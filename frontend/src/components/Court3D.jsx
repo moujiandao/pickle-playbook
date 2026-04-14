@@ -153,7 +153,7 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
           const isOpp = ent.key.startsWith('opp')
           const isLeft = ent.key.includes('left')
           const color = isOpp ? COLORS.oppTeam : COLORS.myTeam
-          const label = isOpp ? (isLeft ? 'OPP L' : 'OPP R') : isLeft ? 'YOU L' : 'YOU R'
+          const label = isOpp ? null : isLeft ? 'YOU L' : 'YOU R'
           const isMe =
             (mySide === 'left' && ent.key === 'my_left') || (mySide === 'right' && ent.key === 'my_right')
           return (

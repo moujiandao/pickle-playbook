@@ -134,21 +134,23 @@ export default function StickFigure({ cx, cy, color, label, isSelected, isMe, sc
       )}
 
       {/* Label below figure, in team color */}
-      <text
-        x={cx}
-        y={feetY + h * 0.22 + labelSize}
-        textAnchor="middle"
-        fontSize={labelSize}
-        fontWeight="700"
-        fill={color}
-        fontFamily="'DM Mono', monospace"
-        letterSpacing="0.5px"
-        stroke="rgba(0,0,0,0.75)"
-        strokeWidth={3}
-        paintOrder="stroke"
-      >
-        {label}
-      </text>
+      {label && (
+        <text
+          x={cx}
+          y={feetY + h * 0.22 + labelSize}
+          textAnchor="middle"
+          fontSize={labelSize}
+          fontWeight="700"
+          fill={color}
+          fontFamily="'DM Mono', monospace"
+          letterSpacing="0.5px"
+          stroke="rgba(0,0,0,0.75)"
+          strokeWidth={3}
+          paintOrder="stroke"
+        >
+          {label}
+        </text>
+      )}
     </g>
   )
 }
