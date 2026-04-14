@@ -38,7 +38,7 @@ export const COLORS = {
   courtMain: '#2563EB',
   kitchenFar: '#2563EB',
   kitchenNear: '#2563EB',
-  outOfBounds: '#991B1B',
+  outOfBounds: '#166534',
   lines: '#FFFFFF',
   myTeam: '#F5A623',
   oppTeam: '#E74C3C',

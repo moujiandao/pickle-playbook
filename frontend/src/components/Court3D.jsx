@@ -2,7 +2,16 @@ import { forwardRef } from 'react'
 import StickFigure from './StickFigure'
 import BallIcon from './BallIcon'
 import { courtToScreen, quadPath, courtLine, depthScale } from '../lib/courtProjection'
-import { COURT_W, KITCHEN, NET_Y, SVG_W, SVG_H, COLORS, NET_PIXEL_HEIGHT } from '../constants'
+import {
+  COURT_W,
+  KITCHEN,
+  NET_Y,
+  SVG_W,
+  SVG_H,
+  COLORS,
+  NET_PIXEL_HEIGHT,
+  BALL_RADIUS,
+} from '../constants'
 
 const COURT_LINES = [
   [0, 0, COURT_W, 0],
@@ -25,10 +34,13 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
 
   const [netLX, netLY] = courtToScreen(-0.3, NET_Y)
   const [netRX] = courtToScreen(COURT_W + 0.3, NET_Y)
-  // Net visual height per pickleball-court-rendering skill: 8-15 units
-  // representing 34 inches (exaggerated for visibility).
-  const netH = 12
-  // Post height sticks up slightly above the mesh (36" vs 34").
+  // Size the net so its top sits just below where a 'mid'-height ball would
+  // float when it's at the net line. Uses the ball's depth scale at NET_Y so
+  // the ratio stays consistent if NET_PIXEL_HEIGHT or BALL_RADIUS changes.
+  const netScale = depthScale(NET_Y)
+  const midBallBottom = BALL_ELEVATION_MULT.mid * NET_PIXEL_HEIGHT * netScale - BALL_RADIUS * netScale
+  const netH = Math.max(12, midBallBottom - 3)
+  // Post height sticks up slightly above the mesh.
   const postTopY = netLY - netH - 3
 
   return (
