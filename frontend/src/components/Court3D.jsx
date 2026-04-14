@@ -81,16 +81,6 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
           strokeWidth={3}
           strokeLinecap="square"
         />
-        {/* Net body */}
-        <rect
-          x={netLX}
-          y={netLY - netH}
-          width={netRX - netLX}
-          height={netH}
-          fill={COLORS.netFill}
-          stroke={COLORS.netFill}
-          strokeWidth={1}
-        />
         {/* Top tape of the net */}
         <line
           x1={netLX}
@@ -98,12 +88,12 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
           x2={netRX}
           y2={netLY - netH}
           stroke="#ffffff"
-          strokeWidth={1.5}
-          opacity={0.9}
+          strokeWidth={2.5}
+          opacity={0.95}
         />
-        {/* Vertical mesh */}
-        {Array.from({ length: 30 }).map((_, i) => {
-          const f = (i + 1) / 31
+        {/* Vertical mesh — transparent cells, thicker lines */}
+        {Array.from({ length: 90 }).map((_, i) => {
+          const f = (i + 1) / 91
           const mx = netLX + (netRX - netLX) * f
           return (
             <line
@@ -113,13 +103,13 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
               x2={mx}
               y2={netLY - 1}
               stroke={COLORS.netMesh}
-              strokeWidth={0.6}
+              strokeWidth={2}
             />
           )
         })}
-        {/* Horizontal mesh */}
-        {Array.from({ length: 4 }).map((_, i) => {
-          const f = (i + 1) / 5
+        {/* Horizontal mesh — transparent cells, thicker lines */}
+        {Array.from({ length: 12 }).map((_, i) => {
+          const f = (i + 1) / 13
           const my = netLY - netH + (netH - 2) * f
           return (
             <line
@@ -129,7 +119,7 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
               x2={netRX - 1}
               y2={my}
               stroke={COLORS.netMesh}
-              strokeWidth={0.5}
+              strokeWidth={2}
             />
           )
         })}

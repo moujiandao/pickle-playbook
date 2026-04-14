@@ -45,7 +45,7 @@ export const COLORS = {
   ballFill: '#C8E636',
   ballStroke: '#2C3E50',
   netFill: '#2C3E50',
-  netMesh: 'rgba(255,255,255,0.5)',
+  netMesh: 'rgba(255,255,255,0.95)',
   accent: '#f59e0b',
   bg: '#0e1117',
   panel: '#1c2530',
