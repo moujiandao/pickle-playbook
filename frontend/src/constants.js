@@ -19,11 +19,12 @@ export const FAR_Y = 65
 export const DEPTH_EXP = 1.12
 
 export const COLORS = {
-  courtMain: '#2e8ab8',
-  kitchenFar: '#2980aa',
-  kitchenNear: '#2b84b0',
-  lines: 'rgba(255,255,255,0.92)',
-  myTeam: '#48bfe3',
+  courtMain: '#2f57a8',
+  kitchenFar: '#2f57a8',
+  kitchenNear: '#2f57a8',
+  outOfBounds: '#8f2a2a',
+  lines: '#ffffff',
+  myTeam: '#fde047',
   oppTeam: '#ef6461',
   accent: '#f59e0b',
   bg: '#0e1117',

@@ -1,5 +1,12 @@
 # Changelog
 
+## [2026-04-14] (court visual refresh)
+
+### Changed
+- Restyle `Court3D.jsx` to match a real pickleball court: solid royal blue playing surface, red out-of-bounds border, thicker white lines, black net posts, and a darker mesh net
+- Collapse `kitchenFar`/`kitchenNear` palette entries in `constants.js` to a single blue and add an `outOfBounds` brick-red color
+- Remove NVZ watermark text from the kitchen
+
 ## [2026-04-14] (merge sprint-2.5 into main)
 
 ### Changed
