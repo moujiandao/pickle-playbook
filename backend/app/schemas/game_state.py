@@ -69,16 +69,31 @@ class ShotRecommendation(BaseModel):
     rally: list[RallyStep]
 
 
+class ScenarioState(BaseModel):
+    """Frontend-facing snapshot stored alongside a saved scenario.
+
+    Mirrors the shape produced by the React app: players, ball, the active
+    side, and (optionally) the most recent analysis result.
+    """
+
+    players: Players
+    ball: Ball
+    mySide: Side
+    result: Optional[list[ShotRecommendation]] = None
+
+    model_config = {"populate_by_name": True}
+
+
 class ScenarioCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=200)
-    game_state: GameState
+    state: ScenarioState
 
 
 class Scenario(BaseModel):
     id: int
     name: str
-    game_state: GameState
-    created_at: datetime
+    state: ScenarioState
+    timestamp: datetime
 
     model_config = {"from_attributes": True}
 

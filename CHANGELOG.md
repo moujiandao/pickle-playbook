@@ -1,5 +1,15 @@
 # Changelog
 
+## [2026-04-13] (integration wiring)
+
+### Changed
+- Wire frontend `useAnalyze` hook to call POST `/api/analyze` directly; remove inline mock generator
+- Replace heuristic-only `services/strategy.py` with a RAG + Claude orchestrator that imports `rag/retrieval.py` and `rag/prompt_builder.py` via `sys.path`; falls back to the deterministic heuristic when `ANTHROPIC_API_KEY`, the rag modules, or the Claude call are unavailable
+- Refactor `useScenarios` hook to call backend `/api/scenarios` instead of `localStorage`
+- Reshape backend `Scenario` schema to match the frontend payload (`{name, state: {players, ball, mySide, result}, timestamp}`); rename `ScenarioRow.game_state_json` -> `state_json`
+- Broaden CORS allowlist to include `http://127.0.0.1:5173`
+- Add `frontend/.env.example` documenting `VITE_API_URL`
+
 ## [2026-04-13] (RAG pipeline)
 
 ### Added

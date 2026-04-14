@@ -31,9 +31,7 @@ export default function App() {
   function handleSave() {
     const name = `${describeBallZone(ball.y)} · ${ball.height} ${ball.speed}${ball.spin ? ` · ${ball.spin}` : ''}`
     saveScenario({
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
       name,
-      timestamp: new Date().toISOString(),
       state: { players: { ...players }, ball: { ...ball }, mySide, result },
     })
     setToast(true)

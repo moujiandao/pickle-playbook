@@ -1,10 +1,8 @@
-import json
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.models.database import ScenarioRow, get_db
-from app.schemas.game_state import Scenario, ScenarioCreate
+from app.schemas.game_state import Scenario, ScenarioCreate, ScenarioState
 
 router = APIRouter()
 
@@ -19,7 +17,7 @@ def list_scenarios(db: Session = Depends(get_db)) -> list[Scenario]:
 def create_scenario(body: ScenarioCreate, db: Session = Depends(get_db)) -> Scenario:
     row = ScenarioRow(
         name=body.name,
-        game_state_json=body.game_state.model_dump_json(),
+        state_json=body.state.model_dump_json(),
     )
     db.add(row)
     db.commit()
@@ -37,10 +35,9 @@ def delete_scenario(scenario_id: int, db: Session = Depends(get_db)) -> None:
 
 
 def _row_to_schema(row: ScenarioRow) -> Scenario:
-    from app.schemas.game_state import GameState
     return Scenario(
         id=row.id,
         name=row.name,
-        game_state=GameState.model_validate(json.loads(row.game_state_json)),
-        created_at=row.created_at,
+        state=ScenarioState.model_validate_json(row.state_json),
+        timestamp=row.created_at,
     )

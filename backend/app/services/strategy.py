@@ -1,9 +1,19 @@
-"""Heuristic strategy engine.
+"""Strategy engine.
 
-Mock stand-in for the eventual RAG+Claude pipeline. Branches on ball zone,
-height, speed, and spin to emit 2-3 shot recommendations, each with a
-3-step rally (you -> opponent -> you).
+Orchestrates RAG retrieval + Claude generation to produce shot recommendations.
+Falls back to a deterministic heuristic when the API key, RAG modules, or
+ChromaDB index are not available, so the endpoint stays usable in tests and
+in offline development.
 """
+
+from __future__ import annotations
+
+import json
+import logging
+import os
+import re
+import sys
+from pathlib import Path
 
 from app.schemas.game_state import GameState, RallyStep, ShotRecommendation
 from app.services.position_describer import (
@@ -12,6 +22,105 @@ from app.services.position_describer import (
     lateral_label,
     zone_of,
 )
+
+logger = logging.getLogger(__name__)
+
+# The rag/ package uses absolute imports between its own modules
+# (e.g. `from embeddings import embed`), so we put its directory on sys.path
+# rather than importing it as a package.
+_env_rag_dir = os.environ.get("PICKLE_RAG_DIR")
+_RAG_DIR = (
+    Path(_env_rag_dir).expanduser().resolve()
+    if _env_rag_dir
+    else Path(__file__).resolve().parents[3] / "rag"
+)
+if _RAG_DIR.is_dir() and str(_RAG_DIR) not in sys.path:
+    sys.path.insert(0, str(_RAG_DIR))
+
+
+def recommend(state: GameState) -> list[ShotRecommendation]:
+    """Return shot recommendations for the given game state.
+
+    Uses the RAG + Claude pipeline when an Anthropic API key is configured.
+    Falls back to the deterministic heuristic when the key, the RAG modules,
+    or any step in the live pipeline is unavailable.
+    """
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        return _heuristic_recommend(state)
+
+    anthropic_mod = _try_import_anthropic()
+    retrieve_fn, build_prompt_fn = _try_import_rag()
+    if anthropic_mod is None or retrieve_fn is None or build_prompt_fn is None:
+        return _heuristic_recommend(state)
+
+    try:
+        state_dict = state.model_dump()
+        try:
+            chunks = retrieve_fn(state_dict, k=5)
+        except Exception as exc:
+            logger.warning("RAG retrieval failed, continuing with no context: %s", exc)
+            chunks = []
+
+        prompt = build_prompt_fn(state_dict, chunks)
+        client = anthropic_mod.Anthropic(api_key=api_key)
+        model = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
+
+        message = client.messages.create(
+            model=model,
+            max_tokens=2048,
+            system=prompt["system"],
+            messages=[{"role": "user", "content": prompt["user"]}],
+        )
+        text = "".join(
+            block.text
+            for block in message.content
+            if getattr(block, "type", "") == "text"
+        )
+        return _parse_recommendations(text)
+    except Exception as exc:
+        logger.exception("Claude pipeline failed, falling back to heuristic: %s", exc)
+        return _heuristic_recommend(state)
+
+
+def _try_import_rag():
+    try:
+        from retrieval import retrieve  # type: ignore
+        from prompt_builder import build_prompt  # type: ignore
+        return retrieve, build_prompt
+    except Exception as exc:
+        logger.warning("RAG modules unavailable: %s", exc)
+        return None, None
+
+
+def _try_import_anthropic():
+    try:
+        import anthropic  # type: ignore
+        return anthropic
+    except Exception as exc:
+        logger.warning("anthropic SDK unavailable: %s", exc)
+        return None
+
+
+_FENCE_RE = re.compile(r"```(?:json)?\s*|\s*```", re.MULTILINE)
+
+
+def _strip_markdown_fences(text: str) -> str:
+    return _FENCE_RE.sub("", text).strip()
+
+
+def _parse_recommendations(text: str) -> list[ShotRecommendation]:
+    cleaned = _strip_markdown_fences(text)
+    data = json.loads(cleaned)
+    if not isinstance(data, list):
+        raise ValueError("Claude response was not a JSON array")
+    return [ShotRecommendation.model_validate(item) for item in data]
+
+
+# ---------------------------------------------------------------------------
+# Heuristic fallback — used when the live RAG+Claude pipeline is unavailable.
+# Keeps the analyze endpoint usable in tests and offline development.
+# ---------------------------------------------------------------------------
 
 
 def _opponent_pressure(state: GameState) -> str:
@@ -28,7 +137,7 @@ def _middle_gap(state: GameState) -> float:
     return abs(state.players.opp_right.x - state.players.opp_left.x)
 
 
-def recommend(state: GameState) -> list[ShotRecommendation]:
+def _heuristic_recommend(state: GameState) -> list[ShotRecommendation]:
     b = state.ball
     zone = ball_zone(b.y)
     ball_where = describe_position(b.x, b.y, "near")

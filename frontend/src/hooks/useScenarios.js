@@ -1,43 +1,63 @@
 import { useState, useEffect } from 'react'
 
-const STORAGE_KEY = 'pickle-scenarios'
+const DEFAULT_API_URL = 'http://localhost:8000'
 
-function load() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : []
-  } catch {
-    return []
-  }
+function apiBase() {
+  return import.meta.env.VITE_API_URL || DEFAULT_API_URL
 }
 
-function persist(scenarios) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(scenarios))
-  } catch {}
+async function fetchAll() {
+  const r = await fetch(`${apiBase()}/api/scenarios`)
+  if (!r.ok) throw new Error(`API ${r.status}`)
+  return r.json()
+}
+
+async function postOne(name, state) {
+  const r = await fetch(`${apiBase()}/api/scenarios`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, state }),
+  })
+  if (!r.ok) {
+    const detail = await r.text().catch(() => '')
+    throw new Error(`API ${r.status}${detail ? `: ${detail}` : ''}`)
+  }
+  return r.json()
+}
+
+async function deleteOne(id) {
+  const r = await fetch(`${apiBase()}/api/scenarios/${id}`, { method: 'DELETE' })
+  if (!r.ok && r.status !== 404) throw new Error(`API ${r.status}`)
 }
 
 export function useScenarios() {
   const [scenarios, setScenarios] = useState([])
 
   useEffect(() => {
-    setScenarios(load())
+    fetchAll()
+      .then(setScenarios)
+      .catch((err) => {
+        console.error('Failed to load scenarios', err)
+        setScenarios([])
+      })
   }, [])
 
-  function saveScenario(entry) {
-    setScenarios((prev) => {
-      const updated = [entry, ...prev].slice(0, 50)
-      persist(updated)
-      return updated
-    })
+  async function saveScenario(entry) {
+    try {
+      const saved = await postOne(entry.name, entry.state)
+      setScenarios((prev) => [saved, ...prev].slice(0, 50))
+    } catch (err) {
+      console.error('Failed to save scenario', err)
+    }
   }
 
-  function deleteScenario(id) {
-    setScenarios((prev) => {
-      const updated = prev.filter((s) => s.id !== id)
-      persist(updated)
-      return updated
-    })
+  async function deleteScenario(id) {
+    try {
+      await deleteOne(id)
+      setScenarios((prev) => prev.filter((s) => s.id !== id))
+    } catch (err) {
+      console.error('Failed to delete scenario', err)
+    }
   }
 
   return { scenarios, saveScenario, deleteScenario }
