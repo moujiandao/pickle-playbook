@@ -87,9 +87,17 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
           y1={netLY - netH}
           x2={netRX}
           y2={netLY - netH}
-          stroke="#ffffff"
+          stroke="#000000"
           strokeWidth={2.5}
-          opacity={0.95}
+        />
+        {/* Bottom band of the net */}
+        <line
+          x1={netLX}
+          y1={netLY}
+          x2={netRX}
+          y2={netLY}
+          stroke="#000000"
+          strokeWidth={2.5}
         />
         {/* Vertical mesh — transparent cells, thicker lines */}
         {Array.from({ length: 90 }).map((_, i) => {
