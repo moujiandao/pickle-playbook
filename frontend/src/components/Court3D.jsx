@@ -23,7 +23,11 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
 
   const [netLX, netLY] = courtToScreen(-0.3, NET_Y)
   const [netRX] = courtToScreen(COURT_W + 0.3, NET_Y)
-  const netH = 18
+  // Net visual height per pickleball-court-rendering skill: 8-15 units
+  // representing 34 inches (exaggerated for visibility).
+  const netH = 12
+  // Post height sticks up slightly above the mesh (36" vs 34").
+  const postTopY = netLY - netH - 3
 
   return (
     <div
@@ -43,43 +47,49 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
           return <line key={i} {...l} stroke={COLORS.lines} strokeWidth={2.6} strokeLinecap="square" />
         })}
 
+        {/* Left post */}
         <line
           x1={netLX}
-          y1={netLY - netH}
+          y1={postTopY}
           x2={netLX}
-          y2={netLY + 3}
-          stroke="#0a0a0a"
+          y2={netLY + 4}
+          stroke={COLORS.netFill}
           strokeWidth={3}
           strokeLinecap="square"
         />
+        {/* Right post */}
         <line
           x1={netRX}
-          y1={netLY - netH}
+          y1={postTopY}
           x2={netRX}
-          y2={netLY + 3}
-          stroke="#0a0a0a"
+          y2={netLY + 4}
+          stroke={COLORS.netFill}
           strokeWidth={3}
           strokeLinecap="square"
         />
+        {/* Net body */}
         <rect
           x={netLX}
           y={netLY - netH}
           width={netRX - netLX}
           height={netH}
-          fill="rgba(10,10,10,0.55)"
-          stroke="#0a0a0a"
-          strokeWidth={1.5}
+          fill={COLORS.netFill}
+          stroke={COLORS.netFill}
+          strokeWidth={1}
         />
+        {/* Top tape of the net */}
         <line
           x1={netLX}
           y1={netLY - netH}
           x2={netRX}
           y2={netLY - netH}
-          stroke="#0a0a0a"
-          strokeWidth={2}
+          stroke="#ffffff"
+          strokeWidth={1.5}
+          opacity={0.9}
         />
-        {Array.from({ length: 24 }).map((_, i) => {
-          const f = (i + 1) / 25
+        {/* Vertical mesh */}
+        {Array.from({ length: 30 }).map((_, i) => {
+          const f = (i + 1) / 31
           const mx = netLX + (netRX - netLX) * f
           return (
             <line
@@ -87,23 +97,24 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
               x1={mx}
               y1={netLY - netH + 1}
               x2={mx}
-              y2={netLY}
-              stroke="rgba(255,255,255,0.28)"
+              y2={netLY - 1}
+              stroke={COLORS.netMesh}
               strokeWidth={0.6}
             />
           )
         })}
-        {Array.from({ length: 5 }).map((_, i) => {
-          const f = (i + 1) / 6
-          const my = netLY - netH + (netH - 1) * f
+        {/* Horizontal mesh */}
+        {Array.from({ length: 4 }).map((_, i) => {
+          const f = (i + 1) / 5
+          const my = netLY - netH + (netH - 2) * f
           return (
             <line
               key={`h${i}`}
-              x1={netLX + 2}
+              x1={netLX + 1}
               y1={my}
-              x2={netRX - 2}
+              x2={netRX - 1}
               y2={my}
-              stroke="rgba(255,255,255,0.22)"
+              stroke={COLORS.netMesh}
               strokeWidth={0.5}
             />
           )
@@ -130,7 +141,6 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
               <StickFigure
                 cx={sx}
                 cy={sy}
-                facingForward={!isOpp}
                 color={color}
                 label={label}
                 isSelected={dragging === ent.key}

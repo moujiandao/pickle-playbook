@@ -1,109 +1,150 @@
-export default function StickFigure({ cx, cy, facingForward, color, label, isSelected, isMe, scale }) {
-  const s = (scale || 1) * 0.55
-  const headR = 4.2 * s
-  const bodyLen = 12 * s
-  const limbLen = 8.5 * s
-  const armSpread = 7.5 * s
-  const bodyTopY = cy - bodyLen
+import { PLAYER_HEIGHT } from '../constants'
+
+// Proportions per pickleball-court-rendering skill:
+//   head diameter = 0.18 × player_height
+//   body length   = 0.40 × player_height
+//   leg length    = 0.35 × player_height (each)
+//   leg spread    = 0.25 × player_height
+//   arm span      = 0.40 × player_height
+//   arms attach   = 0.30 × body length from top of body
+export default function StickFigure({ cx, cy, color, label, isSelected, isMe, scale }) {
+  const h = PLAYER_HEIGHT * (scale || 1)
+  const headR = (h * 0.18) / 2
+  const bodyLen = h * 0.40
+  const legLen = h * 0.35
+  const legSpread = h * 0.25
+  const armSpan = h * 0.40
+  const armOffsetY = bodyLen * 0.30
+  const stroke = Math.max(2, h * 0.04)
+  const labelSize = Math.max(12, h * 0.18)
+
+  const feetY = cy
+  const hipY = feetY - legLen
+  const shoulderY = hipY - bodyLen
+  const headCY = shoulderY - headR
 
   return (
     <g style={{ cursor: 'grab' }}>
       {isSelected && (
         <ellipse
           cx={cx}
-          cy={cy + 2 * s}
-          rx={13 * s}
-          ry={5 * s}
+          cy={feetY + h * 0.04}
+          rx={h * 0.32}
+          ry={h * 0.09}
           fill="none"
           stroke={color}
-          strokeWidth={1.5}
-          strokeDasharray="4,3"
-          opacity={0.7}
+          strokeWidth={stroke * 0.9}
+          strokeDasharray="6,4"
+          opacity={0.85}
         >
-          <animate attributeName="stroke-dashoffset" from="0" to="14" dur="1s" repeatCount="indefinite" />
+          <animate attributeName="stroke-dashoffset" from="0" to="20" dur="1s" repeatCount="indefinite" />
         </ellipse>
       )}
+
+      {/* Ground shadow */}
+      <ellipse cx={cx} cy={feetY + h * 0.03} rx={h * 0.16} ry={h * 0.04} fill="rgba(0,0,0,0.28)" />
+
+      {/* Head */}
+      <circle
+        cx={cx}
+        cy={headCY}
+        r={headR}
+        fill={color}
+        stroke="rgba(0,0,0,0.55)"
+        strokeWidth={stroke * 0.7}
+      />
+
+      {/* Body */}
+      <line
+        x1={cx}
+        y1={shoulderY}
+        x2={cx}
+        y2={hipY}
+        stroke={color}
+        strokeWidth={stroke}
+        strokeLinecap="round"
+      />
+
+      {/* Arms */}
+      <line
+        x1={cx - armSpan / 2}
+        y1={shoulderY + armOffsetY}
+        x2={cx + armSpan / 2}
+        y2={shoulderY + armOffsetY}
+        stroke={color}
+        strokeWidth={stroke}
+        strokeLinecap="round"
+      />
+
+      {/* Paddle (short line from right hand) */}
+      <line
+        x1={cx + armSpan / 2}
+        y1={shoulderY + armOffsetY}
+        x2={cx + armSpan / 2 + h * 0.18}
+        y2={shoulderY + armOffsetY - h * 0.05}
+        stroke="#d4a373"
+        strokeWidth={stroke * 1.2}
+        strokeLinecap="round"
+      />
+
+      {/* Legs */}
+      <line
+        x1={cx}
+        y1={hipY}
+        x2={cx - legSpread / 2}
+        y2={feetY}
+        stroke={color}
+        strokeWidth={stroke}
+        strokeLinecap="round"
+      />
+      <line
+        x1={cx}
+        y1={hipY}
+        x2={cx + legSpread / 2}
+        y2={feetY}
+        stroke={color}
+        strokeWidth={stroke}
+        strokeLinecap="round"
+      />
+
       {isMe && (
-        <>
+        <g>
           <rect
-            x={cx + 7 * s}
-            y={bodyTopY - headR * 2.2}
-            width={19 * s}
-            height={11 * s}
-            rx={2.5 * s}
+            x={cx - h * 0.16}
+            y={headCY - headR - h * 0.22}
+            width={h * 0.32}
+            height={h * 0.16}
+            rx={h * 0.03}
             fill="#f59e0b"
             stroke="#b45309"
-            strokeWidth={0.8}
+            strokeWidth={stroke * 0.5}
           />
           <text
-            x={cx + 16.5 * s}
-            y={bodyTopY - headR * 2.2 + 8 * s}
+            x={cx}
+            y={headCY - headR - h * 0.10}
             textAnchor="middle"
-            fontSize={6.5 * s}
+            fontSize={h * 0.12}
             fontWeight="800"
             fill="#1a1a1a"
             fontFamily="'DM Mono', monospace"
           >
             ME
           </text>
-        </>
+        </g>
       )}
-      <ellipse cx={cx} cy={cy + 3 * s} rx={5.5 * s} ry={2 * s} fill="rgba(0,0,0,0.2)" />
-      <circle cx={cx} cy={bodyTopY - headR} r={headR} fill={color} stroke="rgba(0,0,0,0.2)" strokeWidth={0.8 * s} />
-      {facingForward && s > 0.4 && (
-        <>
-          <circle cx={cx - 1.3 * s} cy={bodyTopY - headR - 0.5 * s} r={0.7 * s} fill="rgba(0,0,0,0.3)" />
-          <circle cx={cx + 1.3 * s} cy={bodyTopY - headR - 0.5 * s} r={0.7 * s} fill="rgba(0,0,0,0.3)" />
-        </>
-      )}
-      <line x1={cx} y1={bodyTopY} x2={cx} y2={cy} stroke="rgba(255,255,255,0.7)" strokeWidth={1.6 * s} strokeLinecap="round" />
-      <line
-        x1={cx - armSpread}
-        y1={bodyTopY + bodyLen * 0.3}
-        x2={cx + armSpread}
-        y2={bodyTopY + bodyLen * 0.33}
-        stroke="rgba(255,255,255,0.6)"
-        strokeWidth={1.4 * s}
-        strokeLinecap="round"
-      />
-      <line
-        x1={cx + armSpread}
-        y1={bodyTopY + bodyLen * 0.33}
-        x2={cx + armSpread + 3 * s}
-        y2={bodyTopY + bodyLen * 0.15}
-        stroke="#c4a86a"
-        strokeWidth={1.8 * s}
-        strokeLinecap="round"
-      />
-      <line
-        x1={cx}
-        y1={cy}
-        x2={cx - 3.5 * s}
-        y2={cy + limbLen * 0.65}
-        stroke="rgba(255,255,255,0.6)"
-        strokeWidth={1.4 * s}
-        strokeLinecap="round"
-      />
-      <line
-        x1={cx}
-        y1={cy}
-        x2={cx + 3.5 * s}
-        y2={cy + limbLen * 0.65}
-        stroke="rgba(255,255,255,0.6)"
-        strokeWidth={1.4 * s}
-        strokeLinecap="round"
-      />
+
+      {/* Label below figure, in team color */}
       <text
         x={cx}
-        y={cy + limbLen * 0.65 + 9 * s}
+        y={feetY + h * 0.22 + labelSize}
         textAnchor="middle"
-        fontSize={8 * s}
+        fontSize={labelSize}
         fontWeight="700"
         fill={color}
         fontFamily="'DM Mono', monospace"
-        letterSpacing="0.3px"
-        stroke="rgba(0,0,0,0.7)"
-        strokeWidth={2.5 * s}
+        letterSpacing="0.5px"
+        stroke="rgba(0,0,0,0.75)"
+        strokeWidth={3}
         paintOrder="stroke"
       >
         {label}

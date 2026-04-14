@@ -1,5 +1,16 @@
 # Changelog
 
+## [2026-04-14] (court rendering per skill spec)
+
+### Changed
+- Rewrite `Court3D`, `StickFigure`, `BallIcon`, `constants.js`, and `courtProjection.js` to comply with `.claude/skills/pickleball-court-rendering.md`
+- Trapezoid geometry: near baseline = 85% of container, far baseline = 59% of near, court height = 77% of container
+- Depth scaling reformulated to `0.55 + depth_ratio * 0.45` (was a custom 0.65-1.15 range)
+- `PLAYER_HEIGHT = 75` and `BALL_RADIUS = 12` so far-side players stay above the 40px minimum and balls above the 8px minimum
+- Player stick figure rebuilt with spec proportions (head 18%, body 40%, legs 35%, arm span 40%) and label rendered below the figure
+- Team colors updated to skill palette: `#F5A623` (you), `#E74C3C` (opponents); ball `#C8E636` with dark stroke; court `#2563EB`, out-of-bounds `#991B1B`, net `#2C3E50` with white mesh
+- Net height capped at 12 units with black posts and a white top-tape
+
 ## [2026-04-14] (court visual refresh)
 
 ### Changed

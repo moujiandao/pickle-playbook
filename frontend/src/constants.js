@@ -5,27 +5,42 @@ export const KITCHEN = 7
 export const NET_Y = COURT_L / 2
 
 // SVG viewport & trapezoid geometry for the 3D-perspective court.
+// Follows pickleball-court-rendering skill:
+//   - near baseline = 85% of container width
+//   - far baseline  = 60% of near baseline (trapezoid foreshortening)
+//   - court height  = 77% of container height
+//   - visible out-of-bounds margin on all sides
 export const SVG_W = 800
 export const SVG_H = 440
 
-export const NEAR_LEFT_X = 30
-export const NEAR_RIGHT_X = SVG_W - 30
-export const NEAR_Y = SVG_H - 25
+export const NEAR_LEFT_X = 60
+export const NEAR_RIGHT_X = SVG_W - 60
+export const NEAR_Y = SVG_H - 40
 
-export const FAR_LEFT_X = 185
-export const FAR_RIGHT_X = SVG_W - 185
-export const FAR_Y = 65
+export const FAR_LEFT_X = 200
+export const FAR_RIGHT_X = SVG_W - 200
+export const FAR_Y = 60
 
 export const DEPTH_EXP = 1.12
 
+// Base player height in SVG units at scale=1. Sized per skill's
+// 40px hard minimum: far-side players use depth scale 0.55, so base
+// must be ≥ 40 / 0.55 ≈ 73. Using 75 gives a small safety margin.
+export const PLAYER_HEIGHT = 75
+export const BALL_RADIUS = 12
+
 export const COLORS = {
-  courtMain: '#2f57a8',
-  kitchenFar: '#2f57a8',
-  kitchenNear: '#2f57a8',
-  outOfBounds: '#8f2a2a',
-  lines: '#ffffff',
-  myTeam: '#fde047',
-  oppTeam: '#ef6461',
+  courtMain: '#2563EB',
+  kitchenFar: '#2563EB',
+  kitchenNear: '#2563EB',
+  outOfBounds: '#991B1B',
+  lines: '#FFFFFF',
+  myTeam: '#F5A623',
+  oppTeam: '#E74C3C',
+  ballFill: '#C8E636',
+  ballStroke: '#2C3E50',
+  netFill: '#2C3E50',
+  netMesh: 'rgba(255,255,255,0.5)',
   accent: '#f59e0b',
   bg: '#0e1117',
   panel: '#1c2530',

@@ -48,6 +48,9 @@ export function courtLine(x1, y1, x2, y2) {
 }
 
 // Players far from the camera appear smaller.
+// Per pickleball-court-rendering skill: scale = 0.55 + depth_ratio * 0.45
+// where depth_ratio is 0.0 at the far baseline and 1.0 at the near baseline.
 export function depthScale(ftY) {
-  return 1.15 - (1 - ftY / COURT_L) * 0.5
+  const depthRatio = ftY / COURT_L
+  return 0.55 + depthRatio * 0.45
 }
