@@ -4,7 +4,7 @@ import BallIcon from './BallIcon'
 import { courtToScreen, depthScale } from '../lib/courtProjection'
 import { SVG_W, SVG_H, COLORS, NET_PIXEL_HEIGHT } from '../constants'
 
-const BALL_ELEVATION_MULT = { low: 0, mid: 2, high: 4 }
+const BALL_ELEVATION_MULT = { low: 1, mid: 2, high: 4 }
 
 const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, onPointerDown }, ref) {
   const entities = [
