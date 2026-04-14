@@ -2,7 +2,9 @@ import { forwardRef } from 'react'
 import StickFigure from './StickFigure'
 import BallIcon from './BallIcon'
 import { courtToScreen, depthScale } from '../lib/courtProjection'
-import { SVG_W, SVG_H, COLORS } from '../constants'
+import { SVG_W, SVG_H, COLORS, NET_PIXEL_HEIGHT } from '../constants'
+
+const BALL_ELEVATION_MULT = { low: 0, mid: 1, high: 2 }
 
 const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, onPointerDown }, ref) {
   const entities = [
@@ -34,9 +36,16 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
           const [sx, sy] = courtToScreen(ent.x, ent.y)
           const scale = depthScale(ent.y)
           if (ent.type === 'ball') {
+            const elevation = (BALL_ELEVATION_MULT[ent.height] ?? 0) * NET_PIXEL_HEIGHT * scale
             return (
               <g key="ball" onPointerDown={(e) => onPointerDown(e, 'ball')}>
-                <BallIcon cx={sx} cy={sy} isSelected={dragging === 'ball'} scale={scale} />
+                <BallIcon
+                  cx={sx}
+                  cy={sy}
+                  elevation={elevation}
+                  isSelected={dragging === 'ball'}
+                  scale={scale}
+                />
               </g>
             )
           }

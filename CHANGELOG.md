@@ -1,5 +1,15 @@
 # Changelog
 
+## [2026-04-14] (ball height visualization)
+
+### Added
+- Elevate the ball visually based on `ball.height`: `low` sits on the court, `mid` raises it by `NET_PIXEL_HEIGHT` (≈ one net-tape height), `high` raises it by 2x, all scaled by depth
+- Dashed vertical tether line from ground contact point to the elevated ball, so the lift is legible at any depth
+- `NET_PIXEL_HEIGHT = 40` constant in `constants.js`
+
+### Changed
+- `BallIcon` now takes an `elevation` prop; ground shadow stays pinned to `cy` while the ball body, holes, and selection ring render at `cy - elevation`
+
 ## [2026-04-14] (reference-image court)
 
 ### Added

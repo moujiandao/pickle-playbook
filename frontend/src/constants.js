@@ -31,6 +31,12 @@ export const NET_SCREEN_Y = 245
 export const PLAYER_HEIGHT = 195
 export const BALL_RADIUS = 12
 
+// Visual elevation of the ball above its ground position, at scale=1.
+// 'mid' raises the ball one NET_PIXEL_HEIGHT (approximately the net-tape
+// height in the image), 'high' raises it 2x. Scaled by depth so far-side
+// balls rise less in pixels, matching perspective.
+export const NET_PIXEL_HEIGHT = 40
+
 export const COLORS = {
   courtMain: '#2563EB',
   kitchenFar: '#2563EB',
