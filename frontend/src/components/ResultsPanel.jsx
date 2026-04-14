@@ -8,7 +8,44 @@ const panelStyle = {
   border: '1px solid rgba(255,255,255,0.06)',
 }
 
-export default function ResultsPanel({ result }) {
+export default function ResultsPanel({ result, error }) {
+  if (error) {
+    return (
+      <div
+        style={{
+          ...panelStyle,
+          border: '1px solid rgba(239,100,97,0.4)',
+          background: 'rgba(239,100,97,0.08)',
+        }}
+        role="alert"
+      >
+        <h3
+          style={{
+            margin: '0 0 8px 0',
+            fontFamily: "'DM Mono', monospace",
+            fontSize: 12,
+            fontWeight: 700,
+            color: '#ef6461',
+            letterSpacing: '1.5px',
+            textTransform: 'uppercase',
+          }}
+        >
+          Analyze Failed
+        </h3>
+        <div
+          style={{
+            fontFamily: "'DM Mono', monospace",
+            fontSize: 12,
+            color: 'rgba(255,255,255,0.7)',
+            lineHeight: 1.5,
+            wordBreak: 'break-word',
+          }}
+        >
+          {error}
+        </div>
+      </div>
+    )
+  }
   if (!result) return null
   return (
     <div style={panelStyle}>

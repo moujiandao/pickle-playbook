@@ -1,5 +1,12 @@
 # Changelog
 
+## [2026-04-14] (fix: analyze button silent failure in production)
+
+### Fixed
+- Correct `frontend/.env.production` to point at the real Render URL `https://pickle-playbook.onrender.com` (was a never-provisioned `pickle-api.brianmar.com` custom domain)
+- Surface API failures in `ResultsPanel`: `App.jsx` now passes the `useAnalyze` `error` state through, and `ResultsPanel` renders a red banner when `error` is set so network/API failures are visible instead of making the analyze button look dead
+- Update `docs/render-temporary-deployment.md` to reflect the actual Render service hostname (`pickle-playbook.onrender.com`, not `pickle-playbook-api.onrender.com`)
+
 ## [2026-04-14] (ball height visualization)
 
 ### Added

@@ -7,7 +7,7 @@ AWS account is temporarily inaccessible. We are using Render's free tier to get 
 ## What Changed in the Sprint Plan
 
 - **Task 3.3 replaced entirely** — skip Dockerfile SSH/Caddy/EC2 steps. Render handles all of that automatically from the existing `Dockerfile`.
-- **Task 3.4 stays the same** — just use the Render URL (`https://pickle-playbook-api.onrender.com`) instead of an EC2 IP.
+- **Task 3.4 stays the same** — just use the Render URL (`https://pickle-playbook.onrender.com`) instead of an EC2 IP.
 
 ## Deployment Steps We Followed
 
@@ -19,7 +19,7 @@ AWS account is temporarily inaccessible. We are using Render's free tier to get 
 - Render auto-detects the `Dockerfile`
 
 **Step 3** — Configure the service:
-- Name: `pickle-playbook-api`
+- Name: `pickle-playbook` (this is what appears in the public hostname)
 - Region: Oregon (closest to Santa Clara)
 - Instance type: Free
 - Environment variables:
@@ -28,9 +28,9 @@ AWS account is temporarily inaccessible. We are using Render's free tier to get 
   - `ANTHROPIC_API_KEY`
   - `OPENAI_API_KEY`
 
-**Step 4** — Deploy. Render builds from the `Dockerfile` automatically. Service URL: `https://pickle-playbook-api.onrender.com`
+**Step 4** — Deploy. Render builds from the `Dockerfile` automatically. Service URL: `https://pickle-playbook.onrender.com`
 
-**Step 5** — Update Vercel: set `VITE_API_URL=https://pickle-playbook-api.onrender.com` and redeploy.
+**Step 5** — Update Vercel: set `VITE_API_URL=https://pickle-playbook.onrender.com` and redeploy.
 
 ## Cold Start Warm-Up (Free Tier Behavior)
 

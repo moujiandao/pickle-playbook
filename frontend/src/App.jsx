@@ -15,7 +15,7 @@ export default function App() {
   const [toast, setToast] = useState(false)
 
   const { dragging, onPointerDown, svgContainerRef } = useDrag(setPlayers, setBall)
-  const { result, setResult, isAnalyzing, analyze } = useAnalyze()
+  const { result, setResult, isAnalyzing, error, analyze } = useAnalyze()
   const { scenarios, saveScenario, deleteScenario } = useScenarios()
 
   // Clear spin when ball leaves kitchen zone
@@ -150,7 +150,7 @@ export default function App() {
             onSave={handleSave}
             scenarioCount={scenarios.length}
           />
-          <ResultsPanel result={result} />
+          <ResultsPanel result={result} error={error} />
           <ScenarioList
             scenarios={scenarios}
             onLoad={handleLoad}
