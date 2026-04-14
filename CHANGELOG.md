@@ -1,5 +1,11 @@
 # Changelog
 
+## [2026-04-13] (integration tests)
+
+### Added
+- Add `backend/tests/integration/` suite that spawns a real uvicorn subprocess against an isolated SQLite file and exercises every public endpoint over real HTTP (47 tests covering health, analyze contract + zone coverage + validation + CORS, scenarios CRUD + round-trip, and corrections)
+- Session-scoped `live_server` fixture in `tests/integration/conftest.py` waits on `/api/health`, forces the heuristic strategy path (clears `ANTHROPIC_API_KEY`), and per-test `_isolate_scenarios` fixture wipes the scenarios table between tests
+
 ## [2026-04-13] (integration wiring)
 
 ### Changed
