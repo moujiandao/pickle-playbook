@@ -1,9 +1,18 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import analyze, scenarios, corrections
+from app.models.database import init_db
+from app.routers import analyze, corrections, scenarios
 
-app = FastAPI(title="Pickle Playbook API", version="0.3.0")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+
+
+app = FastAPI(title="Pickle Playbook API", version="0.3.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -11,6 +20,7 @@ app.add_middleware(
         "https://pickle-playbook.vercel.app",
         "https://pickle-playbook-delta.vercel.app",
         "http://localhost:5173",
+        "http://127.0.0.1:5173",
     ],
     allow_credentials=True,
     allow_methods=["*"],

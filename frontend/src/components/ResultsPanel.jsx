@@ -1,59 +1,152 @@
-// ResultsPanel — displays analyze recommendations with loading/error/empty states
+const panelStyle = {
+  background: '#1c2530',
+  borderRadius: 12,
+  padding: '18px 20px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 16,
+  border: '1px solid rgba(255,255,255,0.06)',
+}
 
-export default function ResultsPanel({ recommendations = [], loading = false, error = null, onRetry }) {
-  if (loading) {
-    return (
-      <div className="rounded-lg border border-slate-700 bg-slate-800 p-4 space-y-3">
-        <h2 className="text-sm font-semibold mb-2 text-slate-300">Results</h2>
-        {[0, 1, 2].map((i) => (
-          <div key={i} className="h-20 rounded bg-slate-700 animate-pulse" />
-        ))}
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="rounded-lg border border-red-800 bg-slate-800 p-4">
-        <h2 className="text-sm font-semibold mb-2 text-slate-300">Results</h2>
-        <p className="text-red-400 text-sm mb-3">{error}</p>
-        <button
-          onClick={onRetry}
-          className="text-xs px-3 py-1.5 rounded bg-slate-700 hover:bg-slate-600 text-slate-200 transition-colors"
-        >
-          Try again
-        </button>
-      </div>
-    )
-  }
-
-  if (recommendations.length === 0) {
-    return (
-      <div className="rounded-lg border border-slate-700 bg-slate-800 p-4">
-        <h2 className="text-sm font-semibold mb-2 text-slate-300">Results</h2>
-        <p className="text-slate-500 text-sm">
-          Set up court positions and click Analyze to get recommendations.
-        </p>
-      </div>
-    )
-  }
-
+export default function ResultsPanel({ result }) {
+  if (!result) return null
   return (
-    <div className="rounded-lg border border-slate-700 bg-slate-800 p-4 space-y-4">
-      <h2 className="text-sm font-semibold text-slate-300">Results</h2>
-      {recommendations.map((rec, idx) => (
-        <div key={idx} className="rounded border border-slate-700 bg-slate-900 p-3">
-          <p className="font-semibold text-slate-100 text-sm">{rec.name}</p>
-          <p className="text-slate-400 text-xs mt-0.5 mb-2">{rec.why}</p>
-          <ol className="space-y-1.5">
-            {rec.rally.map((step) => (
-              <li key={step.shot} className="text-xs text-slate-300">
-                <span className="text-slate-500 mr-1">#{step.shot}</span>
-                <span className="font-medium">{step.who}:</span> {step.action}
-                <span className="text-slate-500"> — {step.result}</span>
-              </li>
-            ))}
-          </ol>
+    <div style={panelStyle}>
+      <h3
+        style={{
+          margin: '0 0 14px 0',
+          fontFamily: "'DM Mono', monospace",
+          fontSize: 12,
+          fontWeight: 700,
+          color: '#f59e0b',
+          letterSpacing: '1.5px',
+          textTransform: 'uppercase',
+        }}
+      >
+        Shot Recommendations
+      </h3>
+      {result.map((shot, i) => (
+        <div
+          key={i}
+          style={{
+            padding: '14px 16px',
+            marginBottom: 12,
+            background: i === 0 ? 'rgba(245,158,11,0.06)' : 'rgba(255,255,255,0.015)',
+            borderRadius: 10,
+            borderLeft: `3px solid ${i === 0 ? '#f59e0b' : 'rgba(255,255,255,0.06)'}`,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+            <span
+              style={{
+                fontFamily: "'DM Mono', monospace",
+                fontSize: 11,
+                fontWeight: 800,
+                color: i === 0 ? '#f59e0b' : 'rgba(255,255,255,0.25)',
+                minWidth: 22,
+              }}
+            >
+              #{i + 1}
+            </span>
+            <span
+              style={{
+                fontFamily: "'Outfit', sans-serif",
+                fontSize: 15,
+                fontWeight: 700,
+                color: '#e8e4dd',
+              }}
+            >
+              {shot.name}
+            </span>
+          </div>
+          <p
+            style={{
+              margin: '0 0 10px 30px',
+              fontSize: 12,
+              color: 'rgba(255,255,255,0.4)',
+              lineHeight: 1.5,
+              fontFamily: "'DM Mono', monospace",
+              fontStyle: 'italic',
+            }}
+          >
+            {shot.why}
+          </p>
+          <div style={{ marginLeft: 30 }}>
+            {shot.rally.map((step, j) => {
+              const isYou = step.who === 'You' || step.who === 'Your Partner'
+              return (
+                <div key={j} style={{ display: 'flex', gap: 10 }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      minWidth: 24,
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 9.5,
+                        fontWeight: 800,
+                        fontFamily: "'DM Mono', monospace",
+                        background: isYou ? 'rgba(72,191,227,0.2)' : 'rgba(239,100,97,0.2)',
+                        color: isYou ? '#48bfe3' : '#ef6461',
+                        border: `1.5px solid ${isYou ? 'rgba(72,191,227,0.4)' : 'rgba(239,100,97,0.4)'}`,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {step.shot}
+                    </div>
+                    {j < shot.rally.length - 1 && (
+                      <div style={{ width: 1.5, height: 22, background: 'rgba(255,255,255,0.08)' }} />
+                    )}
+                  </div>
+                  <div style={{ paddingBottom: j < shot.rally.length - 1 ? 5 : 0, flex: 1 }}>
+                    <div
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 700,
+                        fontFamily: "'DM Mono', monospace",
+                        color: isYou ? '#48bfe3' : '#ef6461',
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px',
+                        marginBottom: 2,
+                      }}
+                    >
+                      {step.who}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 12.5,
+                        color: 'rgba(255,255,255,0.6)',
+                        lineHeight: 1.5,
+                        fontFamily: "'Outfit', sans-serif",
+                      }}
+                    >
+                      {step.action}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 11,
+                        color: 'rgba(255,255,255,0.3)',
+                        lineHeight: 1.4,
+                        fontFamily: "'DM Mono', monospace",
+                        marginTop: 2,
+                      }}
+                    >
+                      {'->'} {step.result}
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </div>
       ))}
     </div>

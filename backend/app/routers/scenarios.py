@@ -1,32 +1,43 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
-from db.repository import ScenarioRepo
-from db.supabase_client import get_client
+from app.models.database import ScenarioRow, get_db
+from app.schemas.game_state import Scenario, ScenarioCreate, ScenarioState
 
 router = APIRouter()
 
 
-class ScenarioCreate(BaseModel):
-    name: str
-    game_state: dict
+@router.get("/scenarios", response_model=list[Scenario])
+def list_scenarios(db: Session = Depends(get_db)) -> list[Scenario]:
+    rows = db.query(ScenarioRow).order_by(ScenarioRow.created_at.desc()).all()
+    return [_row_to_schema(r) for r in rows]
 
 
-@router.get("/scenarios")
-def list_scenarios():
-    repo = ScenarioRepo(get_client())
-    return repo.list_all()
-
-
-@router.post("/scenarios", status_code=201)
-def create_scenario(body: ScenarioCreate):
-    repo = ScenarioRepo(get_client())
-    return repo.save(body.name, body.game_state)
+@router.post("/scenarios", response_model=Scenario, status_code=201)
+def create_scenario(body: ScenarioCreate, db: Session = Depends(get_db)) -> Scenario:
+    row = ScenarioRow(
+        name=body.name,
+        state_json=body.state.model_dump_json(),
+    )
+    db.add(row)
+    db.commit()
+    db.refresh(row)
+    return _row_to_schema(row)
 
 
 @router.delete("/scenarios/{scenario_id}", status_code=204)
-def delete_scenario(scenario_id: str):
-    repo = ScenarioRepo(get_client())
-    deleted = repo.delete(scenario_id)
-    if not deleted:
+def delete_scenario(scenario_id: int, db: Session = Depends(get_db)) -> None:
+    row = db.get(ScenarioRow, scenario_id)
+    if row is None:
         raise HTTPException(status_code=404, detail="Scenario not found")
+    db.delete(row)
+    db.commit()
+
+
+def _row_to_schema(row: ScenarioRow) -> Scenario:
+    return Scenario(
+        id=row.id,
+        name=row.name,
+        state=ScenarioState.model_validate_json(row.state_json),
+        timestamp=row.created_at,
+    )

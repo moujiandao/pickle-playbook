@@ -1,32 +1,37 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+import json
 
-from db.repository import CorrectionRepo
-from db.supabase_client import get_client
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from app.models.database import CorrectionRow, get_db
+from app.schemas.game_state import Correction, CorrectionCreate
 
 router = APIRouter()
 
-VALID_FEEDBACK_TYPES = {"thumbs_up", "thumbs_down", "rewrite"}
+
+@router.post("/correct", response_model=Correction, status_code=201)
+def submit_correction(body: CorrectionCreate, db: Session = Depends(get_db)) -> Correction:
+    """Store a human-in-the-loop correction for later RAG fine-tuning."""
+    row = CorrectionRow(
+        game_state_json=body.game_state.model_dump_json(),
+        corrected_response_json=json.dumps([r.model_dump() for r in body.corrected_response]),
+        note=body.note,
+    )
+    db.add(row)
+    db.commit()
+    db.refresh(row)
+    return _row_to_schema(row)
 
 
-class CorrectionCreate(BaseModel):
-    game_state: dict
-    original_recommendation: dict
-    corrected_recommendation: dict | None = None
-    feedback_type: str
-
-
-@router.post("/correct", status_code=201)
-def submit_correction(body: CorrectionCreate):
-    if body.feedback_type not in VALID_FEEDBACK_TYPES:
-        raise HTTPException(
-            status_code=422,
-            detail=f"feedback_type must be one of: {', '.join(sorted(VALID_FEEDBACK_TYPES))}",
-        )
-    repo = CorrectionRepo(get_client())
-    return repo.save(
-        game_state=body.game_state,
-        original=body.original_recommendation,
-        corrected=body.corrected_recommendation,
-        feedback_type=body.feedback_type,
+def _row_to_schema(row: CorrectionRow) -> Correction:
+    from app.schemas.game_state import GameState, ShotRecommendation
+    return Correction(
+        id=row.id,
+        game_state=GameState.model_validate(json.loads(row.game_state_json)),
+        corrected_response=[
+            ShotRecommendation.model_validate(r)
+            for r in json.loads(row.corrected_response_json)
+        ],
+        note=row.note,
+        created_at=row.created_at,
     )

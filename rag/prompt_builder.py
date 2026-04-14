@@ -1,84 +1,70 @@
-"""Build the Claude system prompt from game state + retrieved strategy chunks."""
+"""
+Builds the full Claude API prompt from a GameState and retrieved chunks.
 
-import json
+Output is a dict with "system" and "user" keys, matching Anthropic SDK
+message format. The system prompt establishes the pickleball expert persona.
+The user message contains the situation + retrieved context + output spec.
+"""
 
-from app.services.position_describer import describe_position
-
-# Near side is y > 22 (my side when my_side drives perspective)
-_MY_SIDE_Y_CENTER = 33.0  # typical starting y for near-side players
-
-
-def _game_state_to_text(game_state: dict) -> str:
-    """Convert raw coordinate dict to tactical English."""
-    players = game_state["players"]
-    ball = game_state["ball"]
-    my_side = game_state.get("my_side", "left")
-
-    # Near side = higher y values (closer to y=44 baseline)
-    my_left = describe_position(players["my_left"]["x"], players["my_left"]["y"], is_near_side=True)
-    my_right = describe_position(players["my_right"]["x"], players["my_right"]["y"], is_near_side=True)
-    opp_left = describe_position(players["opp_left"]["x"], players["opp_left"]["y"], is_near_side=False)
-    opp_right = describe_position(players["opp_right"]["x"], players["opp_right"]["y"], is_near_side=False)
-    ball_pos = describe_position(ball["x"], ball["y"], is_near_side=True)
-
-    spin_str = ball.get("spin") or "flat"
-
-    lines = [
-        f"My team ({my_side} perspective):",
-        f"  - My left player: {my_left}",
-        f"  - My right player: {my_right}",
-        f"Opponents:",
-        f"  - Their left player: {opp_left}",
-        f"  - Their right player: {opp_right}",
-        f"Ball: {ball_pos}, height={ball['height']}, speed={ball['speed']}, spin={spin_str}",
-    ]
-    return "\n".join(lines)
-
-
-def _format_chunks(chunks: list[dict]) -> str:
-    if not chunks:
-        return "No strategy context retrieved."
-    sections = []
-    for i, chunk in enumerate(chunks, 1):
-        source = chunk.get("source", "unknown")
-        content = chunk.get("content", "").strip()
-        sections.append(f"[{i}] Source: {source}\n{content}")
-    return "\n\n".join(sections)
-
+from position_describer import describe_situation
 
 SYSTEM_PROMPT = """\
-You are a pickleball strategy expert. You will receive the current court position \
-of all four players and the ball, plus relevant strategy excerpts from a coaching corpus.
+You are an expert pickleball coach and strategist with deep knowledge of doubles play,
+kitchen tactics, shot mechanics, and rally construction. You analyze court positions and
+ball parameters to recommend tactically sound shot sequences.
 
-Your task is to recommend 3 distinct tactical options, each with a 3-shot rally sequence.
+When given a court situation, you respond with EXACTLY 3 shot recommendations. Each
+recommendation includes a 3-shot rally sequence showing what you should hit, how the
+opponent is likely to respond based on their actual positions, and your follow-up.
 
-Return ONLY a JSON array with exactly 3 objects. Each object must match this schema:
-{
-  "name": "<short tactic name>",
-  "why": "<one sentence explaining why this tactic fits the current situation>",
-  "rally": [
-    {"shot": 1, "who": "<You|Partner|Opponent>", "action": "<what they do>", "result": "<outcome>"},
-    {"shot": 2, "who": "<You|Partner|Opponent>", "action": "<what they do>", "result": "<outcome>"},
-    {"shot": 3, "who": "<You|Partner|Opponent>", "action": "<what they do>", "result": "<outcome>"}
-  ]
-}
+You always ground your advice in the specific positions and ball parameters given.
+You never recommend shots that are physically implausible given the described positions.
+"""
 
-Do not include any text outside the JSON array. No markdown, no explanation.\
+OUTPUT_FORMAT = """\
+Respond with a JSON array of exactly 3 recommendation objects. Each object must have:
+- "name": short name for the shot strategy (e.g., "Cross-Court Dink")
+- "why": 1-2 sentences explaining why this shot fits the situation
+- "rally": array of exactly 3 objects, each with:
+  - "shot": integer (1, 2, or 3)
+  - "who": "You" | "Your partner" | "Opponent L" | "Opponent R"
+  - "action": what they do (verb phrase, e.g., "Soft cross-court dink to opponent's backhand")
+  - "result": tactical outcome (e.g., "Ball lands near opponent's feet, forcing a reset")
+
+Return only the JSON array — no markdown fences, no extra commentary.
 """
 
 
-def build_prompt(game_state: dict, chunks: list[dict]) -> str:
-    """Assemble the full user message for the Claude API call."""
-    situation = _game_state_to_text(game_state)
-    context = _format_chunks(chunks)
+def build_prompt(game_state: dict, chunks: list[dict]) -> dict:
+    """
+    Assemble the Claude API prompt.
 
-    return (
-        f"## Current Court Situation\n{situation}\n\n"
-        f"## Strategy Context\n{context}\n\n"
-        "Based on the situation and strategy context above, recommend 3 tactical options "
-        "as a JSON array."
-    )
+    Returns {"system": str, "user": str} suitable for the Anthropic messages API.
+    """
+    situation = describe_situation(game_state)
 
+    # Format retrieved context chunks
+    if chunks:
+        context_lines = ["--- Relevant Strategy Context ---"]
+        for i, chunk in enumerate(chunks, 1):
+            source = chunk.get("source", "unknown")
+            text = chunk["text"].strip()
+            context_lines.append(f"\n[{i}] Source: {source}\n{text}")
+        context_section = "\n".join(context_lines)
+    else:
+        context_section = "--- No additional strategy context retrieved ---"
 
-def get_system_prompt() -> str:
-    return SYSTEM_PROMPT
+    user_message = f"""{situation}
+
+{context_section}
+
+--- Task ---
+Based on the court situation above and the strategy context provided, recommend the 3 best
+shot strategies for this moment in the rally.
+
+{OUTPUT_FORMAT}"""
+
+    return {
+        "system": SYSTEM_PROMPT,
+        "user": user_message,
+    }

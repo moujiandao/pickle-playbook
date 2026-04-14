@@ -1,34 +1,35 @@
 import { useState } from 'react'
 
-const API_URL = import.meta.env.VITE_API_URL
+const DEFAULT_API_URL = 'http://localhost:8000'
 
 export function useAnalyze() {
-  const [loading, setLoading] = useState(false)
+  const [result, setResult] = useState(null)
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [error, setError] = useState(null)
-  const [recommendations, setRecommendations] = useState([])
 
-  async function analyze(gameState) {
-    setLoading(true)
+  async function analyze(players, ball, mySide) {
+    setIsAnalyzing(true)
+    setResult(null)
     setError(null)
+
     try {
-      const res = await fetch(`${API_URL}/api/analyze`, {
+      const apiUrl = import.meta.env.VITE_API_URL || DEFAULT_API_URL
+      const resp = await fetch(`${apiUrl}/api/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(gameState),
+        body: JSON.stringify({ my_side: mySide, players, ball }),
       })
-      if (!res.ok) {
-        throw new Error(`Server error: ${res.status}`)
+      if (!resp.ok) {
+        const detail = await resp.text().catch(() => '')
+        throw new Error(`API error ${resp.status}${detail ? `: ${detail}` : ''}`)
       }
-      const data = await res.json()
-      setRecommendations(data)
-      return data
+      setResult(await resp.json())
     } catch (err) {
       setError(err.message)
-      return []
     } finally {
-      setLoading(false)
+      setIsAnalyzing(false)
     }
   }
 
-  return { analyze, loading, error, recommendations }
+  return { result, setResult, isAnalyzing, error, analyze }
 }
