@@ -43,6 +43,7 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
                   cx={sx}
                   cy={sy}
                   elevation={elevation}
+                  spin={ent.spin}
                   isSelected={dragging === 'ball'}
                   scale={scale}
                 />

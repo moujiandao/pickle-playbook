@@ -4,10 +4,12 @@ import { BALL_RADIUS, COLORS } from '../constants'
 // cx/cy are the *ground* position. If elevation > 0, the ball body renders
 // that many SVG units above the ground, with a vertical tether line showing
 // the lift; the ground shadow stays pinned to cy.
-export default function BallIcon({ cx, cy, elevation = 0, isSelected, scale }) {
+export default function BallIcon({ cx, cy, elevation = 0, spin, isSelected, scale }) {
   const r = Math.max(4, BALL_RADIUS * (scale || 1))
   const stroke = Math.max(1.5, r * 0.18)
   const cyBall = cy - elevation
+  const spinLabel = spin === 'topspin' ? 'Has Topspin' : spin === 'slice' ? 'Has Slice' : null
+  const spinFontSize = Math.max(11, 16 * (scale || 1))
 
   return (
     <g style={{ cursor: 'grab' }}>
@@ -57,6 +59,23 @@ export default function BallIcon({ cx, cy, elevation = 0, isSelected, scale }) {
       <circle cx={cx - r * 0.35} cy={cyBall - r * 0.15} r={r * 0.12} fill={COLORS.ballStroke} opacity={0.55} />
       <circle cx={cx + r * 0.30} cy={cyBall + r * 0.10} r={r * 0.12} fill={COLORS.ballStroke} opacity={0.55} />
       <circle cx={cx + r * 0.05} cy={cyBall - r * 0.40} r={r * 0.10} fill={COLORS.ballStroke} opacity={0.55} />
+
+      {spinLabel && (
+        <text
+          x={cx}
+          y={cyBall - r - spinFontSize * 0.5}
+          textAnchor="middle"
+          fontSize={spinFontSize}
+          fontWeight="700"
+          fill="#ffffff"
+          fontFamily="'DM Mono', monospace"
+          stroke="rgba(0,0,0,0.8)"
+          strokeWidth={3}
+          paintOrder="stroke"
+        >
+          {spinLabel}
+        </text>
+      )}
     </g>
   )
 }
