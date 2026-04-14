@@ -7,7 +7,11 @@ app = FastAPI(title="Pickle Playbook API", version="0.3.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://pickle-playbook.vercel.app", "http://localhost:5173"],
+    allow_origins=[
+        "https://pickle-playbook.vercel.app",
+        "https://pickle-playbook-delta.vercel.app",
+        "http://localhost:5173",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

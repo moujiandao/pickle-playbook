@@ -1,5 +1,14 @@
 # Changelog
 
+## [2026-04-14] (Render deploy fixes)
+
+### Changed
+- Bind uvicorn to `${PORT:-8001}` in Dockerfile so Render's injected `$PORT` works (local dev still falls back to 8001)
+- Add `https://pickle-playbook-delta.vercel.app` to CORS allowlist in `backend/app/main.py`
+
+### Added
+- Add `docs/render-temporary-deployment.md` documenting temporary Render deployment and clean migration path back to EC2
+
 ## [2026-04-13] (Tasks 3.2 & 3.3)
 
 ### Added
