@@ -121,22 +121,31 @@ export default function App() {
         }}
       >
         <div
-          ref={svgContainerRef}
           style={{
-            borderRadius: 10,
-            overflow: 'hidden',
             flexShrink: 0,
             width: '100%',
             maxWidth: 800,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 14,
           }}
         >
-          <Court3D
-            players={players}
-            ball={ball}
-            mySide={mySide}
-            dragging={dragging}
-            onPointerDown={onPointerDown}
-          />
+          <div
+            ref={svgContainerRef}
+            style={{
+              borderRadius: 10,
+              overflow: 'hidden',
+            }}
+          >
+            <Court3D
+              players={players}
+              ball={ball}
+              mySide={mySide}
+              dragging={dragging}
+              onPointerDown={onPointerDown}
+            />
+          </div>
+          <ResultsPanel result={result} error={error} />
         </div>
 
         <div style={{ flex: '1 1 280px', minWidth: 280, maxWidth: 340, display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -150,7 +159,6 @@ export default function App() {
             onSave={handleSave}
             scenarioCount={scenarios.length}
           />
-          <ResultsPanel result={result} error={error} />
           <ScenarioList
             scenarios={scenarios}
             onLoad={handleLoad}

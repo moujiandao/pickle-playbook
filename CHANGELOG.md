@@ -1,5 +1,14 @@
 # Changelog
 
+## [2026-04-14] (rally flow layout)
+
+### Changed
+- Move `ResultsPanel` from the right-side column to directly below `Court3D` in the left column so the shot sequence reads left-to-right under the court
+- Rewrite `ResultsPanel` success state to show only the top recommendation as a single horizontal strip: `#1` badge + shot name + `why` header, followed by 3 bubbles (action + result) connected by right-pointing arrows
+- Bubble strip uses `overflow-x: auto` with `flex-wrap: nowrap` so it stays on one line and scrolls horizontally only when the container is narrower than three bubbles plus arrows
+- Tighten rally text scale (action 11.5px, result 10.5px) to fit the default case inside the ~800px court column without triggering scroll
+- Drop recommendations 2+ from the UI (backend still returns them; they're intentionally ignored for now)
+
 ## [2026-04-14] (fix: analyze button silent failure in production)
 
 ### Fixed

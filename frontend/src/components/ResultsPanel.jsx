@@ -4,9 +4,11 @@ const panelStyle = {
   padding: '18px 20px',
   display: 'flex',
   flexDirection: 'column',
-  gap: 16,
+  gap: 12,
   border: '1px solid rgba(255,255,255,0.06)',
 }
+
+const BUBBLE_WIDTH = 220
 
 export default function ResultsPanel({ result, error }) {
   if (error) {
@@ -46,146 +48,160 @@ export default function ResultsPanel({ result, error }) {
       </div>
     )
   }
-  if (!result) return null
+
+  if (!result || result.length === 0) return null
+
+  const top = result[0]
+
   return (
     <div style={panelStyle}>
-      <h3
-        style={{
-          margin: '0 0 14px 0',
-          fontFamily: "'DM Mono', monospace",
-          fontSize: 12,
-          fontWeight: 700,
-          color: '#f59e0b',
-          letterSpacing: '1.5px',
-          textTransform: 'uppercase',
-        }}
-      >
-        Shot Recommendations
-      </h3>
-      {result.map((shot, i) => (
-        <div
-          key={i}
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+        <span
           style={{
-            padding: '14px 16px',
-            marginBottom: 12,
-            background: i === 0 ? 'rgba(245,158,11,0.06)' : 'rgba(255,255,255,0.015)',
-            borderRadius: 10,
-            borderLeft: `3px solid ${i === 0 ? '#f59e0b' : 'rgba(255,255,255,0.06)'}`,
+            fontFamily: "'DM Mono', monospace",
+            fontSize: 11,
+            fontWeight: 800,
+            color: '#f59e0b',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-            <span
-              style={{
-                fontFamily: "'DM Mono', monospace",
-                fontSize: 11,
-                fontWeight: 800,
-                color: i === 0 ? '#f59e0b' : 'rgba(255,255,255,0.25)',
-                minWidth: 22,
-              }}
-            >
-              #{i + 1}
-            </span>
-            <span
-              style={{
-                fontFamily: "'Outfit', sans-serif",
-                fontSize: 15,
-                fontWeight: 700,
-                color: '#e8e4dd',
-              }}
-            >
-              {shot.name}
-            </span>
-          </div>
-          <p
-            style={{
-              margin: '0 0 10px 30px',
-              fontSize: 12,
-              color: 'rgba(255,255,255,0.4)',
-              lineHeight: 1.5,
-              fontFamily: "'DM Mono', monospace",
-              fontStyle: 'italic',
-            }}
-          >
-            {shot.why}
-          </p>
-          <div style={{ marginLeft: 30 }}>
-            {shot.rally.map((step, j) => {
-              const isYou = step.who === 'You' || step.who === 'Your Partner'
-              return (
-                <div key={j} style={{ display: 'flex', gap: 10 }}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      minWidth: 24,
-                    }}
-                  >
+          #1
+        </span>
+        <span
+          style={{
+            fontFamily: "'Outfit', sans-serif",
+            fontSize: 16,
+            fontWeight: 700,
+            color: '#e8e4dd',
+          }}
+        >
+          {top.name}
+        </span>
+      </div>
+      <p
+        style={{
+          margin: 0,
+          fontSize: 11.5,
+          color: 'rgba(255,255,255,0.45)',
+          lineHeight: 1.5,
+          fontFamily: "'DM Mono', monospace",
+          fontStyle: 'italic',
+        }}
+      >
+        {top.why}
+      </p>
+      <div
+        style={{
+          marginTop: 4,
+          overflowX: 'auto',
+          overflowY: 'hidden',
+          paddingBottom: 6,
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'nowrap',
+            alignItems: 'stretch',
+            gap: 6,
+            minWidth: 'min-content',
+          }}
+        >
+          {top.rally.map((step, i) => {
+            const isYou = step.who === 'You' || step.who === 'Your Partner' || step.who === 'Partner'
+            const accent = isYou ? '#48bfe3' : '#ef6461'
+            const bg = isYou ? 'rgba(72,191,227,0.08)' : 'rgba(239,100,97,0.07)'
+            const border = isYou ? 'rgba(72,191,227,0.25)' : 'rgba(239,100,97,0.25)'
+            return (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+                <div
+                  style={{
+                    width: BUBBLE_WIDTH,
+                    background: bg,
+                    border: `1px solid ${border}`,
+                    borderRadius: 10,
+                    padding: '10px 12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 4,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                     <div
                       style={{
-                        width: 20,
-                        height: 20,
+                        width: 18,
+                        height: 18,
                         borderRadius: '50%',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: 9.5,
+                        fontSize: 9,
                         fontWeight: 800,
                         fontFamily: "'DM Mono', monospace",
-                        background: isYou ? 'rgba(72,191,227,0.2)' : 'rgba(239,100,97,0.2)',
-                        color: isYou ? '#48bfe3' : '#ef6461',
-                        border: `1.5px solid ${isYou ? 'rgba(72,191,227,0.4)' : 'rgba(239,100,97,0.4)'}`,
+                        background: `${accent}33`,
+                        color: accent,
+                        border: `1.5px solid ${accent}66`,
                         flexShrink: 0,
                       }}
                     >
                       {step.shot}
                     </div>
-                    {j < shot.rally.length - 1 && (
-                      <div style={{ width: 1.5, height: 22, background: 'rgba(255,255,255,0.08)' }} />
-                    )}
-                  </div>
-                  <div style={{ paddingBottom: j < shot.rally.length - 1 ? 5 : 0, flex: 1 }}>
                     <div
                       style={{
-                        fontSize: 10,
+                        fontSize: 9.5,
                         fontWeight: 700,
                         fontFamily: "'DM Mono', monospace",
-                        color: isYou ? '#48bfe3' : '#ef6461',
+                        color: accent,
                         textTransform: 'uppercase',
                         letterSpacing: '1px',
-                        marginBottom: 2,
                       }}
                     >
                       {step.who}
                     </div>
-                    <div
-                      style={{
-                        fontSize: 12.5,
-                        color: 'rgba(255,255,255,0.6)',
-                        lineHeight: 1.5,
-                        fontFamily: "'Outfit', sans-serif",
-                      }}
-                    >
-                      {step.action}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 11,
-                        color: 'rgba(255,255,255,0.3)',
-                        lineHeight: 1.4,
-                        fontFamily: "'DM Mono', monospace",
-                        marginTop: 2,
-                      }}
-                    >
-                      {'->'} {step.result}
-                    </div>
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 11.5,
+                      color: 'rgba(255,255,255,0.75)',
+                      lineHeight: 1.4,
+                      fontFamily: "'Outfit', sans-serif",
+                    }}
+                  >
+                    {step.action}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 10.5,
+                      color: 'rgba(255,255,255,0.4)',
+                      lineHeight: 1.4,
+                      fontFamily: "'DM Mono', monospace",
+                    }}
+                  >
+                    {'->'} {step.result}
                   </div>
                 </div>
-              )
-            })}
-          </div>
+                {i < top.rally.length - 1 && (
+                  <div
+                    aria-hidden="true"
+                    style={{
+                      flexShrink: 0,
+                      width: 22,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'rgba(245,158,11,0.6)',
+                      fontSize: 18,
+                      fontWeight: 700,
+                      fontFamily: "'DM Mono', monospace",
+                    }}
+                  >
+                    →
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
-      ))}
+      </div>
     </div>
   )
 }
