@@ -26,7 +26,7 @@ export const DEPTH_EXP = 1.12
 // Base player height in SVG units at scale=1. Sized per skill's
 // 40px hard minimum: far-side players use depth scale 0.55, so base
 // must be ≥ 40 / 0.55 ≈ 73. Using 75 gives a small safety margin.
-export const PLAYER_HEIGHT = 150
+export const PLAYER_HEIGHT = 195
 export const BALL_RADIUS = 12
 
 export const COLORS = {
