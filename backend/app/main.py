@@ -3,11 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import analyze, scenarios, corrections
 
-app = FastAPI(title="Pickle Playbook API", version="0.0.1")
+app = FastAPI(title="Pickle Playbook API", version="0.3.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["https://pickle-playbook.vercel.app", "http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -20,4 +20,4 @@ app.include_router(corrections.router, prefix="/api", tags=["corrections"])
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok"}
+    return {"status": "ok", "version": "0.3.0"}

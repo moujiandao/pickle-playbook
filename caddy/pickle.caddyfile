@@ -1,0 +1,3 @@
+pickle-api.brianmar.com {
+    reverse_proxy localhost:8001
+}
