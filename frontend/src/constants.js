@@ -4,24 +4,26 @@ export const COURT_L = 44
 export const KITCHEN = 7
 export const NET_Y = COURT_L / 2
 
-// SVG viewport & trapezoid geometry for the 3D-perspective court.
-// Follows pickleball-court-rendering skill:
-//   - near baseline = 85% of container width
-//   - far baseline  = 60% of near baseline (trapezoid foreshortening)
-//   - court height  = 77% of container height
-//   - visible out-of-bounds margin on all sides
-export const SVG_W = 800
-export const SVG_H = 440
+// SVG viewport matches reference-court.jpg (frontend/public/court.jpg) 1000x556
+// so corner pixel coords can be used directly as SVG units.
+export const SVG_W = 1000
+export const SVG_H = 556
 
-export const NEAR_LEFT_X = 60
-export const NEAR_RIGHT_X = SVG_W - 60
-export const NEAR_Y = SVG_H - 40
+// Court corners measured from the reference image. The image is drawn with
+// non-physical perspective: the near half is a trapezoid, the far half is
+// essentially a rectangle, and the two meet at the net line (y_screen = 245).
+// Players/ball project piecewise around NET_SCREEN_Y — see courtProjection.js.
+export const NEAR_LEFT_X = 141
+export const NEAR_RIGHT_X = 858
+export const NEAR_Y = 430
 
-export const FAR_LEFT_X = 200
-export const FAR_RIGHT_X = SVG_W - 200
-export const FAR_Y = 60
+export const FAR_LEFT_X = 253
+export const FAR_RIGHT_X = 750
+export const FAR_Y = 175
 
-export const DEPTH_EXP = 1.12
+// Screen y where courtY = NET_Y (22). Junction of far rectangle and near
+// trapezoid in the image; player/ball movement is restricted against this.
+export const NET_SCREEN_Y = 245
 
 // Base player height in SVG units at scale=1. Sized per skill's
 // 40px hard minimum: far-side players use depth scale 0.55, so base

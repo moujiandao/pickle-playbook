@@ -1,33 +1,14 @@
 import { forwardRef } from 'react'
 import StickFigure from './StickFigure'
 import BallIcon from './BallIcon'
-import { courtToScreen, quadPath, courtLine, depthScale } from '../lib/courtProjection'
-import { COURT_W, KITCHEN, NET_Y, SVG_W, SVG_H, COLORS } from '../constants'
-
-const COURT_LINES = [
-  [0, 0, COURT_W, 0],
-  [COURT_W, 0, COURT_W, 44],
-  [0, 44, COURT_W, 44],
-  [0, 0, 0, 44],
-  [0, NET_Y - KITCHEN, COURT_W, NET_Y - KITCHEN],
-  [0, NET_Y + KITCHEN, COURT_W, NET_Y + KITCHEN],
-  [COURT_W / 2, 0, COURT_W / 2, NET_Y - KITCHEN],
-  [COURT_W / 2, NET_Y + KITCHEN, COURT_W / 2, 44],
-]
+import { courtToScreen, depthScale } from '../lib/courtProjection'
+import { SVG_W, SVG_H, COLORS } from '../constants'
 
 const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, onPointerDown }, ref) {
   const entities = [
     ...Object.entries(players).map(([k, p]) => ({ type: 'player', key: k, ...p })),
     { type: 'ball', key: 'ball', ...ball },
   ].sort((a, b) => b.y - a.y)
-
-  const [netLX, netLY] = courtToScreen(-0.3, NET_Y)
-  const [netRX] = courtToScreen(COURT_W + 0.3, NET_Y)
-  // Net visual height per pickleball-court-rendering skill: 8-15 units
-  // representing 34 inches (exaggerated for visibility).
-  const netH = 12
-  // Post height sticks up slightly above the mesh (36" vs 34").
-  const postTopY = netLY - netH - 3
 
   return (
     <div
@@ -38,87 +19,16 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
         width={SVG_W}
         height={SVG_H}
         viewBox={`0 0 ${SVG_W} ${SVG_H}`}
-        style={{ display: 'block', width: '100%', height: 'auto', touchAction: 'none', background: COLORS.outOfBounds }}
+        style={{ display: 'block', width: '100%', height: 'auto', touchAction: 'none' }}
       >
-        <path d={quadPath(0, 0, COURT_W, 44)} fill={COLORS.courtMain} />
-
-        {COURT_LINES.map((c, i) => {
-          const l = courtLine(...c)
-          return <line key={i} {...l} stroke={COLORS.lines} strokeWidth={2.6} strokeLinecap="square" />
-        })}
-
-        {/* Left post */}
-        <line
-          x1={netLX}
-          y1={postTopY}
-          x2={netLX}
-          y2={netLY + 4}
-          stroke={COLORS.netFill}
-          strokeWidth={3}
-          strokeLinecap="square"
+        <image
+          href="/court.jpg"
+          x={0}
+          y={0}
+          width={SVG_W}
+          height={SVG_H}
+          preserveAspectRatio="none"
         />
-        {/* Right post */}
-        <line
-          x1={netRX}
-          y1={postTopY}
-          x2={netRX}
-          y2={netLY + 4}
-          stroke={COLORS.netFill}
-          strokeWidth={3}
-          strokeLinecap="square"
-        />
-        {/* Net body */}
-        <rect
-          x={netLX}
-          y={netLY - netH}
-          width={netRX - netLX}
-          height={netH}
-          fill={COLORS.netFill}
-          stroke={COLORS.netFill}
-          strokeWidth={1}
-        />
-        {/* Top tape of the net */}
-        <line
-          x1={netLX}
-          y1={netLY - netH}
-          x2={netRX}
-          y2={netLY - netH}
-          stroke="#ffffff"
-          strokeWidth={1.5}
-          opacity={0.9}
-        />
-        {/* Vertical mesh */}
-        {Array.from({ length: 30 }).map((_, i) => {
-          const f = (i + 1) / 31
-          const mx = netLX + (netRX - netLX) * f
-          return (
-            <line
-              key={`v${i}`}
-              x1={mx}
-              y1={netLY - netH + 1}
-              x2={mx}
-              y2={netLY - 1}
-              stroke={COLORS.netMesh}
-              strokeWidth={0.6}
-            />
-          )
-        })}
-        {/* Horizontal mesh */}
-        {Array.from({ length: 4 }).map((_, i) => {
-          const f = (i + 1) / 5
-          const my = netLY - netH + (netH - 2) * f
-          return (
-            <line
-              key={`h${i}`}
-              x1={netLX + 1}
-              y1={my}
-              x2={netRX - 1}
-              y2={my}
-              stroke={COLORS.netMesh}
-              strokeWidth={0.5}
-            />
-          )
-        })}
 
         {entities.map((ent) => {
           const [sx, sy] = courtToScreen(ent.x, ent.y)

@@ -1,5 +1,16 @@
 # Changelog
 
+## [2026-04-14] (reference-image court)
+
+### Added
+- Ship `frontend/public/court.jpg` (copy of `reference/reference-court.jpg`) as the court backdrop
+
+### Changed
+- Replace the hand-drawn SVG court/net in `Court3D.jsx` with a single `<image href="/court.jpg">` element; viewBox resized to 1000x556 to match the image
+- Rewrite `courtProjection.js` with a piecewise mapping anchored to pixel-measured net position (`NET_SCREEN_Y=245`): far half is a rectangle, near half is a trapezoid, so player/ball movement restrictions at `NET_Y=22` line up with the painted net in the image
+- Corner constants in `constants.js` now hold pixel coordinates lifted from the reference image (far `[253, 750] @ y=175`, near `[141, 858] @ y=430`); remove unused `DEPTH_EXP`
+- `useDrag.js` imports `SVG_W`/`SVG_H` from constants instead of hardcoding 800x440
+
 ## [2026-04-14] (court rendering per skill spec)
 
 ### Changed

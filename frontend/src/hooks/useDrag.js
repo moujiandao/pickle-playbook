@@ -1,9 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { screenToCourt } from '../lib/courtProjection'
-import { COURT_W, NET_Y, COURT_L } from '../constants'
-
-const SVG_W = 800
-const SVG_H = 440
+import { COURT_W, NET_Y, COURT_L, SVG_W, SVG_H } from '../constants'
 
 export function useDrag(setPlayers, setBall) {
   const [dragging, setDragging] = useState(null)
