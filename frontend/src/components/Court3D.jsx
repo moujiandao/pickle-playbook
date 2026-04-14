@@ -96,7 +96,7 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
           y1={netLY}
           x2={netRX}
           y2={netLY}
-          stroke="#000000"
+          stroke="#FFFFFF"
           strokeWidth={2.5}
         />
         {/* Vertical mesh — transparent cells, thicker lines */}

@@ -1,5 +1,11 @@
 # Changelog
 
+## [2026-04-14] (court geometry + net bottom band)
+
+### Changed
+- Narrow the far baseline to exactly half the near baseline (`FAR_LEFT_X=230`, `FAR_RIGHT_X=570`); all projected geometry, drag constraints, and player/ball positioning update via `constants.js` without touching `courtProjection.js`
+- Recolor the net bottom band from black to white in `Court3D.jsx`
+
 ## [2026-04-14] (rally flow layout)
 
 ### Changed

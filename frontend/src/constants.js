@@ -5,9 +5,8 @@ export const KITCHEN = 7
 export const NET_Y = COURT_L / 2
 
 // SVG viewport & trapezoid geometry for the 3D-perspective court.
-// Follows pickleball-court-rendering skill:
-//   - near baseline = 85% of container width
-//   - far baseline  = 60% of near baseline (trapezoid foreshortening)
+//   - near baseline = 85% of container width (680px of 800px)
+//   - far baseline  = 50% of near baseline (trapezoid foreshortening)
 //   - court height  = 77% of container height
 //   - visible out-of-bounds margin on all sides
 export const SVG_W = 800
@@ -17,8 +16,9 @@ export const NEAR_LEFT_X = 60
 export const NEAR_RIGHT_X = SVG_W - 60
 export const NEAR_Y = SVG_H - 40
 
-export const FAR_LEFT_X = 200
-export const FAR_RIGHT_X = SVG_W - 200
+// Far baseline width = (NEAR_RIGHT_X - NEAR_LEFT_X) / 2 = 340, centered in SVG
+export const FAR_LEFT_X = 230
+export const FAR_RIGHT_X = SVG_W - 230
 export const FAR_Y = 60
 
 export const DEPTH_EXP = 1.12
