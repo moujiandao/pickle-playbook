@@ -6,6 +6,13 @@
 - Add `backend/tests/integration/` suite that spawns a real uvicorn subprocess against an isolated SQLite file and exercises every public endpoint over real HTTP (47 tests covering health, analyze contract + zone coverage + validation + CORS, scenarios CRUD + round-trip, and corrections)
 - Session-scoped `live_server` fixture in `tests/integration/conftest.py` waits on `/api/health`, forces the heuristic strategy path (clears `ANTHROPIC_API_KEY`), and per-test `_isolate_scenarios` fixture wipes the scenarios table between tests
 
+### Notes (resume context for next session)
+- Branch layout: `sprint-2.5-integration-tests` (4810c66) = `feature/scaffold-skeleton` (696377c, integration wiring) fast-forward-merged + the integration test commit on top. `main` is unchanged. Do work on `sprint-2.5-integration-tests`.
+- Test counts as of this commit: backend 70/70 passing (47 integration + 23 unit), rag 44/44 passing.
+- `tiktoken` is installed in `backend/.venv` but is **not** listed in `backend/requirements.txt` — it lives in `rag/requirements.txt`. If you rebuild the backend venv from requirements alone the rag unit tests will fail with `ModuleNotFoundError: tiktoken`. Either install both requirements files or add `tiktoken` to `backend/requirements.txt`.
+- `rag/chroma_db/` is **not built yet**. The analyze endpoint runs through the heuristic fallback in `services/strategy.py` until you run `python rag/ingest.py` with `OPENAI_API_KEY` set, then start the backend with `ANTHROPIC_API_KEY` set. Integration tests intentionally clear `ANTHROPIC_API_KEY` so they keep exercising the heuristic path regardless.
+- Run integration tests from `backend/` with `.venv` active: `python -m pytest tests/integration -v`. They take ~6s because each session boots a real uvicorn subprocess on a free port against a tmp SQLite file (`PICKLE_DATABASE_URL`).
+
 ## [2026-04-13] (integration wiring)
 
 ### Changed
