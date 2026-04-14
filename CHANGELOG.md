@@ -1,5 +1,11 @@
 # Changelog
 
+## [2026-04-14] (top margin + deeper opponent service boxes)
+
+### Changed
+- Extend the out-of-bounds strip above the far baseline from 60px to 120px so far-side player heads no longer clip against the top edge of the SVG
+- Raise `DEPTH_EXP` from 1.12 to 1.27 so the far half (opponent service boxes, net → far baseline) is 20% taller on screen while the near half stays at its previous 156px; `SVG_H` raised from 440 to 537 to accommodate the combined top-margin + far-half changes
+
 ## [2026-04-14] (court geometry + net bottom band)
 
 ### Changed
