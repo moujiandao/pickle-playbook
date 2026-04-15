@@ -1,5 +1,13 @@
 # Changelog
 
+## [2026-04-14] (more green space + court recolor + player labels)
+
+### Changed
+- Triple the out-of-bounds strip below the near baseline from 40px to 120px; `SVG_H` raised from 537 to 617 with `NEAR_Y = SVG_H - 120` so the court geometry above the near baseline is untouched
+- Widen the left/right out-of-bounds margins from 60px to 100px on each side by raising `SVG_W` from 800 to 880 and recentering `NEAR_LEFT_X`/`FAR_LEFT_X` (near baseline stays 680px wide, far baseline stays 340px wide — trapezoid proportions unchanged)
+- Recolor the entire playing surface to `#1E93D6` (was `#2563EB`); white lines retained
+- Rename near-side player labels from `YOU L` / `YOU R` to `Leftside Player` / `Rightside Player`
+
 ## [2026-04-14] (near half 10% taller than far half)
 
 ### Changed

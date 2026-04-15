@@ -5,25 +5,28 @@ export const KITCHEN = 7
 export const NET_Y = COURT_L / 2
 
 // SVG viewport & trapezoid geometry for the 3D-perspective court.
-//   - near baseline = 85% of container width (680px of 800px)
-//   - far baseline  = 50% of near baseline (trapezoid foreshortening)
+//   - near baseline width = 680px, centered in SVG with 100px
+//     out-of-bounds margin on each side (slightly wider green than
+//     the previous 60px)
+//   - far baseline = 50% of near baseline (trapezoid foreshortening)
 //   - 120px out-of-bounds margin above the far baseline so far-side
 //     stick-figure heads are not clipped at the top of the SVG
-//   - 40px out-of-bounds margin below the near baseline
+//   - 120px out-of-bounds margin below the near baseline (3x the
+//     previous 40px) to give the near-side player more visual runway
 //   - DEPTH_EXP tuned so the near half (net → near baseline) is 10%
 //     taller on screen than the far half (net → far baseline); with
 //     screen_y = NEAR_Y - 0.5^E * (NEAR_Y - FAR_Y) at the net line,
 //     solving near/far = 1.10 gives E ≈ 0.93
-export const SVG_W = 800
-export const SVG_H = 537
+export const SVG_W = 880
+export const SVG_H = 617
 
-export const NEAR_LEFT_X = 60
-export const NEAR_RIGHT_X = SVG_W - 60
-export const NEAR_Y = SVG_H - 40
+export const NEAR_LEFT_X = 100
+export const NEAR_RIGHT_X = SVG_W - 100
+export const NEAR_Y = SVG_H - 120
 
 // Far baseline width = (NEAR_RIGHT_X - NEAR_LEFT_X) / 2 = 340, centered in SVG
-export const FAR_LEFT_X = 230
-export const FAR_RIGHT_X = SVG_W - 230
+export const FAR_LEFT_X = 270
+export const FAR_RIGHT_X = SVG_W - 270
 export const FAR_Y = 120
 
 export const DEPTH_EXP = 0.93
@@ -40,9 +43,9 @@ export const BALL_RADIUS = 12
 export const NET_PIXEL_HEIGHT = 40
 
 export const COLORS = {
-  courtMain: '#2563EB',
-  kitchenFar: '#2563EB',
-  kitchenNear: '#2563EB',
+  courtMain: '#1E93D6',
+  kitchenFar: '#1E93D6',
+  kitchenNear: '#1E93D6',
   outOfBounds: '#166534',
   lines: '#FFFFFF',
   myTeam: '#F5A623',
