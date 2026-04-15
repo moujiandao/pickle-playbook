@@ -1,5 +1,11 @@
 # Changelog
 
+## [2026-04-14] (service box color + out-of-bounds matches court)
+
+### Changed
+- Fill the 4 service-box corners (baseline → kitchen line, split at the center service line) with `#355392` while the kitchen strip keeps the main court color `#1E93D6`; added `COLORS.serviceBox` and 4 `quadPath` fills in `Court3D.jsx`
+- Match the out-of-bounds background to the court color (`#1E93D6`, was green `#166534`); the 2x-thick white perimeter still delineates the playing surface
+
 ## [2026-04-14] (more green space + court recolor + player labels + thicker border)
 
 ### Changed

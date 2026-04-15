@@ -60,6 +60,12 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
       >
         <path d={quadPath(0, 0, COURT_W, 44)} fill={COLORS.courtMain} />
 
+        {/* 4 service box corners (kitchen strip keeps the main court color) */}
+        <path d={quadPath(0, 0, COURT_W / 2, NET_Y - KITCHEN)} fill={COLORS.serviceBox} />
+        <path d={quadPath(COURT_W / 2, 0, COURT_W, NET_Y - KITCHEN)} fill={COLORS.serviceBox} />
+        <path d={quadPath(0, NET_Y + KITCHEN, COURT_W / 2, 44)} fill={COLORS.serviceBox} />
+        <path d={quadPath(COURT_W / 2, NET_Y + KITCHEN, COURT_W, 44)} fill={COLORS.serviceBox} />
+
         {COURT_INTERIOR.map((c, i) => {
           const l = courtLine(...c)
           return <line key={`int${i}`} {...l} stroke={COLORS.lines} strokeWidth={2.6} strokeLinecap="square" />

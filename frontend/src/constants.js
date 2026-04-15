@@ -44,9 +44,10 @@ export const NET_PIXEL_HEIGHT = 40
 
 export const COLORS = {
   courtMain: '#1E93D6',
+  serviceBox: '#355392',
   kitchenFar: '#1E93D6',
   kitchenNear: '#1E93D6',
-  outOfBounds: '#166534',
+  outOfBounds: '#1E93D6',
   lines: '#FFFFFF',
   myTeam: '#F5A623',
   oppTeam: '#E74C3C',
