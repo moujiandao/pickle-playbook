@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026-04-14] (near half 10% taller than far half)
+
+### Changed
+- Lower `DEPTH_EXP` from 1.27 to 0.93 so the near half (net → near baseline) is 10% taller on screen than the far half (net → far baseline), reversing the previous opponent-favored perspective; derived from `near/far = 0.5^E / (1 - 0.5^E) = 1.10`
+
 ## [2026-04-14] (top margin + deeper opponent service boxes)
 
 ### Changed

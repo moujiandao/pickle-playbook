@@ -10,10 +10,10 @@ export const NET_Y = COURT_L / 2
 //   - 120px out-of-bounds margin above the far baseline so far-side
 //     stick-figure heads are not clipped at the top of the SVG
 //   - 40px out-of-bounds margin below the near baseline
-//   - DEPTH_EXP tuned so the far half (net → far baseline) is 20%
-//     taller on screen than the near half (net → near baseline),
-//     making the opponent's two service boxes read deeper while
-//     leaving the player's near-side boxes unchanged
+//   - DEPTH_EXP tuned so the near half (net → near baseline) is 10%
+//     taller on screen than the far half (net → far baseline); with
+//     screen_y = NEAR_Y - 0.5^E * (NEAR_Y - FAR_Y) at the net line,
+//     solving near/far = 1.10 gives E ≈ 0.93
 export const SVG_W = 800
 export const SVG_H = 537
 
@@ -26,7 +26,7 @@ export const FAR_LEFT_X = 230
 export const FAR_RIGHT_X = SVG_W - 230
 export const FAR_Y = 120
 
-export const DEPTH_EXP = 1.27
+export const DEPTH_EXP = 0.93
 
 // Base player height in SVG units at scale=1. Sized per skill's
 // 40px hard minimum: far-side players use depth scale 0.55, so base
