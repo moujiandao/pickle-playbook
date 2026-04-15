@@ -16,7 +16,9 @@ export default function StickFigure({ cx, cy, color, label, isSelected, isMe, sc
   const armSpan = h * 0.40
   const armOffsetY = bodyLen * 0.30
   const stroke = Math.max(2, h * 0.04)
-  const labelSize = Math.max(12, h * 0.18)
+  // Match the BallIcon spin-label sizing so 'Leftside Player' reads
+  // at the same visual weight as 'Has Topspin'.
+  const labelSize = Math.max(11, 16 * (scale || 1))
 
   const feetY = cy
   const hipY = feetY - legLen

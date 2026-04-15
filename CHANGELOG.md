@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026-04-14] (player label matches ball spin label size)
+
+### Changed
+- Resize the `Leftside Player` / `Rightside Player` labels in `StickFigure.jsx` from `Math.max(12, h * 0.18)` to `Math.max(11, 16 * scale)` so they render at the same visual weight as the `Has Topspin` / `Has Slice` text above the ball
+
 ## [2026-04-14] (service box color + out-of-bounds matches court)
 
 ### Changed
