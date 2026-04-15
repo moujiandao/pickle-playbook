@@ -13,11 +13,15 @@ import {
   BALL_RADIUS,
 } from '../constants'
 
-const COURT_LINES = [
+// First 4 entries = court perimeter (drawn 2x thicker).
+// Remaining = interior lines (kitchen + center service lines).
+const COURT_PERIMETER = [
   [0, 0, COURT_W, 0],
   [COURT_W, 0, COURT_W, 44],
   [0, 44, COURT_W, 44],
   [0, 0, 0, 44],
+]
+const COURT_INTERIOR = [
   [0, NET_Y - KITCHEN, COURT_W, NET_Y - KITCHEN],
   [0, NET_Y + KITCHEN, COURT_W, NET_Y + KITCHEN],
   [COURT_W / 2, 0, COURT_W / 2, NET_Y - KITCHEN],
@@ -56,9 +60,13 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
       >
         <path d={quadPath(0, 0, COURT_W, 44)} fill={COLORS.courtMain} />
 
-        {COURT_LINES.map((c, i) => {
+        {COURT_INTERIOR.map((c, i) => {
           const l = courtLine(...c)
-          return <line key={i} {...l} stroke={COLORS.lines} strokeWidth={2.6} strokeLinecap="square" />
+          return <line key={`int${i}`} {...l} stroke={COLORS.lines} strokeWidth={2.6} strokeLinecap="square" />
+        })}
+        {COURT_PERIMETER.map((c, i) => {
+          const l = courtLine(...c)
+          return <line key={`per${i}`} {...l} stroke={COLORS.lines} strokeWidth={5.2} strokeLinecap="square" />
         })}
 
         {/* Left post */}
