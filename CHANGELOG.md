@@ -1,5 +1,11 @@
 # Changelog
 
+## [2026-04-16] (reach ring + ball reachability check)
+
+### Added
+- Draw a dashed white reach ring around the ME player at all times; diameter = 1/3 of the court's screen width at the player's depth (computed via `courtToScreen` so it scales correctly in perspective)
+- Block analyze when the ball is outside ME's reach: `handleAnalyze` computes Euclidean distance in feet between ME and ball and short-circuits with "You can't reach the ball!" if `dist > COURT_W / 3` (~6.7 ft), clearing any stale result
+
 ## [2026-04-14] (player label matches ball spin label size)
 
 ### Changed

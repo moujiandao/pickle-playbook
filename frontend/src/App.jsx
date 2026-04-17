@@ -6,7 +6,7 @@ import ScenarioList from './components/ScenarioList'
 import { useDrag } from './hooks/useDrag'
 import { useAnalyze } from './hooks/useAnalyze'
 import { useScenarios } from './hooks/useScenarios'
-import { INITIAL_PLAYERS, INITIAL_BALL, NET_Y, KITCHEN, describeBallZone } from './constants'
+import { INITIAL_PLAYERS, INITIAL_BALL, NET_Y, KITCHEN, COURT_W, describeBallZone } from './constants'
 
 export default function App() {
   const [mySide, setMySide] = useState('left')
@@ -17,6 +17,7 @@ export default function App() {
   const { dragging, onPointerDown, svgContainerRef } = useDrag(setPlayers, setBall)
   const { result, setResult, isAnalyzing, error, analyze } = useAnalyze()
   const { scenarios, saveScenario, deleteScenario } = useScenarios()
+  const [reachError, setReachError] = useState(null)
 
   // Clear spin when ball leaves kitchen zone
   useEffect(() => {
@@ -25,6 +26,17 @@ export default function App() {
   }, [ball.y, ball.spin])
 
   function handleAnalyze() {
+    const meKey = mySide === 'left' ? 'my_left' : 'my_right'
+    const me = players[meKey]
+    const dx = ball.x - me.x
+    const dy = ball.y - me.y
+    const dist = Math.sqrt(dx * dx + dy * dy)
+    if (dist > COURT_W / 3) {
+      setReachError("You can't reach the ball!")
+      setResult(null)
+      return
+    }
+    setReachError(null)
     analyze(players, ball, mySide)
   }
 
@@ -145,7 +157,7 @@ export default function App() {
               onPointerDown={onPointerDown}
             />
           </div>
-          <ResultsPanel result={result} error={error} />
+          <ResultsPanel result={result} error={reachError || error} />
         </div>
 
         <div style={{ flex: '1 1 280px', minWidth: 280, maxWidth: 340, display: 'flex', flexDirection: 'column', gap: 14 }}>
