@@ -146,3 +146,10 @@ Each step has: shot number, who acts, action description, result description.
 - Do NOT merge coordinate systems — always store in feet, project in the component
 - Do NOT skip the natural language translation step — Claude needs
   "3ft behind kitchen, left side" not "x:5, y:37"
+
+
+## Sprint 3 Active — Deploy + Polish
+- Backend deploying to EC2 alongside claude-bridge (Docker + Caddy)
+- SQLite → Supabase PostgreSQL migration (includes pgvector for embeddings)
+- Frontend deploying to Vercel
+- New feature: human-in-the-loop correction UI
