@@ -1,9 +1,15 @@
+import { useState } from 'react'
 import Court3D from './components/Court3D'
 import ControlPanel from './components/ControlPanel'
 import ResultsPanel from './components/ResultsPanel'
 import ScenarioList from './components/ScenarioList'
 
 function App() {
+  // Lifted state — ControlPanel sets these, ResultsPanel reads them
+  const [gameState, setGameState] = useState(null)
+  const [recommendations, setRecommendations] = useState([])
+  const [analyzing, setAnalyzing] = useState(false)
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 p-6">
       <header className="mb-6">
@@ -15,8 +21,16 @@ function App() {
           <Court3D />
         </section>
         <aside className="space-y-4">
-          <ControlPanel />
-          <ResultsPanel />
+          <ControlPanel
+            onGameStateChange={setGameState}
+            onRecommendations={setRecommendations}
+            onAnalyzingChange={setAnalyzing}
+          />
+          <ResultsPanel
+            recommendations={recommendations}
+            gameState={gameState}
+            loading={analyzing}
+          />
           <ScenarioList />
         </aside>
       </main>

@@ -40,3 +40,10 @@ class Recommendation(BaseModel):
     name: str
     why: str
     rally: list[RallyShot]
+
+
+class CorrectionRequest(BaseModel):
+    game_state: GameState
+    original_recommendation: Recommendation
+    corrected_recommendation: Optional[str] = None
+    feedback_type: Literal["thumbs_up", "thumbs_down", "rewrite"]
