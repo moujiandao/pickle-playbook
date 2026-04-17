@@ -157,7 +157,11 @@ export default function App() {
               onPointerDown={onPointerDown}
             />
           </div>
-          <ResultsPanel result={result} error={reachError || error} />
+          <ResultsPanel
+            result={result}
+            error={reachError || error}
+            gameState={{ my_side: mySide, players, ball }}
+          />
         </div>
 
         <div style={{ flex: '1 1 280px', minWidth: 280, maxWidth: 340, display: 'flex', flexDirection: 'column', gap: 14 }}>

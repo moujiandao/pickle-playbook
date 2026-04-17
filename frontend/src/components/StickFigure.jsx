@@ -7,7 +7,7 @@ import { PLAYER_HEIGHT } from '../constants'
 //   leg spread    = 0.25 × player_height
 //   arm span      = 0.40 × player_height
 //   arms attach   = 0.30 × body length from top of body
-export default function StickFigure({ cx, cy, color, label, isSelected, isMe, scale }) {
+export default function StickFigure({ cx, cy, color, label, isSelected, isMe, scale, reachRx }) {
   const h = PLAYER_HEIGHT * (scale || 1)
   const headR = (h * 0.18) / 2
   const bodyLen = h * 0.40
@@ -31,8 +31,8 @@ export default function StickFigure({ cx, cy, color, label, isSelected, isMe, sc
         <ellipse
           cx={cx}
           cy={feetY + h * 0.04}
-          rx={h * 0.32}
-          ry={h * 0.09}
+          rx={reachRx ?? h * 0.32}
+          ry={reachRx != null ? reachRx * 0.28 : h * 0.09}
           fill="none"
           stroke={color}
           strokeWidth={stroke * 0.9}

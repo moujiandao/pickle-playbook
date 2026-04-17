@@ -1,9 +1,9 @@
 # Changelog
 
-## [2026-04-16] (reach ring + ball reachability check)
+## [2026-04-16] (reach ellipse on ME + ball reachability check)
 
 ### Added
-- Draw a dashed white reach ring around the ME player at all times; diameter = 1/3 of the court's screen width at the player's depth (computed via `courtToScreen` so it scales correctly in perspective)
+- Scale the existing orange dashed selection ellipse on ME to 1/3 court screen width when dragging (rx = `reachRx` computed via `courtToScreen`, ry preserves the ~3.5:1 perspective aspect ratio); other players keep their original small ellipse
 - Block analyze when the ball is outside ME's reach: `handleAnalyze` computes Euclidean distance in feet between ME and ball and short-circuits with "You can't reach the ball!" if `dist > COURT_W / 3` (~6.7 ft), clearing any stale result
 
 ## [2026-04-14] (player label matches ball spin label size)

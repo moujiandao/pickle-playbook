@@ -170,24 +170,12 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
           const label = isOpp ? null : isLeft ? 'Leftside Player' : 'Rightside Player'
           const isMe =
             (mySide === 'left' && ent.key === 'my_left') || (mySide === 'right' && ent.key === 'my_right')
-          // Reach ring: diameter = 1/3 of the court's screen width at this depth.
+          // Reach ellipse rx: 1/3 of the court's screen width at this depth.
           const [courtLx] = courtToScreen(0, ent.y)
           const [courtRx] = courtToScreen(COURT_W, ent.y)
-          const reachR = (courtRx - courtLx) / 6
+          const reachRx = (courtRx - courtLx) / 6
           return (
             <g key={ent.key} onPointerDown={(e) => onPointerDown(e, ent.key)}>
-              {isMe && (
-                <circle
-                  cx={sx}
-                  cy={sy}
-                  r={reachR}
-                  fill="none"
-                  stroke="rgba(255,255,255,0.35)"
-                  strokeWidth={1.5}
-                  strokeDasharray="8,5"
-                  pointerEvents="none"
-                />
-              )}
               <StickFigure
                 cx={sx}
                 cy={sy}
@@ -196,6 +184,7 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
                 isSelected={dragging === ent.key}
                 isMe={isMe}
                 scale={scale}
+                reachRx={isMe ? reachRx : undefined}
               />
             </g>
           )

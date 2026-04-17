@@ -1,3 +1,5 @@
+import CorrectionControls from './CorrectionControls'
+
 const panelStyle = {
   background: '#1c2530',
   borderRadius: 12,
@@ -10,7 +12,7 @@ const panelStyle = {
 
 const BUBBLE_WIDTH = 220
 
-export default function ResultsPanel({ result, error }) {
+export default function ResultsPanel({ result, error, gameState }) {
   if (error) {
     return (
       <div
@@ -202,6 +204,10 @@ export default function ResultsPanel({ result, error }) {
           })}
         </div>
       </div>
+
+      {gameState && (
+        <CorrectionControls recommendation={top} gameState={gameState} />
+      )}
     </div>
   )
 }

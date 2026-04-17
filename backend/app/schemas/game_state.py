@@ -112,3 +112,16 @@ class Correction(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class CorrectionRequest(BaseModel):
+    """Frontend feedback payload for thumbs up/down and inline rewrites.
+
+    Separate from CorrectionCreate — CorrectionCreate stores full corrected
+    response sets; CorrectionRequest captures per-recommendation feedback.
+    TODO: wire to a dedicated feedback table when CorrectionRepo lands.
+    """
+    game_state: GameState
+    original_recommendation: ShotRecommendation
+    corrected_recommendation: Optional[str] = None
+    feedback_type: Literal["thumbs_up", "thumbs_down", "rewrite"]
