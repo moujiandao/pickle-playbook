@@ -25,6 +25,40 @@ from app.services.position_describer import (
 
 logger = logging.getLogger(__name__)
 
+_RECS_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "recommendations": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "why": {"type": "string"},
+                    "rally": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "shot": {"type": "integer"},
+                                "who": {"type": "string"},
+                                "action": {"type": "string"},
+                                "result": {"type": "string"},
+                            },
+                            "required": ["shot", "who", "action", "result"],
+                            "additionalProperties": False,
+                        },
+                    },
+                },
+                "required": ["name", "why", "rally"],
+                "additionalProperties": False,
+            },
+        }
+    },
+    "required": ["recommendations"],
+    "additionalProperties": False,
+}
+
 # The rag/ package uses absolute imports between its own modules
 # (e.g. `from embeddings import embed`), so we put its directory on sys.path
 # rather than importing it as a package.
@@ -64,13 +98,14 @@ def recommend(state: GameState) -> list[ShotRecommendation]:
 
         prompt = build_prompt_fn(state_dict, chunks)
         client = anthropic_mod.Anthropic(api_key=api_key)
-        model = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
+        model = os.environ.get("ANTHROPIC_MODEL", "claude-opus-4-6")
 
         message = client.messages.create(
             model=model,
-            max_tokens=2048,
+            max_tokens=4096,
             system=prompt["system"],
             messages=[{"role": "user", "content": prompt["user"]}],
+            output_config={"format": {"type": "json_schema", "schema": _RECS_SCHEMA}},
         )
         text = "".join(
             block.text
@@ -112,9 +147,10 @@ def _strip_markdown_fences(text: str) -> str:
 def _parse_recommendations(text: str) -> list[ShotRecommendation]:
     cleaned = _strip_markdown_fences(text)
     data = json.loads(cleaned)
-    if not isinstance(data, list):
+    items = data.get("recommendations", data) if isinstance(data, dict) else data
+    if not isinstance(items, list):
         raise ValueError("Claude response was not a JSON array")
-    return [ShotRecommendation.model_validate(item) for item in data]
+    return [ShotRecommendation.model_validate(item) for item in items]
 
 
 # ---------------------------------------------------------------------------

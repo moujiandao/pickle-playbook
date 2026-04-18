@@ -22,16 +22,9 @@ You never recommend shots that are physically implausible given the described po
 """
 
 OUTPUT_FORMAT = """\
-Respond with a JSON array of exactly 3 recommendation objects. Each object must have:
-- "name": short name for the shot strategy (e.g., "Cross-Court Dink")
-- "why": 1-2 sentences explaining why this shot fits the situation
-- "rally": array of exactly 3 objects, each with:
-  - "shot": integer (1, 2, or 3)
-  - "who": "You" | "Your partner" | "Opponent L" | "Opponent R"
-  - "action": what they do (verb phrase, e.g., "Soft cross-court dink to opponent's backhand")
-  - "result": tactical outcome (e.g., "Ball lands near opponent's feet, forcing a reset")
-
-Return only the JSON array — no markdown fences, no extra commentary.
+Return only a JSON object with a "recommendations" key containing an array of exactly 3 \
+recommendation objects. Each object must have "name" (string), "why" (string), and "rally" \
+(array of 3 objects with "shot" (integer), "who" (string), "action" (string), "result" (string)).
 """
 
 

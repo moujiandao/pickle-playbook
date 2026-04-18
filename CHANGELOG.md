@@ -1,5 +1,15 @@
 # Changelog
 
+## [2026-04-17] (RAG integration: model upgrade + structured output)
+
+### Changed
+- Upgrade Claude model default from `claude-sonnet-4-5` to `claude-opus-4-6` in `strategy.py`
+- Add `output_config` with JSON schema enforcement so Claude responses are always valid JSON matching the `ShotRecommendation` shape
+- Raise `max_tokens` from 2048 to 4096 for richer rally descriptions
+- Update `_parse_recommendations` to handle both wrapped `{"recommendations": [...]}` (structured output) and bare array formats
+- Simplify `OUTPUT_FORMAT` in `prompt_builder.py` since structured output enforces the schema server-side
+- Bump `anthropic` SDK minimum from `>=0.40.0` to `>=0.50.0` for `output_config` support
+
 ## [2026-04-16] (reach ellipse on ME + ball reachability check)
 
 ### Added
