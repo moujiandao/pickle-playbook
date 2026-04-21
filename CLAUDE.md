@@ -1,5 +1,18 @@
 # Pickle Playbook
 
+## Current initiative: Intelligence Upgrade (6-sprint plan)
+We are transforming this app from a pure LLM recommendation system into a hybrid retrieval + empirical policy system with eval-driven feedback loops.
+
+Key architectural principles for this work:
+- Every recommendation must be logged with full state + output + eventual verdict
+- LLM provides reasoning and candidate shots; empirical data provides confidence scores
+- Scenario cards (state-tagged principles) are the unit of retrieval, not raw transcript chunks
+- Evals gate every change — pass rate must not drop more than 5% on the golden set
+
+Reference SPRINT_PLAN.md for the full plan.
+
+After updating, show me the diff.
+
 ## What This Is
 Interactive pickleball strategy visualizer. Users drag 4 players and a ball
 on a 3D-perspective court, set ball parameters (height, speed, spin), and
