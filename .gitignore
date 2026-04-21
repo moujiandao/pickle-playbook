@@ -30,3 +30,6 @@ rag/chroma_db/
 # Editor
 .vscode/
 .idea/
+
+# Eval results (keep baseline.json tracked manually)
+evals/results/*.json
