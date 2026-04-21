@@ -13,6 +13,7 @@ BASE_STATE = {
         "opp_right":{"x": 15.0, "y": 7.0},
     },
     "ball": {"x": 10.0, "y": 26.0, "height": "low", "speed": "slow", "spin": None},
+    "skill_level": "4.0",
 }
 
 

@@ -28,7 +28,7 @@ recommendation objects. Each object must have "name" (string), "why" (string), a
 """
 
 
-def build_prompt(game_state: dict, chunks: list[dict]) -> dict:
+def build_prompt(game_state: dict, chunks: list[dict], level: str | None = None) -> dict:
     """
     Assemble the Claude API prompt.
 
@@ -47,7 +47,10 @@ def build_prompt(game_state: dict, chunks: list[dict]) -> dict:
     else:
         context_section = "--- No additional strategy context retrieved ---"
 
+    level_note = f"\nThe player is rated {level}. Tailor shot complexity and terminology to this skill level." if level else ""
+
     user_message = f"""{situation}
+{level_note}
 
 {context_section}
 

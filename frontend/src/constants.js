@@ -64,6 +64,7 @@ export const COLORS = {
 export const BALL_HEIGHTS = ['low', 'mid', 'high']
 export const BALL_SPEEDS = ['slow', 'fast']
 export const BALL_SPINS = ['topspin', 'flat', 'slice']
+export const SKILL_LEVELS = ['3.0', '3.5', '4.0', '4.5', '5.0']
 
 export const INITIAL_PLAYERS = {
   opp_left: { x: 5, y: 7 },

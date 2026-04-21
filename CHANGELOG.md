@@ -1,5 +1,21 @@
 # Changelog
 
+## [2026-04-20] (skill level support)
+
+### Added
+- Skill level selector (3.0-5.0) as button group at top of control panel; analyze button disabled until level is selected
+- YAML frontmatter parsing in RAG chunker for corpus file level metadata
+- Level-filtered ChromaDB retrieval with adjacent-level inclusion (e.g., 4.0 also pulls 3.5 and 4.5 content)
+- Level-specific prompt context for Claude (tailors vocabulary and complexity to skill level)
+- Warning banner when no content exists for the selected skill level, delivered via `X-Pickle-Warning` response header
+- `skill_level` field on `GameState` API contract (required) and `skillLevel` on saved scenarios (optional, backward compatible)
+- `pyyaml` dependency for RAG frontmatter parsing
+
+### Changed
+- Existing corpus files tagged as level 4.0
+- RAG `retrieve()` returns `(chunks, fallback_used)` tuple
+- `recommend()` returns `(recommendations, warning)` tuple
+
 ## [2026-04-17] (RAG integration: model upgrade + structured output)
 
 ### Changed

@@ -19,6 +19,7 @@ VALID_STATE = {
         "opp_right": {"x": 15.0, "y": 7.0},
     },
     "ball": {"x": 10.0, "y": 26.0, "height": "low", "speed": "slow", "spin": None},
+    "skill_level": "4.0",
 }
 
 
@@ -139,6 +140,17 @@ class TestValidation:
     def test_x_out_of_bounds_rejected(self, client):
         bad = _state()
         bad["ball"]["x"] = 25.0
+        r = client.post("/api/analyze", json=bad)
+        assert r.status_code == 422
+
+    def test_missing_skill_level_rejected(self, client):
+        bad = {k: v for k, v in VALID_STATE.items() if k != "skill_level"}
+        r = client.post("/api/analyze", json=bad)
+        assert r.status_code == 422
+
+    def test_invalid_skill_level_rejected(self, client):
+        bad = deepcopy(VALID_STATE)
+        bad["skill_level"] = "6.0"
         r = client.post("/api/analyze", json=bad)
         assert r.status_code == 422
 

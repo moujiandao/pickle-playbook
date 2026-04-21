@@ -72,8 +72,8 @@ if _RAG_DIR.is_dir() and str(_RAG_DIR) not in sys.path:
     sys.path.insert(0, str(_RAG_DIR))
 
 
-def recommend(state: GameState) -> list[ShotRecommendation]:
-    """Return shot recommendations for the given game state.
+def recommend(state: GameState) -> tuple[list[ShotRecommendation], str | None]:
+    """Return shot recommendations and an optional warning for the given game state.
 
     Uses the RAG + Claude pipeline when an Anthropic API key is configured.
     Falls back to the deterministic heuristic when the key, the RAG modules,
@@ -81,22 +81,27 @@ def recommend(state: GameState) -> list[ShotRecommendation]:
     """
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
-        return _heuristic_recommend(state)
+        return (_heuristic_recommend(state), None)
 
     anthropic_mod = _try_import_anthropic()
     retrieve_fn, build_prompt_fn = _try_import_rag()
     if anthropic_mod is None or retrieve_fn is None or build_prompt_fn is None:
-        return _heuristic_recommend(state)
+        return (_heuristic_recommend(state), None)
 
     try:
         state_dict = state.model_dump()
+        fallback_used = False
         try:
-            chunks = retrieve_fn(state_dict, k=5)
+            result = retrieve_fn(state_dict, k=5, level=state_dict.get("skill_level"))
+            if isinstance(result, tuple):
+                chunks, fallback_used = result
+            else:
+                chunks, fallback_used = result, False
         except Exception as exc:
             logger.warning("RAG retrieval failed, continuing with no context: %s", exc)
             chunks = []
 
-        prompt = build_prompt_fn(state_dict, chunks)
+        prompt = build_prompt_fn(state_dict, chunks, level=state_dict.get("skill_level"))
         client = anthropic_mod.Anthropic(api_key=api_key)
         model = os.environ.get("ANTHROPIC_MODEL", "claude-opus-4-6")
 
@@ -112,10 +117,16 @@ def recommend(state: GameState) -> list[ShotRecommendation]:
             for block in message.content
             if getattr(block, "type", "") == "text"
         )
-        return _parse_recommendations(text)
+        recs = _parse_recommendations(text)
+        warning = (
+            f"No {state.skill_level}-level content available yet. Using general advice."
+            if fallback_used
+            else None
+        )
+        return (recs, warning)
     except Exception as exc:
         logger.exception("Claude pipeline failed, falling back to heuristic: %s", exc)
-        return _heuristic_recommend(state)
+        return (_heuristic_recommend(state), None)
 
 
 def _try_import_rag():

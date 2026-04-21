@@ -12,7 +12,7 @@ const panelStyle = {
 
 const BUBBLE_WIDTH = 220
 
-export default function ResultsPanel({ result, error, gameState }) {
+export default function ResultsPanel({ result, error, warning, gameState }) {
   if (error) {
     return (
       <div
@@ -57,6 +57,23 @@ export default function ResultsPanel({ result, error, gameState }) {
 
   return (
     <div style={panelStyle}>
+      {warning && (
+        <div
+          style={{
+            border: '1px solid rgba(245,158,11,0.4)',
+            background: 'rgba(245,158,11,0.08)',
+            borderRadius: 8,
+            padding: '10px 14px',
+            fontFamily: "'DM Mono', monospace",
+            fontSize: 12,
+            color: '#f59e0b',
+            lineHeight: 1.5,
+          }}
+          role="alert"
+        >
+          {warning}
+        </div>
+      )}
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
         <span
           style={{

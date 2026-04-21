@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Generator
 
 import tiktoken
+import yaml
 
 TARGET_MIN = 300
 TARGET_MAX = 500
@@ -133,6 +134,22 @@ def chunk_text(
 # ---------------------------------------------------------------------------
 
 
+def parse_frontmatter(text: str) -> tuple[dict, str]:
+    """Extract YAML frontmatter from text. Returns (metadata, body)."""
+    if not text.startswith("---"):
+        return {}, text
+    end = text.find("---", 3)
+    if end == -1:
+        return {}, text
+    yaml_block = text[3:end].strip()
+    body = text[end + 3:].lstrip("\n")
+    try:
+        meta = yaml.safe_load(yaml_block) or {}
+    except yaml.YAMLError:
+        return {}, text
+    return meta, body
+
+
 def load_file(path: Path) -> str:
     """Read a .md, .txt, or .srt file and return clean plain text."""
     raw = path.read_text(encoding="utf-8")
@@ -142,6 +159,12 @@ def load_file(path: Path) -> str:
 
 
 def chunk_file(path: Path, **kwargs) -> list[dict]:
-    """Load a file and chunk it. Source is set to the filename stem."""
-    text = load_file(path)
-    return chunk_text(text, source=path.name, **kwargs)
+    """Load a file, strip frontmatter, and chunk it."""
+    raw = load_file(path)
+    meta, body = parse_frontmatter(raw)
+    chunks = chunk_text(body, source=path.name, **kwargs)
+    level = meta.get("level")
+    if level is not None:
+        for c in chunks:
+            c["level"] = str(level)
+    return chunks

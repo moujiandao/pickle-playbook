@@ -25,6 +25,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Pickle-Warning"],
 )
 
 app.include_router(analyze.router, prefix="/api", tags=["analyze"])

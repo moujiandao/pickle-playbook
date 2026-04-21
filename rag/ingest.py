@@ -78,6 +78,7 @@ def ingest_corpus(
                 "source": c["source"],
                 "chunk_index": c["chunk_index"],
                 "token_count": c["token_count"],
+                "level": c.get("level", "unknown"),
             }
             for c in chunks
         ]

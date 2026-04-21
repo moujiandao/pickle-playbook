@@ -1,3 +1,6 @@
+---
+level: "4.0"
+---
 # Positioning, Stacking, and Switching
 
 ## Core Positioning Principle: Control the Kitchen Line

@@ -13,9 +13,10 @@ export default function App() {
   const [players, setPlayers] = useState(INITIAL_PLAYERS)
   const [ball, setBall] = useState(INITIAL_BALL)
   const [toast, setToast] = useState(false)
+  const [skillLevel, setSkillLevel] = useState(null)
 
   const { dragging, onPointerDown, svgContainerRef } = useDrag(setPlayers, setBall)
-  const { result, setResult, isAnalyzing, error, analyze } = useAnalyze()
+  const { result, setResult, isAnalyzing, error, warning, analyze } = useAnalyze()
   const { scenarios, saveScenario, deleteScenario } = useScenarios()
   const [reachError, setReachError] = useState(null)
 
@@ -26,6 +27,7 @@ export default function App() {
   }, [ball.y, ball.spin])
 
   function handleAnalyze() {
+    if (!skillLevel) return
     const meKey = mySide === 'left' ? 'my_left' : 'my_right'
     const me = players[meKey]
     const dx = ball.x - me.x
@@ -37,14 +39,14 @@ export default function App() {
       return
     }
     setReachError(null)
-    analyze(players, ball, mySide)
+    analyze(players, ball, mySide, skillLevel)
   }
 
   function handleSave() {
     const name = `${describeBallZone(ball.y)} · ${ball.height} ${ball.speed}${ball.spin ? ` · ${ball.spin}` : ''}`
     saveScenario({
       name,
-      state: { players: { ...players }, ball: { ...ball }, mySide, result },
+      state: { players: { ...players }, ball: { ...ball }, mySide, skillLevel, result },
     })
     setToast(true)
     setTimeout(() => setToast(false), 2000)
@@ -54,6 +56,7 @@ export default function App() {
     setPlayers(sc.state.players)
     setBall(sc.state.ball)
     setMySide(sc.state.mySide)
+    setSkillLevel(sc.state.skillLevel || null)
     setResult(sc.state.result || null)
   }
 
@@ -160,6 +163,7 @@ export default function App() {
           <ResultsPanel
             result={result}
             error={reachError || error}
+            warning={warning}
             gameState={{ my_side: mySide, players, ball }}
           />
         </div>
@@ -174,6 +178,8 @@ export default function App() {
             isAnalyzing={isAnalyzing}
             onSave={handleSave}
             scenarioCount={scenarios.length}
+            skillLevel={skillLevel}
+            setSkillLevel={setSkillLevel}
           />
           <ScenarioList
             scenarios={scenarios}

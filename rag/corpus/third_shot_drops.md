@@ -1,3 +1,6 @@
+---
+level: "4.0"
+---
 # Third Shot Drops
 
 ## Why the Third Shot Matters

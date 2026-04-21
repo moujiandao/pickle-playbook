@@ -1,4 +1,4 @@
-import { NET_Y, KITCHEN, describeBallZone } from '../constants'
+import { NET_Y, KITCHEN, describeBallZone, SKILL_LEVELS } from '../constants'
 
 const panelStyle = {
   background: '#1c2530',
@@ -70,10 +70,24 @@ const st = {
   },
 }
 
-export default function ControlPanel({ mySide, setMySide, ball, setBall, onAnalyze, isAnalyzing, onSave, scenarioCount }) {
+export default function ControlPanel({ mySide, setMySide, ball, setBall, onAnalyze, isAnalyzing, onSave, scenarioCount, skillLevel, setSkillLevel }) {
   const inK = ball.y >= NET_Y - KITCHEN && ball.y <= NET_Y + KITCHEN
   return (
     <div style={panelStyle}>
+      <div>
+        <label style={st.label}>SKILL LEVEL</label>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {SKILL_LEVELS.map((lvl) => (
+            <button
+              key={lvl}
+              onClick={() => setSkillLevel(lvl)}
+              style={{ ...st.btn, ...(skillLevel === lvl ? st.active : {}) }}
+            >
+              {lvl}
+            </button>
+          ))}
+        </div>
+      </div>
       <div>
         <label style={st.label}>I AM</label>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -152,10 +166,10 @@ export default function ControlPanel({ mySide, setMySide, ball, setBall, onAnaly
       </div>
       <button
         onClick={onAnalyze}
-        disabled={isAnalyzing}
-        style={{ ...st.analyze, opacity: isAnalyzing ? 0.6 : 1 }}
+        disabled={isAnalyzing || !skillLevel}
+        style={{ ...st.analyze, opacity: isAnalyzing || !skillLevel ? 0.6 : 1 }}
       >
-        {isAnalyzing ? 'Analyzing...' : 'What Shot Should I Hit?'}
+        {!skillLevel ? 'Select Skill Level' : isAnalyzing ? 'Analyzing...' : 'What Shot Should I Hit?'}
       </button>
       <button onClick={onSave} style={st.save}>
         Save Scenario {scenarioCount > 0 ? `(${scenarioCount})` : ''}

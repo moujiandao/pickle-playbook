@@ -7,6 +7,7 @@ Side = Literal["left", "right"]
 Height = Literal["low", "mid", "high"]
 Speed = Literal["slow", "fast"]
 Spin = Literal["topspin", "flat", "slice"]
+SkillLevel = Literal["3.0", "3.5", "4.0", "4.5", "5.0"]
 
 
 class Position(BaseModel):
@@ -54,6 +55,7 @@ class GameState(BaseModel):
     my_side: Side
     players: Players
     ball: Ball
+    skill_level: SkillLevel
 
 
 class RallyStep(BaseModel):
@@ -79,6 +81,7 @@ class ScenarioState(BaseModel):
     players: Players
     ball: Ball
     mySide: Side
+    skillLevel: Optional[SkillLevel] = None
     result: Optional[list[ShotRecommendation]] = None
 
     model_config = {"populate_by_name": True}

@@ -94,6 +94,7 @@ Each step has: shot number, who acts, action description, result description.
 ```json
 {
   "my_side": "left",
+  "skill_level": "4.0",
   "players": {
     "my_left":   { "x": 5.0,  "y": 37.0 },
     "my_right":  { "x": 15.0, "y": 37.0 },

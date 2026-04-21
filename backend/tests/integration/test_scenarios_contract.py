@@ -17,6 +17,7 @@ VALID_STATE_PAYLOAD = {
     },
     "ball": {"x": 10.0, "y": 26.0, "height": "low", "speed": "slow", "spin": None},
     "mySide": "left",
+    "skillLevel": None,
     "result": None,
 }
 
@@ -75,6 +76,7 @@ class TestCreate:
                 "my_side": VALID_STATE_PAYLOAD["mySide"],
                 "players": VALID_STATE_PAYLOAD["players"],
                 "ball": VALID_STATE_PAYLOAD["ball"],
+                "skill_level": "4.0",
             },
         ).json()
 

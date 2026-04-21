@@ -21,38 +21,29 @@ load_dotenv()
 
 DEFAULT_DB_DIR = str(Path(__file__).parent / "chroma_db")
 
+_ADJACENT = {
+    "3.0": ["3.0", "3.5"],
+    "3.5": ["3.0", "3.5", "4.0"],
+    "4.0": ["3.5", "4.0", "4.5"],
+    "4.5": ["4.0", "4.5", "5.0"],
+    "5.0": ["4.5", "5.0"],
+}
+
 
 def _get_collection(db_dir: str, client: Optional[chromadb.Client] = None):
     c = client or chromadb.PersistentClient(path=db_dir)
     return c.get_or_create_collection(name=COLLECTION_NAME)
 
 
-def retrieve(
-    game_state: dict,
-    k: int = 5,
-    db_dir: str = DEFAULT_DB_DIR,
-    client: Optional[chromadb.Client] = None,
-) -> list[dict]:
-    """
-    Retrieve the *k* most relevant strategy chunks for a given game state.
-
-    Returns a list of dicts:
-      {
-        "text": str,          # chunk content
-        "source": str,        # filename (e.g., "kitchen_play.md")
-        "chunk_index": int,
-        "distance": float,    # lower = more similar
-      }
-    """
-    query = make_retrieval_query(game_state)
-    query_embedding = embed([query])[0]
-
-    collection = _get_collection(db_dir, client)
-    results = collection.query(
-        query_embeddings=[query_embedding],
-        n_results=k,
-        include=["documents", "metadatas", "distances"],
-    )
+def _query_collection(collection, query_embedding, k, where=None):
+    kwargs = {
+        "query_embeddings": [query_embedding],
+        "n_results": k,
+        "include": ["documents", "metadatas", "distances"],
+    }
+    if where:
+        kwargs["where"] = where
+    results = collection.query(**kwargs)
 
     chunks = []
     if not results["ids"] or not results["ids"][0]:
@@ -71,5 +62,31 @@ def retrieve(
                 "distance": dist,
             }
         )
-
     return chunks
+
+
+def retrieve(
+    game_state: dict,
+    k: int = 5,
+    db_dir: str = DEFAULT_DB_DIR,
+    client: Optional[chromadb.Client] = None,
+    level: Optional[str] = None,
+) -> tuple[list[dict], bool]:
+    """Retrieve the *k* most relevant strategy chunks for a given game state.
+
+    Returns (chunks, fallback_used) where fallback_used is True when
+    level-filtered retrieval found nothing and we fell back to unfiltered.
+    """
+    query = make_retrieval_query(game_state)
+    query_embedding = embed([query])[0]
+    collection = _get_collection(db_dir, client)
+
+    if level and level in _ADJACENT:
+        where = {"level": {"$in": _ADJACENT[level]}}
+        chunks = _query_collection(collection, query_embedding, k, where=where)
+        if chunks:
+            return chunks, False
+        # Fallback: no level-specific content, try unfiltered
+        return _query_collection(collection, query_embedding, k), True
+
+    return _query_collection(collection, query_embedding, k), False
