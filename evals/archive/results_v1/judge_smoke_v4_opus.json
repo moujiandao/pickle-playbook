@@ -1,0 +1,211 @@
+{
+  "summary": {
+    "total": 5,
+    "errors": 0,
+    "shot_match_rate": 0.8,
+    "avg_reasoning_coverage": 0.783,
+    "by_difficulty": {
+      "obvious": {
+        "total": 1,
+        "shot_matched": 1,
+        "overall_passed": 1,
+        "shot_match_rate": 1.0,
+        "overall_pass_rate": 1.0
+      },
+      "typical": {
+        "total": 2,
+        "shot_matched": 2,
+        "overall_passed": 1,
+        "shot_match_rate": 1.0,
+        "overall_pass_rate": 0.5
+      },
+      "tricky": {
+        "total": 2,
+        "shot_matched": 1,
+        "overall_passed": 1,
+        "shot_match_rate": 0.5,
+        "overall_pass_rate": 0.5
+      }
+    },
+    "judge_model": "claude-opus-4-6",
+    "judge_pass_rate": 0.8,
+    "overall_pass_rate": 0.6,
+    "failure_breakdown": {
+      "right_shot_good_reasoning": 3,
+      "right_shot_bad_reasoning": 1,
+      "wrong_shot_good_reasoning": 1,
+      "wrong_shot_bad_reasoning": 0
+    },
+    "avg_judge_scores": {
+      "strategic_soundness": 4.0,
+      "reasoning_quality": 3.8,
+      "specificity": 3.6
+    },
+    "skill_level_feasible_rate": 1.0
+  },
+  "results": [
+    {
+      "scenario_id": "gold_010",
+      "difficulty": "obvious",
+      "shot_match": true,
+      "predicted_shot": "Reset with a Deep Drop to the Middle",
+      "predicted_family": "reset",
+      "expected_primary": "block_volley",
+      "expected_families": [
+        "attack_volley",
+        "block",
+        "reset"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.667,
+      "mentions": {
+        "block": true,
+        "absorb": false,
+        "kitchen": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three options are strategically reasonable given both opponents are deep and you're at the kitchen with a fast mid-height ball; the primary 'deep drop to the middle' is slightly conservative since mid-height at the kitchen against baseline opponents is quite attackable, but it's still sound and the second/third options correctly identify the offensive opportunity.",
+        "passed": true,
+        "model": "claude-opus-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_015",
+      "difficulty": "typical",
+      "shot_match": true,
+      "predicted_shot": "Drive at the Right Hip of the Left-Side Player",
+      "predicted_family": "drive",
+      "expected_primary": "third_shot_drive",
+      "expected_families": [
+        "drive",
+        "drop"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 1.0,
+      "mentions": {
+        "high": true,
+        "drive": true,
+        "attack": true,
+        "kitchen": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three recommendations are strategically sound for a high, slow ball at mid-court depth against two kitchen-line opponents; the primary drive at the body is a strong 4.0-level play, the drop option adds good tactical variety, and the middle speed-up is a classic high-percentage choice \u2014 reasoning correctly links ball height/speed to attackability and accounts for opponent positioning, though the description says 'mid-court' when the ball is actually closer to the baseline (y=38), slightly overstating the offensive opportunity.",
+        "passed": true,
+        "model": "claude-opus-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_028",
+      "difficulty": "typical",
+      "shot_match": true,
+      "predicted_shot": "Drop Shot to Kitchen",
+      "predicted_family": "drop",
+      "expected_primary": "third_shot_drive",
+      "expected_families": [
+        "drive",
+        "drop"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "transition": true,
+        "drive": true,
+        "attack": false,
+        "advance": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 3,
+        "reasoning_quality": 2,
+        "specificity": 2,
+        "skill_level_feasible": true,
+        "notes": "The primary drop shot recommendation is reasonable as a third-shot-style play to advance to the kitchen, but the reasoning incorrectly states 'both opponents are at the baseline' when they are actually in the transition zone, which significantly changes the calculus \u2014 a drop against transition-zone opponents is riskier since they can easily attack a mediocre drop, and the second recommendation's reasoning also misidentifies opponents as being at the baseline, showing poor state awareness throughout.",
+        "passed": false,
+        "model": "claude-opus-4-6"
+      },
+      "quadrant": "right_shot_bad_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_039",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "predicted_shot": "Reset dink to the middle",
+      "predicted_family": "reset",
+      "expected_primary": "soft_drop",
+      "expected_families": [
+        "block",
+        "reset"
+      ],
+      "unmapped_expected_labels": [
+        "soft_drop"
+      ],
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "transition": true,
+        "soft": true,
+        "drop": false,
+        "kitchen": true
+      },
+      "warning": "No 3.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three recommendations correctly identify the low, slow ball in the transition zone as a reset opportunity rather than an attack, with sound reasoning about targeting the middle for confusion, the backhand for weakness, or crosscourt for net clearance margin; the primary middle reset dink is an excellent high-percentage choice for a 3.5 player looking to advance to the kitchen line.",
+        "passed": true,
+        "model": "claude-opus-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_044",
+      "difficulty": "tricky",
+      "shot_match": false,
+      "predicted_shot": "Cross-Court Roll/Reset to Keep the Ball Low",
+      "predicted_family": "reset",
+      "expected_primary": "drive_down_middle",
+      "expected_families": [
+        "dink",
+        "drive"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "middle": true,
+        "gap": true,
+        "cheating wide": false,
+        "attack": true
+      },
+      "warning": "No 4.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three options are reasonable for a kitchen-line battle with a mid-height slow ball; the cross-court dink is the safest primary, the middle speed-up is a solid secondary, and the inside-out drop is creative but slightly risky \u2014 reasoning correctly ties ball height to attackability and references net clearance and seam confusion, though the ATP label in option 3 is misleading since this is really just a deceptive dink.",
+        "passed": true,
+        "model": "claude-opus-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    }
+  ],
+  "errors": []
+}

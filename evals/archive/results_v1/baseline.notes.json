@@ -1,0 +1,26 @@
+{
+  "gold_002": {
+    "judge_verdict": "correct",
+    "note": "",
+    "priority": "high",
+    "scenario_action": "keep",
+    "system_signal": null,
+    "updated_at": "2026-04-28T17:45:34"
+  },
+  "gold_003": {
+    "judge_verdict": "wrong_pass",
+    "note": "update golden rule expected sequence. Opponent is not forced to \"dink\" up. Dinking only happens when everyone is at the kitchen.",
+    "priority": "med",
+    "scenario_action": "rewrite_context",
+    "system_signal": "prompt_issue",
+    "updated_at": "2026-04-28T17:47:15"
+  },
+  "gold_004": {
+    "judge_verdict": "wrong_pass",
+    "note": "you cannot hit an angle that is too sharp. Too sharp of an angle lowers your shot consistency. \"crosscourt\" dink back to the middle",
+    "priority": "high",
+    "scenario_action": "rewrite_context",
+    "system_signal": "prompt_issue",
+    "updated_at": "2026-04-28T17:49:09"
+  }
+}

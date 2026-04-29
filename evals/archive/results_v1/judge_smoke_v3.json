@@ -1,0 +1,149 @@
+{
+  "summary": {
+    "total": 5,
+    "passed": 2,
+    "errors": 0,
+    "overall_pass_rate": 0.4,
+    "avg_reasoning_coverage": 0.683,
+    "by_difficulty": {
+      "obvious": {
+        "total": 1,
+        "passed": 1,
+        "pass_rate": 1.0
+      },
+      "typical": {
+        "total": 2,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "tricky": {
+        "total": 2,
+        "passed": 1,
+        "pass_rate": 0.5
+      }
+    },
+    "avg_judge_scores": {
+      "strategic_soundness": 3.6,
+      "reasoning_quality": 4.0,
+      "specificity": 4.2
+    },
+    "skill_level_feasible_rate": 1.0
+  },
+  "results": [
+    {
+      "scenario_id": "gold_010",
+      "difficulty": "obvious",
+      "shot_match": true,
+      "reasoning_coverage": 0.667,
+      "mentions": {
+        "block": true,
+        "absorb": false,
+        "kitchen": true
+      },
+      "predicted_shot": "Reset with a Deep Drop to the Middle",
+      "expected_shot": "block_volley",
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 3,
+        "reasoning_quality": 3,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "The system identifies the correct block/reset concept in shot 2 and uses scenario-specific details well, but leads with a suboptimal deep drop primary recommendation and the third option (counter-attack) is strategically questionable given the fast incoming pace, diluting overall soundness; 'block,' 'absorb,' and 'kitchen' are only partially addressed across the three shots.",
+        "passed": true
+      }
+    },
+    {
+      "scenario_id": "gold_015",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 1.0,
+      "mentions": {
+        "high": true,
+        "drive": true,
+        "attack": true,
+        "kitchen": true
+      },
+      "predicted_shot": "Drive to the Right Hip of the Left-Side Player",
+      "expected_shot": "third_shot_drive",
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "skill_level_feasible": true,
+        "notes": "All three recommendations are strategically sound and well-reasoned, with the primary drive to the body matching the expert's preferred third_shot_drive, and the drop option aligning with the acceptable alternative; reasoning explicitly addresses ball height, attack opportunity, opponent positioning, and middle confusion\u2014all hallmarks of strong pickleball IQ.",
+        "passed": true
+      }
+    },
+    {
+      "scenario_id": "gold_028",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "transition": true,
+        "drive": true,
+        "attack": false,
+        "advance": true
+      },
+      "predicted_shot": "Deep Drop Shot to Reset",
+      "expected_shot": "third_shot_drive",
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "System correctly identifies both the drop and drive options matching expert expectations, with solid situation-specific reasoning about opponent positioning and ball height, though the third option (deep line drive) is less strategically optimal than the primary recommendations.",
+        "passed": true
+      }
+    },
+    {
+      "scenario_id": "gold_039",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "transition": false,
+        "soft": true,
+        "drop": true,
+        "kitchen": true
+      },
+      "predicted_shot": "Reset dink to opponent's backhand side",
+      "expected_shot": "soft_drop",
+      "warning": "No 3.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three shots align well with expert expectations (reset and drop are both acceptable), reasoning correctly emphasizes neutralizing, transitioning to the kitchen, and high-percentage play, though the third option's topspin dip cue edges toward 4.0-level precision.",
+        "passed": true
+      }
+    },
+    {
+      "scenario_id": "gold_044",
+      "difficulty": "tricky",
+      "shot_match": false,
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "middle": false,
+        "gap": false,
+        "cheating wide": false,
+        "attack": true
+      },
+      "predicted_shot": "Cross-court dink with topspin to opponent's backhand",
+      "expected_shot": "drive_down_middle",
+      "warning": "No 4.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 2,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "The system's reasoning is technically sound and well-contextualized, but it misses the expert-preferred primary shot (drive down the middle exploiting the gap between opponents cheating wide), instead leading with a conservative dink when the mid-height ball presents a clear attacking opportunity.",
+        "passed": true
+      }
+    }
+  ],
+  "errors": []
+}

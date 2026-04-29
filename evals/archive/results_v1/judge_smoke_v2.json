@@ -1,0 +1,149 @@
+{
+  "summary": {
+    "total": 5,
+    "passed": 3,
+    "errors": 0,
+    "overall_pass_rate": 0.6,
+    "avg_reasoning_coverage": 0.683,
+    "by_difficulty": {
+      "obvious": {
+        "total": 1,
+        "passed": 1,
+        "pass_rate": 1.0
+      },
+      "typical": {
+        "total": 2,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "tricky": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      }
+    },
+    "avg_judge_scores": {
+      "strategic_soundness": 4.0,
+      "reasoning_quality": 4.2,
+      "specificity": 4.0,
+      "skill_level_alignment": 4.0
+    }
+  },
+  "results": [
+    {
+      "scenario_id": "gold_010",
+      "difficulty": "obvious",
+      "shot_match": true,
+      "reasoning_coverage": 0.667,
+      "mentions": {
+        "block": false,
+        "absorb": true,
+        "kitchen": true
+      },
+      "predicted_shot": "Reset Drop to Opponent's Feet",
+      "expected_shot": "block_volley",
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 3,
+        "reasoning_quality": 3,
+        "specificity": 3,
+        "skill_level_alignment": 3,
+        "notes": "The system misses the expert-preferred block_volley entirely and never uses key terms like 'block' or 'absorb,' instead offering three divergent options including a counter-attack that contradicts the defensive priority of the situation, and while the reasoning shows general pickleball awareness it lacks the precision and vocabulary expected for a 4.0-calibrated recommendation.",
+        "passed": true
+      }
+    },
+    {
+      "scenario_id": "gold_015",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "high": true,
+        "drive": false,
+        "attack": true,
+        "kitchen": true
+      },
+      "predicted_shot": "Drive at the Feet of Opponent Right",
+      "expected_shot": "third_shot_drive",
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "skill_level_alignment": 5,
+        "notes": "All three shots are well-calibrated for a 4.0 player \u2014 the primary drive recommendation aligns with expert expectations, the body-shot speed-up adds a tactically sophisticated alternative, and the offensive topspin drop mirrors the expected third_shot_drop option with appropriate reasoning about court positioning and neutralization.",
+        "passed": true
+      }
+    },
+    {
+      "scenario_id": "gold_028",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "transition": false,
+        "drive": true,
+        "attack": true,
+        "advance": false
+      },
+      "predicted_shot": "Deep Soft Topspin to Backhand Side",
+      "expected_shot": "third_shot_drive",
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_alignment": 4,
+        "notes": "System correctly identifies all three expert-expected shot types (drive, drop, middle drive) with solid situational reasoning about opponent positioning and transition, though it leads with a soft topspin rather than the preferred third-shot drive and the ordering slightly underweights the aggressive attack mentality expected at 4.0.",
+        "passed": true
+      }
+    },
+    {
+      "scenario_id": "gold_039",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "transition": false,
+        "soft": true,
+        "drop": true,
+        "kitchen": true
+      },
+      "predicted_shot": "Soft Reset Dink to Opponent's Backhand Side",
+      "expected_shot": "soft_drop",
+      "warning": "No 3.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 4,
+        "skill_level_alignment": 4,
+        "notes": "All three shots align well with expert expectations (reset, soft drop, kitchen transition focus) with clear tactical reasoning, though the backhand targeting and net-height detail at the sideline slightly exceed typical 3.5 instructional framing.",
+        "passed": true
+      }
+    },
+    {
+      "scenario_id": "gold_044",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "middle": true,
+        "gap": true,
+        "cheating wide": false,
+        "attack": true
+      },
+      "predicted_shot": "Soft Dink Cross-Court to Opponent's Backhand",
+      "expected_shot": "drive_down_middle",
+      "warning": "No 4.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 3,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_alignment": 4,
+        "notes": "The system correctly identifies the middle seam attack in shot 3 and shows solid 4.5-level reasoning (Erne setups, angle exploitation, communication gaps), but buries the highest-percentage play\u2014driving the middle gap against opponents cheating wide\u2014by listing it third and framing it as a dink rather than the aggressive drive the expert expects as the best shot.",
+        "passed": true
+      }
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,773 @@
+{
+  "summary": {
+    "total": 50,
+    "passed": 13,
+    "errors": 0,
+    "overall_pass_rate": 0.26,
+    "avg_reasoning_coverage": 0.535,
+    "by_difficulty": {
+      "obvious": {
+        "total": 10,
+        "passed": 3,
+        "pass_rate": 0.3
+      },
+      "typical": {
+        "total": 20,
+        "passed": 4,
+        "pass_rate": 0.2
+      },
+      "tricky": {
+        "total": 15,
+        "passed": 5,
+        "pass_rate": 0.333
+      },
+      "adversarial": {
+        "total": 5,
+        "passed": 1,
+        "pass_rate": 0.2
+      }
+    }
+  },
+  "results": [
+    {
+      "scenario_id": "gold_001",
+      "difficulty": "obvious",
+      "shot_match": false,
+      "reasoning_coverage": 0.667,
+      "mentions": {
+        "kitchen": true,
+        "advance": false,
+        "time": true
+      },
+      "predicted_shot": "Deep Drop Shot to Opponent's Feet",
+      "expected_shot": "third_shot_drop",
+      "warning": "No 3.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_002",
+      "difficulty": "obvious",
+      "shot_match": false,
+      "reasoning_coverage": 0.667,
+      "mentions": {
+        "high": true,
+        "attack": true,
+        "finish": false
+      },
+      "predicted_shot": "Speed-up at Opponent Right's Hip",
+      "expected_shot": "put_away_volley",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_003",
+      "difficulty": "obvious",
+      "shot_match": true,
+      "reasoning_coverage": 1.0,
+      "mentions": {
+        "reset": true,
+        "soft": true,
+        "kitchen": true
+      },
+      "predicted_shot": "Soft Reset Dink to Opponent's Backhand",
+      "expected_shot": "reset",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_004",
+      "difficulty": "obvious",
+      "shot_match": true,
+      "reasoning_coverage": 0.667,
+      "mentions": {
+        "crosscourt": false,
+        "low": true,
+        "net": true
+      },
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "expected_shot": "crosscourt_dink",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_005",
+      "difficulty": "obvious",
+      "shot_match": false,
+      "reasoning_coverage": 0.667,
+      "mentions": {
+        "high": true,
+        "attack": false,
+        "feet": true
+      },
+      "predicted_shot": "Overhead Slam to Open Court",
+      "expected_shot": "drive",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_006",
+      "difficulty": "obvious",
+      "shot_match": false,
+      "reasoning_coverage": 1.0,
+      "mentions": {
+        "lob": true,
+        "reset": true,
+        "time": true
+      },
+      "predicted_shot": "Soft Reset Dink to Middle",
+      "expected_shot": "lob",
+      "warning": "No 3.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_007",
+      "difficulty": "obvious",
+      "shot_match": false,
+      "reasoning_coverage": 0.333,
+      "mentions": {
+        "deep": false,
+        "time": true,
+        "advance": false
+      },
+      "predicted_shot": "Drop Shot into the Kitchen",
+      "expected_shot": "deep_return",
+      "warning": "No 3.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_008",
+      "difficulty": "obvious",
+      "shot_match": false,
+      "reasoning_coverage": 0.0,
+      "mentions": {
+        "popup": false,
+        "volley": false,
+        "feet": false
+      },
+      "predicted_shot": "Soft Reset Dink to Opponent's Backhand",
+      "expected_shot": "attack_volley",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_009",
+      "difficulty": "obvious",
+      "shot_match": false,
+      "reasoning_coverage": 1.0,
+      "mentions": {
+        "speed": true,
+        "middle": true,
+        "attack": true
+      },
+      "predicted_shot": "Inside-Out Dink to Opponent's Right Foot",
+      "expected_shot": "speedup",
+      "warning": "No 4.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_010",
+      "difficulty": "obvious",
+      "shot_match": true,
+      "reasoning_coverage": 0.667,
+      "mentions": {
+        "block": true,
+        "absorb": false,
+        "kitchen": true
+      },
+      "predicted_shot": "Reset with a Deep Soft Drop into Opponent's Kitchen",
+      "expected_shot": "block_volley",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_011",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "forehand": false,
+        "roll": true,
+        "feet": false,
+        "mid-height": true
+      },
+      "predicted_shot": "Soft Dink Cross-Court to Opponent's Backhand",
+      "expected_shot": "forehand_roll_to_feet",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_012",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "kitchen": true,
+        "advance": false,
+        "angle": true,
+        "drop": true
+      },
+      "predicted_shot": "Deep Drop Shot to Middle",
+      "expected_shot": "third_shot_drop",
+      "warning": "No 3.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_013",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "shoulder": false,
+        "attack": true,
+        "speed": true,
+        "hip": true
+      },
+      "predicted_shot": "Dink Cross-Court to Opponent's Backhand",
+      "expected_shot": "speedup",
+      "warning": "No 4.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_014",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 1.0,
+      "mentions": {
+        "fast": true,
+        "absorb": true,
+        "soft": true,
+        "kitchen": true
+      },
+      "predicted_shot": "Counter-punch with a firm dink to opponent's backhand",
+      "expected_shot": "block_volley",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_015",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 1.0,
+      "mentions": {
+        "high": true,
+        "drive": true,
+        "attack": true,
+        "kitchen": true
+      },
+      "predicted_shot": "Drive at Opponent's Right Hip/Feet",
+      "expected_shot": "third_shot_drive",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_016",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "overhead": false,
+        "lob": false,
+        "smash": false,
+        "attack": true
+      },
+      "predicted_shot": "Aggressive Speed-Up at Opponent's Feet",
+      "expected_shot": "overhead_smash",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_017",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "line": true,
+        "gap": false,
+        "net-rusher": false,
+        "feet": false
+      },
+      "predicted_shot": "Dink Cross-Court to Opponent Left at Baseline",
+      "expected_shot": "drive_return_down_line",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_018",
+      "difficulty": "typical",
+      "shot_match": true,
+      "reasoning_coverage": 0.333,
+      "mentions": {
+        "middle": true,
+        "forehand": false,
+        "communication": false
+      },
+      "predicted_shot": "Cross-Court Dink to Opponent's Backhand",
+      "expected_shot": "right_player_forehand_middle",
+      "warning": "No 3.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_019",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "angle": true,
+        "sideline": true,
+        "pull": false,
+        "open court": false
+      },
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "expected_shot": "angle_dink_sideline",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_020",
+      "difficulty": "typical",
+      "shot_match": true,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "low": true,
+        "patience": false,
+        "wait": true,
+        "dink": true
+      },
+      "predicted_shot": "Cross-Court Dink to Opponent's Backhand",
+      "expected_shot": "crosscourt_dink",
+      "warning": "No 3.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_021",
+      "difficulty": "typical",
+      "shot_match": true,
+      "reasoning_coverage": 1.0,
+      "mentions": {
+        "transition": true,
+        "soft": true,
+        "drop": true,
+        "advance": true
+      },
+      "predicted_shot": "Soft Reset Dink to Opponent's Backhand",
+      "expected_shot": "soft_drop",
+      "warning": "No 3.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_022",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "high": true,
+        "backhand": true,
+        "attack": false,
+        "volley": false
+      },
+      "predicted_shot": "Aggressive Overhead/Slam to Open Court",
+      "expected_shot": "backhand_volley_attack",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_023",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "air": false,
+        "volley": true,
+        "float": false,
+        "advance": false
+      },
+      "predicted_shot": "Aggressive Drop Volley to Backhand Side",
+      "expected_shot": "volley_before_bounce",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_024",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "above tape": false,
+        "attack": true,
+        "patience": false,
+        "mid-height": true
+      },
+      "predicted_shot": "Soft Dink Cross-Court to Opponent's Backhand",
+      "expected_shot": "speedup",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_025",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.0,
+      "mentions": {
+        "wide": false,
+        "recover": false,
+        "reset": false,
+        "position": false
+      },
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "expected_shot": "reset_crosscourt",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_026",
+      "difficulty": "typical",
+      "shot_match": true,
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "angle": true,
+        "short": false,
+        "sideline": false,
+        "cut": false
+      },
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "expected_shot": "cut_angle_volley",
+      "warning": "No 4.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_027",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "low": true,
+        "half-volley": false,
+        "soft": true,
+        "transition": true
+      },
+      "predicted_shot": "Soft Reset Dink to Opponent's Backhand (Cross-Court Left)",
+      "expected_shot": "half_volley_soft",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_028",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "transition": true,
+        "drive": true,
+        "attack": false,
+        "advance": false
+      },
+      "predicted_shot": "Deep Soft Drop into Kitchen",
+      "expected_shot": "third_shot_drive",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_029",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "advancing": true,
+        "lob": false,
+        "over": true,
+        "time": true
+      },
+      "predicted_shot": "Deep Drop Shot to Opponent's Feet",
+      "expected_shot": "lob",
+      "warning": "No 3.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_030",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "server": false,
+        "feet": true,
+        "gap": false,
+        "line": true
+      },
+      "predicted_shot": "Dink Cross-Court to Opponent Left at Baseline",
+      "expected_shot": "drive_to_server_feet",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_031",
+      "difficulty": "tricky",
+      "shot_match": false,
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "body": false,
+        "jam": true,
+        "shoulder": false,
+        "hip": true
+      },
+      "predicted_shot": "Soft Reset Dink to Opponent's Backhand",
+      "expected_shot": "speedup_to_body",
+      "warning": "No 4.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_032",
+      "difficulty": "tricky",
+      "shot_match": false,
+      "reasoning_coverage": 0.0,
+      "mentions": {
+        "corner": false,
+        "crosscourt": false,
+        "partner": false,
+        "Erne": false
+      },
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "expected_shot": "sharp_crosscourt_kitchen",
+      "warning": "No 4.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_033",
+      "difficulty": "tricky",
+      "shot_match": false,
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "stacking": false,
+        "cross": false,
+        "partner": true,
+        "switch": false
+      },
+      "predicted_shot": "Deep Drop Shot to Opponent's Backhand",
+      "expected_shot": "partner_cross_forehand",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_034",
+      "difficulty": "tricky",
+      "shot_match": false,
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "ATP": false,
+        "sideline": true,
+        "post": false,
+        "angle": false
+      },
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "expected_shot": "around_the_post",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_035",
+      "difficulty": "tricky",
+      "shot_match": false,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "fake": true,
+        "deception": true,
+        "soft": true,
+        "backpedal": false
+      },
+      "predicted_shot": "Inside-Out Dink to Opponent's Left Foot",
+      "expected_shot": "fake_attack_dink",
+      "warning": "No 4.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_036",
+      "difficulty": "tricky",
+      "shot_match": false,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "angle": true,
+        "sideline": true,
+        "safe": false,
+        "line": true
+      },
+      "predicted_shot": "Inside-Out Dink to Opponent's Left Foot",
+      "expected_shot": "dink_down_the_line",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_037",
+      "difficulty": "tricky",
+      "shot_match": false,
+      "reasoning_coverage": 0.0,
+      "mentions": {
+        "partner": false,
+        "poach": false,
+        "crosscourt": false,
+        "setup": false
+      },
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "expected_shot": "dink_crosscourt_for_partner_poach",
+      "warning": "No 4.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_038",
+      "difficulty": "tricky",
+      "shot_match": false,
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "defensive": false,
+        "reset": true,
+        "recover": false,
+        "position": true
+      },
+      "predicted_shot": "Soft Reset Dink to Opponent's Backhand (Cross-Court)",
+      "expected_shot": "reset_from_baseline",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_039",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "transition": false,
+        "soft": true,
+        "drop": true,
+        "kitchen": true
+      },
+      "predicted_shot": "Soft Reset Dink to Opponent's Backhand Side",
+      "expected_shot": "soft_drop",
+      "warning": "No 3.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_040",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "behind": false,
+        "cheating": false,
+        "line": true,
+        "open": false
+      },
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "expected_shot": "inside_out_behind_opponent",
+      "warning": "No 4.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_041",
+      "difficulty": "tricky",
+      "shot_match": false,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "body": true,
+        "jam": true,
+        "limit": true,
+        "return angle": false
+      },
+      "predicted_shot": "Drop Shot to Opponent's Backhand Side",
+      "expected_shot": "serve_to_body",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_042",
+      "difficulty": "tricky",
+      "shot_match": false,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "lob": false,
+        "time": true,
+        "partner": true,
+        "defensive": true
+      },
+      "predicted_shot": "Soft Reset Drop to Opponent's Feet",
+      "expected_shot": "defensive_lob",
+      "warning": "No 3.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_043",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "middle": true,
+        "T": true,
+        "split": false,
+        "confusion": true
+      },
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "expected_shot": "dink_to_middle_T",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_044",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "middle": true,
+        "gap": true,
+        "cheating wide": false,
+        "attack": true
+      },
+      "predicted_shot": "Soft Dink Cross-Court to Opponent's Backhand",
+      "expected_shot": "drive_down_middle",
+      "warning": "No 4.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_045",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "reset": false,
+        "exchange": true,
+        "recover": false,
+        "position": false
+      },
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "expected_shot": "reset",
+      "warning": "No 4.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_046",
+      "difficulty": "adversarial",
+      "shot_match": false,
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "above net": false,
+        "roll": true,
+        "body": false,
+        "4.5": true
+      },
+      "predicted_shot": "Soft Reset to Opponent's Feet",
+      "expected_shot": "roll_volley_body",
+      "warning": "No 4.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_047",
+      "difficulty": "adversarial",
+      "shot_match": false,
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "controlled": false,
+        "feet": false,
+        "partner": true,
+        "roll": false
+      },
+      "predicted_shot": "Attack Deep Middle with Pace",
+      "expected_shot": "forehand_roll_to_feet",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_048",
+      "difficulty": "adversarial",
+      "shot_match": true,
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "overhead": false,
+        "smash": false,
+        "4.5": true,
+        "drop": false
+      },
+      "predicted_shot": "Soft Reset to Kitchen Center",
+      "expected_shot": "drop",
+      "warning": "No 4.5-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_049",
+      "difficulty": "adversarial",
+      "shot_match": false,
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "transition": false,
+        "drive": true,
+        "feet": true,
+        "opp_right": false
+      },
+      "predicted_shot": "Attack the Baseline Player's Feet with a Drive",
+      "expected_shot": "third_shot_drive_to_opp_right",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    },
+    {
+      "scenario_id": "gold_050",
+      "difficulty": "adversarial",
+      "shot_match": false,
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "gap": false,
+        "opp_right": false,
+        "baseline": true,
+        "drive": false
+      },
+      "predicted_shot": "Soft Reset Dink to Opponent Right's Feet",
+      "expected_shot": "drive_to_opp_right",
+      "warning": "No 4.0-level content available yet. Using general advice."
+    }
+  ],
+  "errors": []
+}
