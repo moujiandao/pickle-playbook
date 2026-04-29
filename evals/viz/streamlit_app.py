@@ -812,6 +812,33 @@ def main() -> None:
                     f"shot_match: **{result.get('shot_match')}**  ·  "
                     f"reasoning_coverage: **{result.get('reasoning_coverage', '—')}**"
                 )
+
+                # v2 deterministic checks (M2 advanced shot, M5 tactical mode).
+                # Render only when the underlying fields are present so v1
+                # results files don't show empty rows.
+                m2_violation = result.get("m2_advanced_shot_violation")
+                m5_match = result.get("m5_tactical_mode_match")
+                if m2_violation is not None or m5_match is not None:
+                    parts = []
+                    if m2_violation is not None:
+                        m2_label = "❌ M2 advanced-shot for sub-4.0" if m2_violation else "M2 ✓"
+                        parts.append(f"**{m2_label}**")
+                    if m5_match is not None:
+                        m5_label = "M5 ✓" if m5_match else "❌ M5 posture mismatch"
+                        parts.append(f"**{m5_label}**")
+                    if parts:
+                        st.caption("Deterministic: " + "  ·  ".join(parts))
+
+                pred_posture = result.get("predicted_posture")
+                exp_postures = result.get("expected_postures")
+                exp_mode = result.get("expected_tactical_mode")
+                if any(v is not None for v in (pred_posture, exp_postures, exp_mode)):
+                    st.caption(
+                        f"Posture: predicted=`{pred_posture or '—'}`  ·  "
+                        f"expected=`{', '.join(exp_postures) if exp_postures else '—'}`  ·  "
+                        f"state→mode=`{exp_mode or '—'}`"
+                    )
+
                 if mentions := result.get("mentions"):
                     st.caption("Mentions: " + ", ".join(
                         f"{k}={'✓' if v else '✗'}" for k, v in mentions.items()

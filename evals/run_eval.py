@@ -161,7 +161,15 @@ def score_scenario(scenario: dict, recs: list) -> dict:
         and is_advanced_shot(predicted_shot)
     )
 
-    # M5 — tactical mode (posture) must match one of the acceptable postures
+    # M5 — tactical mode (posture) must match one of the acceptable postures.
+    #
+    # Three states distinguished:
+    #   None   — scenario has no expected postures (skip the check).
+    #   False  — prediction failed (unmappable, or wrong posture).
+    #   True   — prediction's posture is in the acceptable set.
+    #
+    # The False case includes "predicted_posture is None" (unmapped shot text).
+    # That's intentional: an unmappable recommendation can't satisfy M5.
     m5_mode_match = (
         predicted_posture is not None
         and predicted_posture in exp_postures
