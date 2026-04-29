@@ -181,6 +181,16 @@ def score_scenario(scenario: dict, recs: list) -> dict:
     mentions = {kw: kw.lower() in all_why for kw in must_mention}
     reasoning_coverage = sum(mentions.values()) / len(mentions) if mentions else 0.0
 
+    # Per-mode pass for the deterministic gates only. Judge-gated modes
+    # (M3, M4) are merged in by the runner after the judge runs. M5 with
+    # no expected postures (impossible state) is treated as pass-through.
+    per_mode_pass: dict[str, bool] = {
+        "M1": bool(shot_match),
+        "M2": not m2_violation,
+        "M5": bool(m5_mode_match) if m5_mode_match is not None else True,
+    }
+    overall_pass = all(per_mode_pass.values())  # judge-less floor; runner overwrites
+
     return {
         "scenario_id": scenario["id"],
         "difficulty": scenario.get("difficulty", "unknown"),
@@ -196,6 +206,8 @@ def score_scenario(scenario: dict, recs: list) -> dict:
         "unmapped_expected_labels": unmapped_expected,
         "m2_advanced_shot_violation": m2_violation,
         "m5_tactical_mode_match": m5_mode_match,
+        "per_mode_pass": per_mode_pass,
+        "overall_pass": overall_pass,
         "reasoning_coverage": round(reasoning_coverage, 3),
         "mentions": mentions,
     }
@@ -283,16 +295,23 @@ def run(
                         model=judge_model_id,
                     )
                     result["judge"] = {
-                        "strategic_soundness": jr.strategic_soundness,
-                        "reasoning_quality": jr.reasoning_quality,
-                        "specificity": jr.specificity,
-                        "skill_level_feasible": jr.skill_level_feasible,
+                        "state_use": jr.state_use,                 # M3
+                        "ball_state_reading": jr.ball_state_reading,  # M4
+                        "m3_passed": jr.m3_passed,
+                        "m4_passed": jr.m4_passed,
                         "notes": jr.notes,
                         "passed": jr.passed,
                         "model": jr.model,
                     }
                     result["quadrant"] = _quadrant(result["shot_match"], jr.passed)
-                    result["overall_pass"] = bool(result["shot_match"] and jr.passed)
+
+                # score_scenario already populated per_mode_pass with the
+                # deterministic gates (M1, M2, M5) and overall_pass with their
+                # AND. After the judge runs we merge M3+M4 in and recompute.
+                if use_judge and "judge" in result:
+                    result["per_mode_pass"]["M3"] = result["judge"]["m3_passed"]
+                    result["per_mode_pass"]["M4"] = result["judge"]["m4_passed"]
+                    result["overall_pass"] = all(result["per_mode_pass"].values())
                 results.append(result)
             except Exception as exc:
                 errors.append({"scenario_id": scenario_id, "error": str(exc)})
@@ -328,10 +347,22 @@ def run(
         "by_difficulty": by_difficulty,
     }
 
+    # Per-mode pass rates always available (deterministic modes work without judge).
+    mode_keys = ["M1", "M2", "M5"] + (["M3", "M4"] if use_judge else [])
+    per_mode_rates: dict[str, float] = {}
+    for m in mode_keys:
+        rows = [r for r in results if m in r.get("per_mode_pass", {})]
+        if rows:
+            per_mode_rates[m] = round(
+                sum(1 for r in rows if r["per_mode_pass"][m]) / len(rows), 3
+            )
+    summary["per_mode_pass_rate"] = per_mode_rates
+    overall_passed = [r for r in results if r.get("overall_pass")]
+    summary["overall_pass_rate"] = round(len(overall_passed) / n, 3) if n else 0.0
+
     if use_judge:
         judge_rows = [r["judge"] for r in results if "judge" in r]
         judge_passed = [r for r in results if r.get("judge", {}).get("passed")]
-        overall_passed = [r for r in results if r.get("overall_pass")]
 
         failure_breakdown: dict[str, int] = {
             "right_shot_good_reasoning": 0,
@@ -346,16 +377,12 @@ def run(
 
         summary["judge_model"] = judge_model_id
         summary["judge_pass_rate"] = round(len(judge_passed) / n, 3) if n else 0.0
-        summary["overall_pass_rate"] = round(len(overall_passed) / n, 3) if n else 0.0
         summary["failure_breakdown"] = failure_breakdown
         if judge_rows:
             summary["avg_judge_scores"] = {
                 k: round(sum(j[k] for j in judge_rows) / len(judge_rows), 2)
-                for k in ("strategic_soundness", "reasoning_quality", "specificity")
+                for k in ("state_use", "ball_state_reading")
             }
-            summary["skill_level_feasible_rate"] = round(
-                sum(1 for j in judge_rows if j["skill_level_feasible"]) / len(judge_rows), 2
-            )
 
     output = {"summary": summary, "results": results, "errors": errors}
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)

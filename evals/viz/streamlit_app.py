@@ -848,15 +848,29 @@ def main() -> None:
 
                 if judge := result.get("judge"):
                     st.subheader("Judge")
-                    jcols = st.columns(3)
-                    jcols[0].metric("Strategic", judge.get("strategic_soundness"))
-                    jcols[1].metric("Reasoning", judge.get("reasoning_quality"))
-                    jcols[2].metric("Specific", judge.get("specificity"))
-                    st.caption(
-                        f"skill_level_feasible: **{judge.get('skill_level_feasible')}**  ·  "
-                        f"quadrant: **{result.get('quadrant', '—')}**  ·  "
-                        f"model: `{judge.get('model', '?')}`"
-                    )
+                    # v2 has state_use + ball_state_reading; v1 has the
+                    # strategic_soundness/reasoning_quality/specificity trio.
+                    if "state_use" in judge or "ball_state_reading" in judge:
+                        jcols = st.columns(2)
+                        jcols[0].metric("M3 state_use", judge.get("state_use"))
+                        jcols[1].metric("M4 ball_state_reading", judge.get("ball_state_reading"))
+                        st.caption(
+                            f"M3 passed: **{judge.get('m3_passed')}**  ·  "
+                            f"M4 passed: **{judge.get('m4_passed')}**  ·  "
+                            f"quadrant: **{result.get('quadrant', '—')}**  ·  "
+                            f"model: `{judge.get('model', '?')}`"
+                        )
+                    else:
+                        # v1 archive results — render legacy fields
+                        jcols = st.columns(3)
+                        jcols[0].metric("Strategic", judge.get("strategic_soundness"))
+                        jcols[1].metric("Reasoning", judge.get("reasoning_quality"))
+                        jcols[2].metric("Specific", judge.get("specificity"))
+                        st.caption(
+                            f"skill_level_feasible: **{judge.get('skill_level_feasible')}**  ·  "
+                            f"quadrant: **{result.get('quadrant', '—')}**  ·  "
+                            f"model: `{judge.get('model', '?')}`"
+                        )
                     if jnotes := judge.get("notes"):
                         st.info(jnotes)
 
