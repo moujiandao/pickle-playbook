@@ -13,7 +13,13 @@ Changes from Claude's draft:
 - M2 detection mechanism **sharpened** — instead of a fuzzy judge call,
   check whether the recommended shot is on an explicit "advanced shot" list
   (4.0+ required). Sub-4.0 + advanced shot = automatic M2 fail.
-- Added M5 (wrong tactical mode — offense vs defense).
+- Added M5 (wrong tactical mode — offense vs defense), **deterministic** —
+  expected mode is derived from state (me_zone × ball_height × ball_speed),
+  predicted posture is derived from the shot family. No judge involved.
+
+**Detection summary after round 1:** M1, M2, M5 are **deterministic**;
+M3 and M4 use the LLM judge. The judge prompt only has to grade two
+dimensions, not five. Cleaner and cheaper.
 
 **Last updated:** 2026-04-28
 
@@ -105,11 +111,35 @@ This replaces v1's fuzzy `skill_level_feasible` Likert with a crisp deterministi
 
 **Why it matters:** This is the most strategic failure — a model that can't tell offense from defense is missing the central judgment of the sport. Often correlates with M4 (if you misread the ball, you'll often pick the wrong mode), but they're separable: a model can read the ball correctly and still pick the wrong posture for it.
 
-**Detection mechanism:**
-- Each scenario has a `tactical_mode` tag: `offensive` / `defensive` / `neutral` (rally maintenance / setup shots).
-- Each shot family or specific shot has a default posture in `shot_taxonomy.py` (e.g. `attack_volley` → offensive, `reset` → defensive, `dink` → neutral, `drop` → context-dependent so the judge handles).
-- Deterministic check: if scenario.tactical_mode ≠ predicted_shot.posture → M5 fail.
-- The judge handles ambiguous cases (e.g. third-shot drop is neutral / setup, but in a panic situation it's defensive).
+**Detection mechanism: fully deterministic, no judge.**
+
+The expected tactical mode is *derivable from the state* — given me's court zone, ball height, ball speed, and opponent positions, the right posture is determined. Two functions, both in `shot_taxonomy.py`:
+
+1. **`expected_tactical_mode(state) → "offensive" | "defensive" | "neutral"`** — applies a decision rule. First cut:
+
+   | me_zone | ball_height | ball_speed | expected mode |
+   |---|---|---|---|
+   | kitchen | high | any | offensive (attack) |
+   | kitchen | mid | slow | offensive (roll/attack) |
+   | kitchen | mid | fast | neutral (controlled volley) |
+   | kitchen | low | any | neutral (dink rally) |
+   | transition | high | any | offensive |
+   | transition | low | fast | defensive (reset) |
+   | transition | low | slow | neutral |
+   | transition | mid | any | neutral |
+   | baseline | any | any | neutral (setup — drop or drive) |
+
+   Edges that don't fit cleanly should not be in the golden set; if they're tactically ambiguous, they're not good eval cases anyway.
+
+2. **`shot_posture(shot_text) → "offensive" | "defensive" | "neutral"`** — classifies what posture the recommended shot represents. Similar to `classify()` for families:
+   - `attack_volley`, `speedup`, `overhead`, `roll`, `specialty` → offensive
+   - `reset`, `block`, `lob` (defensive) → defensive
+   - `dink`, `drop` (neutral/setup), `serve_return` → neutral
+   - `drive` → offensive in third-shot context, but neutral/setup mostly. Lean offensive.
+
+**M5 check:** if `expected_tactical_mode(state) != shot_posture(predicted_shot)` → M5 fail.
+
+This means M5 (along with M1 and M2) is fully deterministic. Only M3 (state-blind reasoning) and M4 (ball-state reading) need the LLM judge.
 
 ---
 
@@ -133,11 +163,12 @@ primarily probes.
 
 1. **Priority weighting** — are all 5 modes equal, or is one the primary
    thing to catch? (Influences scenario distribution and judge pass criterion.)
-2. **`tactical_mode` tagging** — for the M5 deterministic check we need a
-   posture tag on each scenario. Three values: `offensive` / `defensive` /
-   `neutral`. We'll add this as a new field during scenario writing.
-3. **Where does the `ADVANCED_SHOTS` list live?** Probably `shot_taxonomy.py`
-   alongside the families. To be confirmed during Phase 4.
+2. ~~**`tactical_mode` tagging** — derived deterministically from state, no
+   per-scenario tag needed.~~ Resolved: see M5 detection mechanism.
+3. **Where do `ADVANCED_SHOTS`, `expected_tactical_mode()`, and
+   `shot_posture()` live?** Plan: add all three to `shot_taxonomy.py`
+   alongside `SHOT_FAMILIES`. They're tightly coupled to shot identity and
+   shouldn't be a separate module. Confirm before Phase 4.
 
 ---
 
