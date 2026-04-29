@@ -1,0 +1,30 @@
+Evaluating:   0%|          | 0/5 [00:00<?, ?it/s]Evaluating:  20%|██        | 1/5 [00:28<01:55, 28.95s/it]Evaluating:  40%|████      | 2/5 [01:01<01:33, 31.13s/it]Evaluating:  60%|██████    | 3/5 [01:30<01:00, 30.23s/it]Evaluating:  80%|████████  | 4/5 [01:58<00:29, 29.10s/it]Evaluating: 100%|██████████| 5/5 [02:26<00:00, 28.85s/it]Evaluating: 100%|██████████| 5/5 [02:26<00:00, 29.31s/it]
+{
+  "total": 5,
+  "passed": 3,
+  "errors": 0,
+  "overall_pass_rate": 0.6,
+  "avg_reasoning_coverage": 0.783,
+  "by_difficulty": {
+    "tricky": {
+      "total": 2,
+      "passed": 2,
+      "pass_rate": 1.0
+    },
+    "typical": {
+      "total": 2,
+      "passed": 0,
+      "pass_rate": 0.0
+    },
+    "obvious": {
+      "total": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    }
+  },
+  "avg_judge_scores": {
+    "strategic_soundness": 4.0,
+    "reasoning_quality": 4.2,
+    "specificity": 4.0
+  }
+}

@@ -1,13 +1,14 @@
 """Tests for eval runner scoring logic.
 
-These tests cover score_scenario, _normalize_shot, and eval_state_to_game_state.
-The recommend() function is NOT called — tests are purely about the scoring layer.
+Covers score_scenario (family-based shot_match + reasoning_coverage),
+_quadrant, and eval_state_to_game_state. The recommend() function is NOT
+called — tests are purely about the scoring layer.
 """
 
 import sys
 from pathlib import Path
 
-import pytest
+import pytest  # noqa: F401
 
 # Ensure evals/ and backend/ are on path before importing run_eval
 _HERE = Path(__file__).resolve().parent
@@ -16,7 +17,7 @@ for _p in (_HERE, _REPO / "backend"):
     if str(_p) not in sys.path:
         sys.path.insert(0, str(_p))
 
-from run_eval import _normalize_shot, eval_state_to_game_state, score_scenario
+from run_eval import _quadrant, eval_state_to_game_state, score_scenario
 
 
 # ── helpers ────────────────────────────────────────────────────────────────
@@ -57,66 +58,66 @@ def _base_state(**overrides) -> dict:
     return state
 
 
-# ── _normalize_shot ────────────────────────────────────────────────────────
-
-class TestNormalizeShotName:
-    def test_strips_hyphens_spaces(self):
-        assert _normalize_shot("Cross-Court Dink") == "crosscourtdink"
-
-    def test_strips_underscores(self):
-        assert _normalize_shot("crosscourt_dink") == "crosscourtdink"
-
-    def test_case_insensitive(self):
-        assert _normalize_shot("Third-Shot Drop") == _normalize_shot("third_shot_drop")
-
-    def test_numeric_preserved(self):
-        assert "3" in _normalize_shot("third-shot-3")
-
-    def test_empty_string(self):
-        assert _normalize_shot("") == ""
-
-
-# ── score_scenario — shot match ────────────────────────────────────────────
+# ── score_scenario — family-based shot match ───────────────────────────────
 
 class TestShotMatch:
-    def test_exact_match_normalized(self):
+    def test_same_family_matches(self):
         recs = [_Rec("Third-Shot Drop from the Baseline")]
         result = score_scenario(_scenario("third_shot_drop"), recs)
         assert result["shot_match"] is True
+        assert result["predicted_family"] == "drop"
+        assert result["expected_families"] == ["drop"]
 
-    def test_acceptable_alternative_match(self):
-        # "Third-Shot Drive" normalizes to "thirdshotdrive" == normalize("third_shot_drive")
-        recs = [_Rec("Third-Shot Drive")]
-        result = score_scenario(_scenario("third_shot_drop", alternatives=["third_shot_drive"]), recs)
+    def test_acceptable_alternative_family_matches(self):
+        recs = [_Rec("Drive down the middle")]
+        result = score_scenario(
+            _scenario("third_shot_drop", alternatives=["third_shot_drive"]), recs
+        )
         assert result["shot_match"] is True
+        assert result["predicted_family"] == "drive"
+        assert set(result["expected_families"]) == {"drop", "drive"}
 
-    def test_no_match(self):
+    def test_different_family_no_match(self):
         recs = [_Rec("Speed-Up Attack")]
         result = score_scenario(_scenario("third_shot_drop"), recs)
         assert result["shot_match"] is False
+        assert result["predicted_family"] == "speedup"
 
-    def test_substring_match_primary_contains_pred(self):
-        # "speedup" is contained in "speedupattack" normalized
-        recs = [_Rec("Speedup Attack")]
-        result = score_scenario(_scenario("speedup"), recs)
-        assert result["shot_match"] is True
+    def test_unmappable_prediction_is_miss(self):
+        recs = [_Rec("Some Nonsense Shot")]
+        result = score_scenario(_scenario("drop"), recs)
+        assert result["shot_match"] is False
+        assert result["predicted_family"] is None
 
     def test_empty_recs_no_crash(self):
         result = score_scenario(_scenario("third_shot_drop"), [])
         assert result["shot_match"] is False
+        assert result["predicted_shot"] is None
+        assert result["predicted_family"] is None
 
-    def test_predicted_shot_recorded(self):
+    def test_predicted_and_expected_recorded(self):
         recs = [_Rec("Cross-Court Dink")]
         result = score_scenario(_scenario("crosscourt_dink"), recs)
         assert result["predicted_shot"] == "Cross-Court Dink"
-        assert result["expected_shot"] == "crosscourt_dink"
+        assert result["expected_primary"] == "crosscourt_dink"
 
-    def test_no_recs_predicted_shot_is_none(self):
-        result = score_scenario(_scenario("drop"), [])
-        assert result["predicted_shot"] is None
+    def test_compound_drop_volley_is_attack_volley_not_drop(self):
+        # drop_volley ≠ drop. If golden says drop, a drop_volley prediction must miss.
+        recs = [_Rec("Drop Volley")]
+        result = score_scenario(_scenario("third_shot_drop"), recs)
+        assert result["shot_match"] is False
+        assert result["predicted_family"] == "attack_volley"
+
+    def test_unmapped_expected_labels_surfaced(self):
+        # Alt label that classify() can't map should appear in unmapped_expected_labels
+        recs = [_Rec("Drive")]
+        result = score_scenario(
+            _scenario("third_shot_drive", alternatives=["bogus_label"]), recs
+        )
+        assert "bogus_label" in result["unmapped_expected_labels"]
 
 
-# ── score_scenario — reasoning coverage ───────────────────────────────────
+# ── score_scenario — reasoning coverage (diagnostic only, not a gate) ─────
 
 class TestReasoningCoverage:
     def test_full_coverage(self):
@@ -126,8 +127,10 @@ class TestReasoningCoverage:
 
     def test_partial_coverage(self):
         recs = [_Rec("Drop", "drop into the kitchen")]
-        result = score_scenario(_scenario("drop", must_mention=["kitchen", "advance", "time"]), recs)
-        assert result["reasoning_coverage"] == 0.333  # round(1/3, 3)
+        result = score_scenario(
+            _scenario("drop", must_mention=["kitchen", "advance", "time"]), recs
+        )
+        assert result["reasoning_coverage"] == 0.333
 
     def test_zero_coverage(self):
         recs = [_Rec("Drop", "hit the ball softly over the net")]
@@ -156,6 +159,23 @@ class TestReasoningCoverage:
         recs = [_Rec("Drop", "kitchen play")]
         result = score_scenario(_scenario("drop", must_mention=["kitchen", "advance"]), recs)
         assert result["mentions"] == {"kitchen": True, "advance": False}
+
+
+# ── quadrant math ──────────────────────────────────────────────────────────
+
+class TestQuadrant:
+    def test_right_shot_good_reasoning(self):
+        assert _quadrant(True, True) == "right_shot_good_reasoning"
+
+    def test_right_shot_bad_reasoning(self):
+        assert _quadrant(True, False) == "right_shot_bad_reasoning"
+
+    def test_wrong_shot_good_reasoning_is_dangerous(self):
+        # Judge rationalizing a wrong pick — most dangerous quadrant
+        assert _quadrant(False, True) == "wrong_shot_good_reasoning"
+
+    def test_wrong_shot_bad_reasoning(self):
+        assert _quadrant(False, False) == "wrong_shot_bad_reasoning"
 
 
 # ── eval_state_to_game_state ───────────────────────────────────────────────
@@ -189,7 +209,6 @@ class TestEvalStateToGameState:
         assert gs.players.opp_left.y == 4.0
 
     def test_stacking_no_validator_error(self):
-        # Both players same side — stacking scenario
         gs = eval_state_to_game_state(_base_state(
             me_position="right_transition",
             partner_position="right_transition",
