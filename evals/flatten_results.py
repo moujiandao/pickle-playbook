@@ -44,6 +44,7 @@ def flatten(results_path: Path, out_path: Path) -> int:
 
     columns = [
         "id",
+        "failure_modes",              # v2 schema; empty for v1 results
         "difficulty",
         "pass",                       # ✓ / ✗ for quick visual scan
         "predicted_shot",
@@ -81,10 +82,11 @@ def flatten(results_path: Path, out_path: Path) -> int:
 
             writer.writerow({
                 "id": sid,
+                "failure_modes": ",".join(scen.get("failure_modes", [])),
                 "difficulty": r.get("difficulty", ""),
                 "pass": "✓" if r.get("shot_match") else "✗",
                 "predicted_shot": r.get("predicted_shot", ""),
-                "expected_shot": r.get("expected_shot", ""),
+                "expected_shot": r.get("expected_shot") or r.get("expected_primary") or "",
                 "acceptable_alternatives": ", ".join(expert.get("acceptable_alternatives", [])),
                 "reasoning_coverage": r.get("reasoning_coverage", ""),
                 "mentions_hit": hit,

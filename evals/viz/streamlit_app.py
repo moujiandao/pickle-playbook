@@ -654,6 +654,14 @@ def main() -> None:
     sel_speed = st.sidebar.multiselect("Ball speed", speeds, default=speeds)
     sel_shot = st.sidebar.multiselect("Primary shot", primary_shots, default=primary_shots)
 
+    failure_modes = sorted({m for s in scenarios for m in s.get("failure_modes", [])})
+    sel_modes: list[str] | None = None
+    if failure_modes:
+        sel_modes = st.sidebar.multiselect(
+            "Failure modes", failure_modes, default=failure_modes,
+            help="v2 schema. Scenarios may probe one or more modes (M1-M5).",
+        )
+
     sel_quadrant: list[str] | None = None
     if results:
         quadrants = sorted({(r.get("quadrant") or "no_judge") for r in results["by_id"].values()})
@@ -702,6 +710,10 @@ def main() -> None:
             return False
         if s["expert_answer"]["primary_shot"] not in sel_shot:
             return False
+        if sel_modes is not None:
+            modes = s.get("failure_modes", [])
+            if not modes or not any(m in sel_modes for m in modes):
+                return False
         if results is not None:
             r = results["by_id"].get(s["id"])
             q = (r.get("quadrant") if r else None) or "no_judge"
