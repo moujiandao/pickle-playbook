@@ -178,3 +178,140 @@ def expected_families(primary: str, alternatives: list[str]) -> tuple[set[str], 
             families.add(fam)
 
     return families, unmapped
+
+
+# ── M2: advanced shot detection ────────────────────────────────────────────
+
+# Shots that require 4.0+ skill to execute reliably. A sub-4.0 player choosing
+# any of these is M2 fail. Match logic mirrors classify(): exact normalized
+# canonical, then keyword fallback for free-form text.
+_ADVANCED_RAW: frozenset[str] = frozenset({
+    # specialty family — Ernes, ATPs, behind-the-back
+    "around_the_post", "inside_out_behind_opponent",
+    # offensive-finesse volleys
+    "drop_volley", "roll_volley", "roll_volley_body", "cut_angle_volley",
+    "backhand_volley_attack",
+    # topspin / spin variants
+    "topspin_return", "deep_topspin_return",
+    # roll family is fundamentally a 4.0+ shape
+    "roll", "backhand_roll",
+    # backhand reset cross-court is reliable above 4.0; below it tends to float
+    "backhand_reset_crosscourt",
+})
+
+# Apply _norm() so lookup can use the same normalization as classify().
+ADVANCED_CANONICAL: frozenset[str] = frozenset(_norm(s) for s in _ADVANCED_RAW)
+
+_ADVANCED_KEYWORDS = [
+    re.compile(r"\bern[ey]?s?\b", re.IGNORECASE),             # erne / erney / ernes
+    re.compile(r"around[\s_-]*the[\s_-]*post|\batp\b", re.IGNORECASE),
+    re.compile(r"\btopspin\w*", re.IGNORECASE),
+    re.compile(r"roll[\s_-]*volley", re.IGNORECASE),
+    re.compile(r"drop[\s_-]*volley", re.IGNORECASE),
+    re.compile(r"cut[\s_-]*angle", re.IGNORECASE),
+    re.compile(r"inside[\s_-]*out", re.IGNORECASE),
+]
+
+
+def is_advanced_shot(shot_name: str | None) -> bool:
+    """Return True if `shot_name` requires 4.0+ skill to execute reliably.
+
+    Used for M2 (skill-level overreach) deterministic check: if the player is
+    sub-4.0 and the recommendation is_advanced_shot → fail M2.
+    """
+    if not shot_name or not shot_name.strip():
+        return False
+    if _norm(shot_name) in ADVANCED_CANONICAL:
+        return True
+    return any(p.search(shot_name) for p in _ADVANCED_KEYWORDS)
+
+
+# ── M5: tactical mode (offense / defense / neutral) ───────────────────────
+
+# Map shot families → posture. drop and dink are neutral/setup; the deterministic
+# rule errs toward neutral when a family supports multiple intents (e.g. drive
+# can be a third-shot setup or an attack — caller can't tell from the family
+# name alone, so we use the dominant case).
+_FAMILY_POSTURE: dict[str, str] = {
+    "drop": "neutral",
+    "drive": "offensive",
+    "reset": "defensive",
+    "block": "defensive",
+    "dink": "neutral",
+    "speedup": "offensive",
+    "attack_volley": "offensive",
+    "roll": "offensive",
+    "lob": "defensive",
+    "overhead": "offensive",
+    "serve_return": "neutral",
+    "specialty": "offensive",
+}
+
+
+def shot_posture(shot_name: str | None) -> str | None:
+    """Classify a shot's tactical posture: 'offensive' | 'defensive' | 'neutral'.
+
+    Returns None when the shot doesn't classify (unmapped family). Built on
+    top of classify() so anything classify() handles, this handles too.
+    """
+    fam = classify(shot_name)
+    if fam is None:
+        return None
+    return _FAMILY_POSTURE.get(fam)
+
+
+# Decision table for expected tactical mode.
+# Keyed by (me_zone, ball_height, ball_speed). me_zone is parsed from
+# state.me_position (e.g. 'right_baseline' → 'baseline'). Speed is collapsed
+# when the cell doesn't depend on it ('any' wildcard handled in lookup).
+_MODE_TABLE: dict[tuple[str, str, str], str] = {
+    # kitchen
+    ("kitchen", "high", "any"):  "offensive",
+    ("kitchen", "mid",  "slow"): "offensive",
+    ("kitchen", "mid",  "fast"): "neutral",
+    ("kitchen", "low",  "any"):  "neutral",
+    # transition
+    ("transition", "high", "any"):  "offensive",
+    ("transition", "mid",  "any"):  "neutral",
+    ("transition", "low",  "fast"): "defensive",
+    ("transition", "low",  "slow"): "neutral",
+    # baseline (third-shot territory — always setup, dominantly neutral)
+    ("baseline", "any", "any"): "neutral",
+}
+
+
+def expected_tactical_mode(state: dict) -> str | None:
+    """Compute expected tactical mode from game state.
+
+    Inputs read: state['me_position'], state['ball_height'], state['ball_speed'].
+    Returns None if state is malformed or zone/height/speed are unrecognized.
+    """
+    me = state.get("me_position", "")
+    height = state.get("ball_height")
+    speed = state.get("ball_speed")
+    if "_" not in me or height is None or speed is None:
+        return None
+    zone = me.rsplit("_", 1)[-1]
+    if zone not in {"kitchen", "transition", "baseline"}:
+        return None
+
+    # Try most specific match first, then progressively wildcard speed/height.
+    for h, s in ((height, speed), (height, "any"), ("any", speed), ("any", "any")):
+        mode = _MODE_TABLE.get((zone, h, s))
+        if mode is not None:
+            return mode
+    return None
+
+
+def expected_postures(primary: str, alternatives: list[str]) -> set[str]:
+    """Posture set for all acceptable shots in a scenario.
+
+    A model prediction passes M5 if its posture is in this set. Lets a scenario
+    with primary=drop (neutral) and alt=drive (offensive) accept either posture.
+    """
+    postures: set[str] = set()
+    for label in [primary, *alternatives]:
+        p = shot_posture(label)
+        if p is not None:
+            postures.add(p)
+    return postures

@@ -18,7 +18,15 @@ _HERE = Path(__file__).resolve().parent
 if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
 
-from shot_taxonomy import FAMILY_NAMES, classify, expected_families
+from shot_taxonomy import (
+    FAMILY_NAMES,
+    classify,
+    expected_families,
+    expected_postures,
+    expected_tactical_mode,
+    is_advanced_shot,
+    shot_posture,
+)
 
 
 class TestFamilyNames:
@@ -171,3 +179,146 @@ class TestExpectedFamilies:
         fams, unmapped = expected_families("xyzzy", ["foobar"])
         assert fams == set()
         assert unmapped == ["xyzzy", "foobar"]
+
+
+# ── M2: advanced shot detection ────────────────────────────────────────────
+
+class TestIsAdvancedShot:
+    def test_canonical_advanced(self):
+        assert is_advanced_shot("around_the_post") is True
+        assert is_advanced_shot("inside_out_behind_opponent") is True
+        assert is_advanced_shot("drop_volley") is True
+        assert is_advanced_shot("roll_volley") is True
+        assert is_advanced_shot("cut_angle_volley") is True
+        assert is_advanced_shot("topspin_return") is True
+        assert is_advanced_shot("backhand_roll") is True
+
+    def test_freeform_erne(self):
+        assert is_advanced_shot("Erne") is True
+        assert is_advanced_shot("Ernes to the line") is True
+        assert is_advanced_shot("backhand erne") is True
+
+    def test_freeform_atp(self):
+        assert is_advanced_shot("Around-the-Post") is True
+        assert is_advanced_shot("ATP winner") is True
+
+    def test_freeform_topspin(self):
+        assert is_advanced_shot("Topspin Roll Volley") is True
+        assert is_advanced_shot("topspin dink") is True
+
+    def test_basic_shots_not_advanced(self):
+        assert is_advanced_shot("third_shot_drop") is False
+        assert is_advanced_shot("dink") is False
+        assert is_advanced_shot("crosscourt_dink") is False
+        assert is_advanced_shot("reset") is False
+        assert is_advanced_shot("drive") is False
+        assert is_advanced_shot("put_away_volley") is False  # advanced ≠ aggressive
+        assert is_advanced_shot("block") is False
+
+    def test_empty_or_none_is_not_advanced(self):
+        assert is_advanced_shot(None) is False
+        assert is_advanced_shot("") is False
+        assert is_advanced_shot("   ") is False
+
+
+# ── M5: shot posture ───────────────────────────────────────────────────────
+
+class TestShotPosture:
+    def test_offensive_families(self):
+        assert shot_posture("drive") == "offensive"
+        assert shot_posture("speedup") == "offensive"
+        assert shot_posture("put_away_volley") == "offensive"
+        assert shot_posture("overhead") == "offensive"
+        assert shot_posture("around_the_post") == "offensive"
+
+    def test_defensive_families(self):
+        assert shot_posture("reset") == "defensive"
+        assert shot_posture("block") == "defensive"
+        assert shot_posture("lob") == "defensive"
+
+    def test_neutral_families(self):
+        assert shot_posture("third_shot_drop") == "neutral"
+        assert shot_posture("dink") == "neutral"
+        assert shot_posture("crosscourt_dink") == "neutral"
+        assert shot_posture("serve_deep") == "neutral"
+
+    def test_unmappable_returns_none(self):
+        assert shot_posture("xyzzy") is None
+        assert shot_posture(None) is None
+        assert shot_posture("") is None
+
+
+# ── M5: expected tactical mode from state ─────────────────────────────────
+
+def _state(**overrides) -> dict:
+    base = {
+        "skill_level": 4.0,
+        "me_position": "right_kitchen",
+        "ball_height": "low",
+        "ball_speed": "slow",
+    }
+    base.update(overrides)
+    return base
+
+
+class TestExpectedTacticalMode:
+    def test_kitchen_high_ball_is_offensive(self):
+        assert expected_tactical_mode(_state(me_position="right_kitchen", ball_height="high", ball_speed="slow")) == "offensive"
+        assert expected_tactical_mode(_state(me_position="left_kitchen", ball_height="high", ball_speed="fast")) == "offensive"
+
+    def test_kitchen_mid_slow_is_offensive(self):
+        assert expected_tactical_mode(_state(me_position="right_kitchen", ball_height="mid", ball_speed="slow")) == "offensive"
+
+    def test_kitchen_mid_fast_is_neutral(self):
+        # Fast mid ball at kitchen — controlled volley territory, not attack
+        assert expected_tactical_mode(_state(me_position="right_kitchen", ball_height="mid", ball_speed="fast")) == "neutral"
+
+    def test_kitchen_low_is_neutral(self):
+        # Dink rally
+        assert expected_tactical_mode(_state(me_position="right_kitchen", ball_height="low", ball_speed="slow")) == "neutral"
+        assert expected_tactical_mode(_state(me_position="right_kitchen", ball_height="low", ball_speed="fast")) == "neutral"
+
+    def test_transition_low_fast_is_defensive(self):
+        # Classic reset territory
+        assert expected_tactical_mode(_state(me_position="right_transition", ball_height="low", ball_speed="fast")) == "defensive"
+
+    def test_transition_low_slow_is_neutral(self):
+        assert expected_tactical_mode(_state(me_position="left_transition", ball_height="low", ball_speed="slow")) == "neutral"
+
+    def test_transition_high_is_offensive(self):
+        assert expected_tactical_mode(_state(me_position="right_transition", ball_height="high", ball_speed="slow")) == "offensive"
+
+    def test_baseline_always_neutral(self):
+        # Third-shot territory — setup, neither offense nor defense by default
+        assert expected_tactical_mode(_state(me_position="right_baseline", ball_height="mid", ball_speed="slow")) == "neutral"
+        assert expected_tactical_mode(_state(me_position="left_baseline", ball_height="high", ball_speed="fast")) == "neutral"
+        assert expected_tactical_mode(_state(me_position="right_baseline", ball_height="low", ball_speed="slow")) == "neutral"
+
+    def test_malformed_state_returns_none(self):
+        assert expected_tactical_mode({}) is None
+        assert expected_tactical_mode({"me_position": "garbage"}) is None
+        assert expected_tactical_mode(_state(ball_height="bogus")) is None
+
+
+# ── expected_postures aggregates primary + alternatives ───────────────────
+
+class TestExpectedPostures:
+    def test_single_neutral(self):
+        assert expected_postures("dink", []) == {"neutral"}
+
+    def test_drop_with_drive_alternative(self):
+        # v2_001 case: primary=neutral, alt=offensive — both acceptable
+        assert expected_postures("third_shot_drop", ["third_shot_drive"]) == {"neutral", "offensive"}
+
+    def test_putaway_with_alternatives(self):
+        # All offensive — only offensive should pass M5
+        assert expected_postures("put_away_volley", ["attack_volley", "overhead"]) == {"offensive"}
+
+    def test_reset_with_block_alt(self):
+        # v2_003 case: reset (defensive) with block (defensive), drop_volley (offensive)
+        # drop_volley is attack_volley family → offensive. So set includes both.
+        assert expected_postures("reset", ["block", "drop_volley"]) == {"defensive", "offensive"}
+
+    def test_unmapped_label_skipped(self):
+        # Bad label doesn't break the set; just doesn't contribute
+        assert expected_postures("dink", ["xyzzy"]) == {"neutral"}

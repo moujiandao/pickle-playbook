@@ -38,7 +38,18 @@ except ImportError:
     def tqdm(iterable, **kwargs):  # type: ignore[misc]
         return iterable
 
-from shot_taxonomy import classify, expected_families  # noqa: E402
+from shot_taxonomy import (  # noqa: E402
+    classify,
+    expected_families,
+    expected_postures,
+    expected_tactical_mode,
+    is_advanced_shot,
+    shot_posture,
+)
+
+# Skill levels at or above this threshold are considered capable of advanced
+# shots; below it, an advanced shot recommendation is M2 fail.
+_ADVANCED_SHOT_THRESHOLD = 4.0
 
 # ── court layout constants ─────────────────────────────────────────────────
 _ZONE_Y_MY = {"kitchen": 29.0, "transition": 35.0, "baseline": 40.0}
@@ -106,27 +117,55 @@ def eval_state_to_game_state(state: dict):
 def score_scenario(scenario: dict, recs: list) -> dict:
     """Score recs against a golden scenario.
 
-    shot_match:          predicted family ∈ expected family set (deterministic).
-    reasoning_coverage:  diagnostic only (fraction of must_mention hits); not a gate.
+    Deterministic checks emitted (one per failure mode that has a det. layer):
+      shot_match         — M1: predicted family ∈ expected family set.
+      m2_advanced_shot_violation
+                         — M2: True if scenario.skill_level < 4.0 AND the
+                           predicted shot is on the advanced-shot list.
+      m5_tactical_mode_match
+                         — M5: predicted shot's posture ∈ expected_postures
+                           (postures of all acceptable shots for this state).
+      reasoning_coverage — diagnostic only (must_mention keyword hit rate).
+
+    M3 / M4 require the LLM judge and are added by the judge stage downstream.
     """
     expert = scenario["expert_answer"]
     primary = expert["primary_shot"]
     alternatives = expert.get("acceptable_alternatives", [])
     must_mention = expert.get("reasoning_must_mention", [])
+    state = scenario.get("state", {})
+    skill_level = float(state.get("skill_level", 0.0)) if state.get("skill_level") is not None else 0.0
 
     expected_fams, unmapped_expected = expected_families(primary, alternatives)
+    exp_postures = expected_postures(primary, alternatives)
+    exp_mode = expected_tactical_mode(state)
 
     predicted_shot: str | None = None
     predicted_family: str | None = None
+    predicted_posture: str | None = None
     if recs:
         first_name = recs[0].name if hasattr(recs[0], "name") else recs[0].get("name", "")
         predicted_shot = first_name
         predicted_family = classify(first_name)
+        predicted_posture = shot_posture(first_name)
 
     shot_match = (
         predicted_family is not None
         and predicted_family in expected_fams
     )
+
+    # M2 — advanced shot recommended to a sub-4.0 player
+    m2_violation = (
+        predicted_shot is not None
+        and skill_level < _ADVANCED_SHOT_THRESHOLD
+        and is_advanced_shot(predicted_shot)
+    )
+
+    # M5 — tactical mode (posture) must match one of the acceptable postures
+    m5_mode_match = (
+        predicted_posture is not None
+        and predicted_posture in exp_postures
+    ) if exp_postures else None
 
     all_why = " ".join(
         (r.why if hasattr(r, "why") else r.get("why", "")) for r in recs
@@ -137,12 +176,18 @@ def score_scenario(scenario: dict, recs: list) -> dict:
     return {
         "scenario_id": scenario["id"],
         "difficulty": scenario.get("difficulty", "unknown"),
+        "failure_modes": scenario.get("failure_modes", []),
         "shot_match": shot_match,
         "predicted_shot": predicted_shot,
         "predicted_family": predicted_family,
+        "predicted_posture": predicted_posture,
         "expected_primary": primary,
         "expected_families": sorted(expected_fams),
+        "expected_postures": sorted(exp_postures),
+        "expected_tactical_mode": exp_mode,
         "unmapped_expected_labels": unmapped_expected,
+        "m2_advanced_shot_violation": m2_violation,
+        "m5_tactical_mode_match": m5_mode_match,
         "reasoning_coverage": round(reasoning_coverage, 3),
         "mentions": mentions,
     }
@@ -168,7 +213,11 @@ def run(
     use_judge: bool = False,
     judge_model: str = "sonnet",
 ) -> dict:
+    from app.observability import flush as flush_traces
+    from app.observability import init_observability, trace_scenario
     from app.services.strategy import recommend
+
+    init_observability(service="evals")
 
     scenarios: list[dict] = []
     with open(scenarios_path) as f:
@@ -196,39 +245,49 @@ def run(
     errors: list[dict] = []
 
     for scenario in tqdm(scenarios, desc="Evaluating"):
-        try:
-            game_state = eval_state_to_game_state(scenario["state"])
-            recs, warning = recommend(game_state)
-            result = score_scenario(scenario, recs)
-            if warning:
-                result["warning"] = warning
+        scenario_id = scenario.get("id", "?")
+        failure_modes = ",".join(scenario.get("failure_modes", [])) or None
+        difficulty = scenario.get("difficulty")
+        with trace_scenario(
+            scenario_id,
+            service="evals",
+            difficulty=difficulty,
+            failure_modes=failure_modes,
+            judge_model=judge_model_id if use_judge else None,
+        ):
+            try:
+                game_state = eval_state_to_game_state(scenario["state"])
+                recs, warning = recommend(game_state)
+                result = score_scenario(scenario, recs)
+                if warning:
+                    result["warning"] = warning
 
-            if use_judge and judge_model_id is not None:
-                from llm_judge import score_response  # noqa: PLC0415
-                recs_dicts = [
-                    r.model_dump() if hasattr(r, "model_dump") else dict(r) for r in recs
-                ]
-                skill_level = scenario["state"].get("skill_level", "unknown")
-                jr = score_response(
-                    recs_dicts,
-                    scenario["state"],          # blind: state only
-                    skill_level,
-                    model=judge_model_id,
-                )
-                result["judge"] = {
-                    "strategic_soundness": jr.strategic_soundness,
-                    "reasoning_quality": jr.reasoning_quality,
-                    "specificity": jr.specificity,
-                    "skill_level_feasible": jr.skill_level_feasible,
-                    "notes": jr.notes,
-                    "passed": jr.passed,
-                    "model": jr.model,
-                }
-                result["quadrant"] = _quadrant(result["shot_match"], jr.passed)
-                result["overall_pass"] = bool(result["shot_match"] and jr.passed)
-            results.append(result)
-        except Exception as exc:
-            errors.append({"scenario_id": scenario.get("id", "?"), "error": str(exc)})
+                if use_judge and judge_model_id is not None:
+                    from llm_judge import score_response  # noqa: PLC0415
+                    recs_dicts = [
+                        r.model_dump() if hasattr(r, "model_dump") else dict(r) for r in recs
+                    ]
+                    skill_level = scenario["state"].get("skill_level", "unknown")
+                    jr = score_response(
+                        recs_dicts,
+                        scenario["state"],          # blind: state only
+                        skill_level,
+                        model=judge_model_id,
+                    )
+                    result["judge"] = {
+                        "strategic_soundness": jr.strategic_soundness,
+                        "reasoning_quality": jr.reasoning_quality,
+                        "specificity": jr.specificity,
+                        "skill_level_feasible": jr.skill_level_feasible,
+                        "notes": jr.notes,
+                        "passed": jr.passed,
+                        "model": jr.model,
+                    }
+                    result["quadrant"] = _quadrant(result["shot_match"], jr.passed)
+                    result["overall_pass"] = bool(result["shot_match"] and jr.passed)
+                results.append(result)
+            except Exception as exc:
+                errors.append({"scenario_id": scenario_id, "error": str(exc)})
 
     # ── aggregate ──────────────────────────────────────────────────────────
     n = len(results)
@@ -294,6 +353,8 @@ def run(
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     Path(output_path).write_text(json.dumps(output, indent=2))
     print(json.dumps(summary, indent=2))
+
+    flush_traces()
     return output
 
 

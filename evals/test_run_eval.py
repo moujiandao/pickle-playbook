@@ -29,10 +29,11 @@ class _Rec:
         self.why = why
 
 
-def _scenario(primary: str, alternatives=None, must_mention=None, sid="t001"):
+def _scenario(primary: str, alternatives=None, must_mention=None, sid="t001", state=None):
     return {
         "id": sid,
         "difficulty": "obvious",
+        "state": state or _base_state(),
         "expert_answer": {
             "primary_shot": primary,
             "acceptable_alternatives": alternatives or [],
@@ -241,3 +242,123 @@ class TestEvalStateToGameState:
         ))
         assert gs.ball.x == 7.5
         assert gs.ball.y == 29.0
+
+
+# ── M2 — advanced shot for sub-4.0 player (deterministic) ─────────────────
+
+class TestM2AdvancedShotViolation:
+    def test_advanced_shot_at_3_5_is_violation(self):
+        # 3.5 player + Erne recommendation = M2 fail
+        recs = [_Rec("Erne to the line")]
+        scen = _scenario(
+            "crosscourt_dink",
+            state=_base_state(skill_level=3.5),
+        )
+        result = score_scenario(scen, recs)
+        assert result["m2_advanced_shot_violation"] is True
+
+    def test_advanced_shot_at_4_0_is_not_violation(self):
+        # 4.0 player + Erne = no M2 violation (player is capable)
+        recs = [_Rec("Erne winner")]
+        scen = _scenario(
+            "crosscourt_dink",
+            state=_base_state(skill_level=4.0),
+        )
+        result = score_scenario(scen, recs)
+        assert result["m2_advanced_shot_violation"] is False
+
+    def test_basic_shot_at_3_0_is_not_violation(self):
+        recs = [_Rec("Cross-court Dink")]
+        scen = _scenario(
+            "crosscourt_dink",
+            state=_base_state(skill_level=3.0),
+        )
+        result = score_scenario(scen, recs)
+        assert result["m2_advanced_shot_violation"] is False
+
+    def test_topspin_at_3_5_is_violation(self):
+        recs = [_Rec("Topspin Roll Volley")]
+        scen = _scenario("dink", state=_base_state(skill_level=3.5))
+        result = score_scenario(scen, recs)
+        assert result["m2_advanced_shot_violation"] is True
+
+    def test_no_recs_no_violation(self):
+        scen = _scenario("dink", state=_base_state(skill_level=3.0))
+        result = score_scenario(scen, [])
+        assert result["m2_advanced_shot_violation"] is False
+
+
+# ── M5 — tactical mode (posture) match (deterministic) ────────────────────
+
+class TestM5TacticalModeMatch:
+    def test_offensive_predicted_when_offensive_expected(self):
+        # State: high ball at kitchen → offensive expected.
+        # Predicted: put_away_volley → offensive. Match.
+        recs = [_Rec("Put Away Volley")]
+        scen = _scenario(
+            "put_away_volley",
+            state=_base_state(ball_height="high", ball_speed="slow"),
+        )
+        result = score_scenario(scen, recs)
+        assert result["m5_tactical_mode_match"] is True
+        assert result["expected_tactical_mode"] == "offensive"
+        assert result["predicted_posture"] == "offensive"
+
+    def test_defensive_predicted_when_defensive_expected(self):
+        # State: low fast ball at transition → defensive expected.
+        recs = [_Rec("Reset to kitchen")]
+        scen = _scenario(
+            "reset",
+            state=_base_state(
+                me_position="right_transition",
+                ball_height="low", ball_speed="fast",
+            ),
+        )
+        result = score_scenario(scen, recs)
+        assert result["m5_tactical_mode_match"] is True
+        assert result["expected_tactical_mode"] == "defensive"
+
+    def test_offensive_predicted_when_defensive_expected_is_mismatch(self):
+        # State: low fast at transition → defensive. Model picks drive (offensive). Fail.
+        recs = [_Rec("Drive at the body")]
+        scen = _scenario(
+            "reset",
+            state=_base_state(
+                me_position="right_transition",
+                ball_height="low", ball_speed="fast",
+            ),
+        )
+        result = score_scenario(scen, recs)
+        assert result["m5_tactical_mode_match"] is False
+        assert result["predicted_posture"] == "offensive"
+
+    def test_alternatives_widen_acceptable_postures(self):
+        # v2_001 case: primary=drop (neutral), alt=drive (offensive).
+        # Model picks drive — should pass M5 because offensive is in expected_postures.
+        recs = [_Rec("Third-shot drive")]
+        scen = _scenario(
+            "third_shot_drop",
+            alternatives=["third_shot_drive"],
+            state=_base_state(
+                me_position="right_baseline",
+                ball_position={"x": 15.0, "y": 40.0},
+                ball_height="mid", ball_speed="slow",
+            ),
+        )
+        result = score_scenario(scen, recs)
+        assert result["m5_tactical_mode_match"] is True
+        assert "offensive" in result["expected_postures"]
+        assert "neutral" in result["expected_postures"]
+
+    def test_unmappable_predicted_returns_false_match(self):
+        recs = [_Rec("Garbage non-shot")]
+        scen = _scenario("dink", state=_base_state())
+        result = score_scenario(scen, recs)
+        assert result["m5_tactical_mode_match"] is False
+        assert result["predicted_posture"] is None
+
+    def test_no_recs_match_is_false(self):
+        scen = _scenario("dink", state=_base_state())
+        result = score_scenario(scen, [])
+        # No prediction → can't match
+        assert result["m5_tactical_mode_match"] is False
