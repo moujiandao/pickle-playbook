@@ -710,7 +710,10 @@ def main() -> None:
             return False
         if s["expert_answer"]["primary_shot"] not in sel_shot:
             return False
-        if sel_modes is not None:
+        if sel_modes is not None and set(sel_modes) != set(failure_modes):
+            # User has narrowed the mode filter — exclude scenarios outside it.
+            # When all modes are selected (default), pass through scenarios that
+            # lack the failure_modes field (e.g. legacy v1 rows).
             modes = s.get("failure_modes", [])
             if not modes or not any(m in sel_modes for m in modes):
                 return False
