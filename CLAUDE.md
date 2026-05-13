@@ -95,13 +95,12 @@ pickle-playbook/
 - Opponents locked to y <= 22, your team locked to y >= 22
 - "ME" badge follows the mySide selection (left or right)
 
-### 3-Shot Rally Format
-Every recommendation includes exactly 3 shots:
-1. YOUR shot (what to hit)
-2. OPPONENT likely response (based on their actual positions)
-3. YOUR follow-up (or partner's follow-up)
+### Rally Format
+Each recommendation includes a single shot (shot 1 only):
+- YOUR shot — what to hit and its immediate result
 
-Each step has: shot number, who acts, action description, result description.
+Shots 2 (opponent response) and 3 (your follow-up) are intentionally omitted for now.
+They will be re-added once single-shot recommendations are stable.
 
 ### Game State JSON (API Contract)
 ```json
@@ -130,9 +129,7 @@ Each step has: shot number, who acts, action description, result description.
     "name": "Cross-Court Dink",
     "why": "Ball is low in kitchen. Both opponents at kitchen.",
     "rally": [
-      { "shot": 1, "who": "You", "action": "Soft cross-court dink...", "result": "Lands in opponent kitchen..." },
-      { "shot": 2, "who": "Opponent", "action": "OPP L dinks back...", "result": "Returns to your side..." },
-      { "shot": 3, "who": "You", "action": "Attack middle gap...", "result": "Splits defenders..." }
+      { "shot": 1, "who": "You", "action": "Soft cross-court dink...", "result": "Lands in opponent kitchen..." }
     ]
   }
 ]
@@ -167,3 +164,5 @@ Each step has: shot number, who acts, action description, result description.
 - SQLite → Supabase PostgreSQL migration (includes pgvector for embeddings)
 - Frontend deploying to Vercel
 - New feature: human-in-the-loop correction UI
+
+##

@@ -1,11 +1,6 @@
 """Tests for position_describer — coordinate-to-NL translation."""
 
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from position_describer import (
+from situation_describer import (
     describe_player,
     describe_ball,
     describe_situation,

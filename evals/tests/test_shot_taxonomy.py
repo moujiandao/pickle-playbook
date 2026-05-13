@@ -10,14 +10,6 @@ Covers:
 
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-
-# Ensure evals/ is on path
-_HERE = Path(__file__).resolve().parent
-if str(_HERE) not in sys.path:
-    sys.path.insert(0, str(_HERE))
-
 from shot_taxonomy import (
     FAMILY_NAMES,
     classify,

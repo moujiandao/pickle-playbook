@@ -28,7 +28,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 _EVALS_DIR = Path(__file__).resolve().parent
 _BACKEND_DIR = _REPO_ROOT / "backend"
 
-for _p in (_BACKEND_DIR, _EVALS_DIR):
+for _p in (_BACKEND_DIR, _EVALS_DIR, _EVALS_DIR / "lib"):
     if str(_p) not in sys.path:
         sys.path.insert(0, str(_p))
 

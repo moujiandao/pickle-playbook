@@ -5,17 +5,7 @@ _quadrant, and eval_state_to_game_state. The recommend() function is NOT
 called — tests are purely about the scoring layer.
 """
 
-import sys
-from pathlib import Path
-
 import pytest  # noqa: F401
-
-# Ensure evals/ and backend/ are on path before importing run_eval
-_HERE = Path(__file__).resolve().parent
-_REPO = _HERE.parent
-for _p in (_HERE, _REPO / "backend"):
-    if str(_p) not in sys.path:
-        sys.path.insert(0, str(_p))
 
 from run_eval import _quadrant, eval_state_to_game_state, score_scenario
 

@@ -22,20 +22,15 @@ from __future__ import annotations
 
 import json
 import re
-import sys
 from pathlib import Path
 
 import pytest
 
-_HERE = Path(__file__).resolve().parent
-_REPO = _HERE.parent
-if str(_HERE) not in sys.path:
-    sys.path.insert(0, str(_HERE))
-
 from shot_taxonomy import classify
 
-_SCENARIOS_PATH = _HERE / "golden_scenarios.jsonl"
-_FAILURE_MODES_PATH = _HERE / "failure_modes.md"
+_EVALS = Path(__file__).resolve().parents[1]
+_SCENARIOS_PATH = _EVALS / "golden_scenarios.jsonl"
+_FAILURE_MODES_PATH = _EVALS / "failure_modes.md"
 
 _VALID_SKILLS = {3.0, 3.5, 4.0, 4.5, 5.0, 5.5}
 _VALID_SIDES = {"left", "right"}

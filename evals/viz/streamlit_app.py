@@ -213,8 +213,30 @@ def _court_shapes() -> list[dict]:
     ]
 
 
+def _add_coordinate_hover(fig: go.Figure) -> None:
+    """Invisible grid of points so hovering anywhere on the court shows x/y in feet."""
+    xs, ys = [], []
+    x = 0.0
+    while x <= _COURT_W:
+        y = 0.0
+        while y <= _COURT_L:
+            xs.append(round(x, 1))
+            ys.append(round(y, 1))
+            y += 0.5
+        x += 0.5
+    fig.add_trace(go.Scatter(
+        x=xs, y=ys,
+        mode="markers",
+        marker=dict(size=12, color="rgba(0,0,0,0)"),
+        hovertemplate="x: %{x:.1f} ft<br>y: %{y:.1f} ft<extra></extra>",
+        showlegend=False,
+        name="",
+    ))
+
+
 def _base_fig(height: int = 700) -> go.Figure:
     fig = go.Figure()
+    _add_coordinate_hover(fig)
     fig.update_layout(
         xaxis=dict(range=[-1, _COURT_W + 1], showgrid=False, zeroline=False,
                    showticklabels=False, scaleanchor="y", scaleratio=1),

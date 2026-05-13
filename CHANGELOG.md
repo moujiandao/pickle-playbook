@@ -1,5 +1,42 @@
 # Changelog
 
+## [2026-05-10]
+
+### Changed
+- Remove shots 2 and 3 (opponent response and follow-up) from all recommendations — each suggestion now shows only shot 1 (your shot). Affects `prompt_builder.py`, all heuristic rallies in `strategy.py`, CLAUDE.md docs, and the Response JSON contract. To be re-added in a future sprint.
+
+## [2026-04-29] (eval cleanup)
+
+### Removed
+- `evals/check_regression.py` — stub file with `raise NotImplementedError` in every function. Will be re-created when the regression gate is actually wired into CI; the sprint plan still references it as future work
+- README mentions of `check_regression.py` in `evals/README.md` (file table row, baseline-check usage block, and exit-code note)
+
+## [2026-04-28] (Langfuse observability)
+
+### Added
+- `backend/app/observability.py` — single-process bootstrap that initializes the Langfuse client and attaches the OpenTelemetry Anthropic instrumentor, plus a `trace_scenario(...)` context manager that wraps a unit of work in a parent Langfuse observation so nested Anthropic calls become child generations
+- Lifespan call to `init_observability("backend")` in `backend/app/main.py` so every `/api/analyze` Anthropic call is auto-traced
+- `init_observability("evals")` + per-scenario `trace_scenario(...)` wrap in `evals/run_eval.py`, with a final `flush()` so each scenario shows up as one Langfuse trace with `scenario_id`, `failure_modes`, `difficulty`, and `judge_model` in metadata
+- `langfuse>=4.5.0` and `opentelemetry-instrumentation-anthropic>=0.60.0` in `backend/requirements.txt`
+
+### Notes
+- Helper is idempotent and no-ops cleanly when `LANGFUSE_PUBLIC_KEY` / `LANGFUSE_SECRET_KEY` are unset, so tests and offline dev keep working
+- Required env vars (in `backend/.env`): `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_HOST` (Langfuse SDK reads `LANGFUSE_HOST`, not `LANGFUSE_BASE_URL`)
+
+## [2026-04-28] (eval triage in visualizer)
+
+### Added
+- Triage panel in `evals/viz/streamlit_app.py` Detail tab: per-scenario annotations (`judge_verdict`, `scenario_action`, `system_signal`, `priority`, freeform `note`)
+- Sidecar notes persistence at `evals/results/{stem}.notes.json`, scoped per results file
+- Sidebar triage filters (only-annotated, by action, by priority) and "Download triage report (.md)" button that emits a checklist grouped by `scenario_action`
+- "Bulk triage" tab with `st.data_editor` table: spreadsheet-style inline editing of triage fields across many scenarios, with Save / Discard controls and dirty-row diffing
+
+## [2026-04-23] (eval visualizer)
+
+### Added
+- `evals/viz/streamlit_app.py` — Streamlit court visualizer with Overview + Detail tabs; plots golden-scenario ball positions on a 2D court, optionally joins an eval results JSON to color-code by quadrant
+- `evals/viz/requirements.txt` — streamlit + plotly pins
+
 ## [2026-04-20] (skill level support)
 
 ### Added
