@@ -59,17 +59,18 @@ _RECS_SCHEMA = {
     "additionalProperties": False,
 }
 
+# Sonnet 4.6 at medium effort is the speed/quality sweet spot for an
+# interactive UI. Override via ANTHROPIC_MODEL env var to use Opus for harder
+# scenarios (and pair with ANTHROPIC_EFFORT="high" for more reasoning depth).
+_DEFAULT_MODEL = "claude-sonnet-4-6"
+_DEFAULT_EFFORT = "medium"
+
 # The rag/ package uses absolute imports between its own modules
 # (e.g. `from embeddings import embed`), so we put its directory on sys.path
 # rather than importing it as a package.
-_env_rag_dir = os.environ.get("PICKLE_RAG_DIR")
-_RAG_DIR = (
-    Path(_env_rag_dir).expanduser().resolve()
-    if _env_rag_dir
-    else Path(__file__).resolve().parents[3] / "rag"
-)
-if _RAG_DIR.is_dir() and str(_RAG_DIR) not in sys.path:
-    sys.path.insert(0, str(_RAG_DIR))
+_EVALS_LIB_DIR = Path(__file__).resolve().parents[3] / "evals" / "lib"
+if _EVALS_LIB_DIR.is_dir() and str(_EVALS_LIB_DIR) not in sys.path:
+    sys.path.insert(0, str(_EVALS_LIB_DIR))
 
 
 def recommend(state: GameState) -> tuple[list[ShotRecommendation], str | None]:
@@ -81,36 +82,53 @@ def recommend(state: GameState) -> tuple[list[ShotRecommendation], str | None]:
     """
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
-        return (_heuristic_recommend(state), None)
+        return (
+            _heuristic_recommend(state),
+            "ANTHROPIC_API_KEY not set; using deterministic heuristic.",
+        )
 
     anthropic_mod = _try_import_anthropic()
-    retrieve_fn, build_prompt_fn = _try_import_rag()
-    if anthropic_mod is None or retrieve_fn is None or build_prompt_fn is None:
-        return (_heuristic_recommend(state), None)
+    build_prompt_fn = _try_import_prompt_builder()
+    if anthropic_mod is None:
+        return (
+            _heuristic_recommend(state),
+            "anthropic SDK not installed; using deterministic heuristic.",
+        )
+    if build_prompt_fn is None:
+        return (
+            _heuristic_recommend(state),
+            "prompt_builder not importable from evals/lib; using deterministic heuristic.",
+        )
 
     try:
         state_dict = state.model_dump()
-        fallback_used = False
-        try:
-            result = retrieve_fn(state_dict, k=5, level=state_dict.get("skill_level"))
-            if isinstance(result, tuple):
-                chunks, fallback_used = result
-            else:
-                chunks, fallback_used = result, False
-        except Exception as exc:
-            logger.warning("RAG retrieval failed, continuing with no context: %s", exc)
-            chunks = []
+        chunks: list = []
 
         prompt = build_prompt_fn(state_dict, chunks, level=state_dict.get("skill_level"))
         client = anthropic_mod.Anthropic(api_key=api_key)
-        model = os.environ.get("ANTHROPIC_MODEL", "claude-opus-4-6")
+        model = os.environ.get("ANTHROPIC_MODEL", _DEFAULT_MODEL)
 
+        # Cache the system prompt — it's identical across requests, so the
+        # second + requests pay ~10% of the input price on the shared prefix.
+        system_blocks = [
+            {
+                "type": "text",
+                "text": prompt["system"],
+                "cache_control": {"type": "ephemeral"},
+            }
+        ]
+
+        effort = os.environ.get("ANTHROPIC_EFFORT", _DEFAULT_EFFORT)
         message = client.messages.create(
             model=model,
-            max_tokens=4096,
-            system=prompt["system"],
+            max_tokens=8192,
+            thinking={"type": "adaptive"},
+            output_config={
+                "format": {"type": "json_schema", "schema": _RECS_SCHEMA},
+                "effort": effort,
+            },
+            system=system_blocks,
             messages=[{"role": "user", "content": prompt["user"]}],
-            output_config={"format": {"type": "json_schema", "schema": _RECS_SCHEMA}},
         )
         text = "".join(
             block.text
@@ -118,25 +136,20 @@ def recommend(state: GameState) -> tuple[list[ShotRecommendation], str | None]:
             if getattr(block, "type", "") == "text"
         )
         recs = _parse_recommendations(text)
-        warning = (
-            f"No {state.skill_level}-level content available yet. Using general advice."
-            if fallback_used
-            else None
-        )
-        return (recs, warning)
+        return (recs, None)
     except Exception as exc:
         logger.exception("Claude pipeline failed, falling back to heuristic: %s", exc)
-        return (_heuristic_recommend(state), None)
+        warning = f"Claude pipeline failed; using heuristic fallback ({type(exc).__name__}: {exc})"
+        return (_heuristic_recommend(state), warning)
 
 
-def _try_import_rag():
+def _try_import_prompt_builder():
     try:
-        from retrieval import retrieve  # type: ignore
         from prompt_builder import build_prompt  # type: ignore
-        return retrieve, build_prompt
+        return build_prompt
     except Exception as exc:
-        logger.warning("RAG modules unavailable: %s", exc)
-        return None, None
+        logger.warning("prompt_builder unavailable: %s", exc)
+        return None
 
 
 def _try_import_anthropic():
@@ -212,16 +225,6 @@ def _heuristic_recommend(state: GameState) -> list[ShotRecommendation]:
                         action=f"Soft cross-court dink to the {cross_target} side of their kitchen.",
                         result="Lands just over the net, forcing a stretched reply.",
                     ),
-                    RallyStep(
-                        shot=2, who="Opponent",
-                        action=f"Opponent on the {cross_target} dinks back, likely to your middle.",
-                        result="Ball pops up slightly as they reach wide.",
-                    ),
-                    RallyStep(
-                        shot=3, who=partner_label,
-                        action="Partner steps in and redirects the dink to the open middle seam.",
-                        result="Splits the defenders and forces a defensive reset.",
-                    ),
                 ],
             )
         )
@@ -232,8 +235,6 @@ def _heuristic_recommend(state: GameState) -> list[ShotRecommendation]:
                     why=f"Opponents are spread ({gap:.0f}ft apart). A dink up the middle creates confusion over who takes it.",
                     rally=[
                         RallyStep(shot=1, who=me_label, action="Controlled dink into the middle of their kitchen.", result="Lands between both opponents, causing hesitation."),
-                        RallyStep(shot=2, who="Opponent", action="One opponent reaches across and pops the ball up.", result="Weak reply floats above net height."),
-                        RallyStep(shot=3, who=me_label, action="Step in and put the ball away with a controlled roll.", result="Point won on the attack."),
                     ],
                 )
             )
@@ -243,8 +244,6 @@ def _heuristic_recommend(state: GameState) -> list[ShotRecommendation]:
                 why="If the angle is tight, a soft reset into the kitchen keeps you in the point without overcommitting.",
                 rally=[
                     RallyStep(shot=1, who=me_label, action="Cushioned reset into the center of their kitchen.", result="Neutralizes pace, buys time to reset your feet."),
-                    RallyStep(shot=2, who="Opponent", action="Opponent dinks back to continue the exchange.", result="Neutral kitchen rally."),
-                    RallyStep(shot=3, who=partner_label, action="Partner takes over the dink battle from a balanced stance.", result="Maintains neutral rally position."),
                 ],
             )
         )
@@ -257,8 +256,6 @@ def _heuristic_recommend(state: GameState) -> list[ShotRecommendation]:
                 why=f"Ball is at {b.height} height in the kitchen ({ball_where}). That's attackable before it drops.",
                 rally=[
                     RallyStep(shot=1, who=me_label, action="Short backswing speed-up at the opponent's hip.", result="Forces a reactive, high reply."),
-                    RallyStep(shot=2, who="Opponent", action="Opponent blocks upward, ball floats.", result="Ball sits up in the kitchen zone."),
-                    RallyStep(shot=3, who=partner_label, action="Partner crashes in and puts the floater away.", result="Point ends on the put-away."),
                 ],
             )
         )
@@ -268,8 +265,6 @@ def _heuristic_recommend(state: GameState) -> list[ShotRecommendation]:
                 why="Rolling topspin keeps the ball low over the net while still carrying bite.",
                 rally=[
                     RallyStep(shot=1, who=me_label, action="Low-to-high topspin roll aimed at the far shoulder.", result="Dips fast into the kitchen, hard to read."),
-                    RallyStep(shot=2, who="Opponent", action="Opponent pops the roll up off the paddle face.", result="Short, floaty return."),
-                    RallyStep(shot=3, who=me_label, action="Finish overhead into the open court.", result="Unanswered winner."),
                 ],
             )
         )
@@ -282,8 +277,6 @@ def _heuristic_recommend(state: GameState) -> list[ShotRecommendation]:
                 why=f"Ball is in the transition zone ({ball_where}). A drop buys time to get to the kitchen.",
                 rally=[
                     RallyStep(shot=1, who=me_label, action="Soft third-shot drop landing in the middle of their kitchen.", result="Forces them to hit up; you advance."),
-                    RallyStep(shot=2, who="Opponent", action="Opponent dinks back crosscourt.", result="Neutral kitchen exchange begins."),
-                    RallyStep(shot=3, who=partner_label, action="Partner and you reach the kitchen line together.", result="Even kitchen battle established."),
                 ],
             )
         )
@@ -294,8 +287,6 @@ def _heuristic_recommend(state: GameState) -> list[ShotRecommendation]:
                     why="One opponent is still back. Drive at their feet before they establish position.",
                     rally=[
                         RallyStep(shot=1, who=me_label, action="Flat drive at the feet of the deeper opponent.", result="Forces a tough half-volley."),
-                        RallyStep(shot=2, who="Opponent", action="Deep opponent blocks the drive short and high.", result="Ball sits up in the transition zone."),
-                        RallyStep(shot=3, who=partner_label, action="Partner steps in and attacks the floater.", result="Put-away into open court."),
                     ],
                 )
             )
@@ -308,8 +299,6 @@ def _heuristic_recommend(state: GameState) -> list[ShotRecommendation]:
             why=f"Ball is near your baseline ({ball_where}). A controlled drop is the highest-percentage advance.",
             rally=[
                 RallyStep(shot=1, who=me_label, action="Compact third-shot drop to the middle of their kitchen.", result="Gives you time to advance to the transition zone."),
-                RallyStep(shot=2, who="Opponent", action="Opponent dinks the drop back to your partner's side.", result="Neutral kitchen dink begins."),
-                RallyStep(shot=3, who=partner_label, action="Partner resets into the kitchen and holds position.", result="Both teams at the kitchen line."),
             ],
         )
     )
@@ -320,8 +309,6 @@ def _heuristic_recommend(state: GameState) -> list[ShotRecommendation]:
                 why="A fast ball from the baseline can be converted into a heavy topspin drive that dips at their feet.",
                 rally=[
                     RallyStep(shot=1, who=me_label, action="Topspin drive at the weaker opponent's hip.", result="Forces a defensive block."),
-                    RallyStep(shot=2, who="Opponent", action="Opponent blocks the drive short.", result="Ball lands mid-court."),
-                    RallyStep(shot=3, who=me_label, action="Follow the drive in and put away the short block.", result="Aggressive advance to the kitchen."),
                 ],
             )
         )

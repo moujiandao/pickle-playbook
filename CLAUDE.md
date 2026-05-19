@@ -1,5 +1,18 @@
 # Pickle Playbook
 
+## Current initiative: Intelligence Upgrade (6-sprint plan)
+We are transforming this app from a pure LLM recommendation system into a hybrid retrieval + empirical policy system with eval-driven feedback loops.
+
+Key architectural principles for this work:
+- Every recommendation must be logged with full state + output + eventual verdict
+- LLM provides reasoning and candidate shots; empirical data provides confidence scores
+- Scenario cards (state-tagged principles) are the unit of retrieval, not raw transcript chunks
+- Evals gate every change — pass rate must not drop more than 5% on the golden set
+
+Reference SPRINT_PLAN.md for the full plan.
+
+After updating, show me the diff.
+
 ## What This Is
 Interactive pickleball strategy visualizer. Users drag 4 players and a ball
 on a 3D-perspective court, set ball parameters (height, speed, spin), and
@@ -82,13 +95,12 @@ pickle-playbook/
 - Opponents locked to y <= 22, your team locked to y >= 22
 - "ME" badge follows the mySide selection (left or right)
 
-### 3-Shot Rally Format
-Every recommendation includes exactly 3 shots:
-1. YOUR shot (what to hit)
-2. OPPONENT likely response (based on their actual positions)
-3. YOUR follow-up (or partner's follow-up)
+### Rally Format
+Each recommendation includes a single shot (shot 1 only):
+- YOUR shot — what to hit and its immediate result
 
-Each step has: shot number, who acts, action description, result description.
+Shots 2 (opponent response) and 3 (your follow-up) are intentionally omitted for now.
+They will be re-added once single-shot recommendations are stable.
 
 ### Game State JSON (API Contract)
 ```json
@@ -117,9 +129,7 @@ Each step has: shot number, who acts, action description, result description.
     "name": "Cross-Court Dink",
     "why": "Ball is low in kitchen. Both opponents at kitchen.",
     "rally": [
-      { "shot": 1, "who": "You", "action": "Soft cross-court dink...", "result": "Lands in opponent kitchen..." },
-      { "shot": 2, "who": "Opponent", "action": "OPP L dinks back...", "result": "Returns to your side..." },
-      { "shot": 3, "who": "You", "action": "Attack middle gap...", "result": "Splits defenders..." }
+      { "shot": 1, "who": "You", "action": "Soft cross-court dink...", "result": "Lands in opponent kitchen..." }
     ]
   }
 ]
@@ -154,3 +164,5 @@ Each step has: shot number, who acts, action description, result description.
 - SQLite → Supabase PostgreSQL migration (includes pgvector for embeddings)
 - Frontend deploying to Vercel
 - New feature: human-in-the-loop correction UI
+
+##

@@ -1,0 +1,1588 @@
+{
+  "summary": {
+    "total": 48,
+    "errors": 0,
+    "shot_match_rate": 0.479,
+    "avg_reasoning_coverage": 0.563,
+    "by_difficulty": {
+      "obvious": {
+        "total": 10,
+        "shot_matched": 5,
+        "overall_passed": 4,
+        "shot_match_rate": 0.5,
+        "overall_pass_rate": 0.4
+      },
+      "typical": {
+        "total": 19,
+        "shot_matched": 8,
+        "overall_passed": 6,
+        "shot_match_rate": 0.421,
+        "overall_pass_rate": 0.316
+      },
+      "tricky": {
+        "total": 14,
+        "shot_matched": 9,
+        "overall_passed": 9,
+        "shot_match_rate": 0.643,
+        "overall_pass_rate": 0.643
+      },
+      "adversarial": {
+        "total": 5,
+        "shot_matched": 1,
+        "overall_passed": 1,
+        "shot_match_rate": 0.2,
+        "overall_pass_rate": 0.2
+      }
+    },
+    "judge_model": "claude-sonnet-4-6",
+    "judge_pass_rate": 0.917,
+    "overall_pass_rate": 0.417,
+    "failure_breakdown": {
+      "right_shot_good_reasoning": 20,
+      "right_shot_bad_reasoning": 3,
+      "wrong_shot_good_reasoning": 24,
+      "wrong_shot_bad_reasoning": 1
+    },
+    "avg_judge_scores": {
+      "strategic_soundness": 4.08,
+      "reasoning_quality": 4.08,
+      "specificity": 4.04
+    },
+    "skill_level_feasible_rate": 0.96
+  },
+  "results": [
+    {
+      "scenario_id": "gold_001",
+      "difficulty": "obvious",
+      "shot_match": true,
+      "predicted_shot": "Deep Drop Shot to Right Side",
+      "predicted_family": "drop",
+      "expected_primary": "third_shot_drop",
+      "expected_families": [
+        "drive",
+        "drop"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.667,
+      "mentions": {
+        "kitchen": true,
+        "advance": true,
+        "time": false
+      },
+      "warning": "No 3.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 2,
+        "reasoning_quality": 2,
+        "specificity": 2,
+        "skill_level_feasible": false,
+        "notes": "The primary recommendation of a 'deep drop shot to the right side' is contradictory \u2014 a drop shot lands in the kitchen, not deep \u2014 and the system incorrectly states the player is in the transition zone when they are at their own baseline (y=40), making a third-shot drop the correct framing but the reasoning is muddled; the drive to the middle is the most strategically sound option given the baseline position and mid-height ball, but it's listed second rather than primary.",
+        "passed": false,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_bad_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_002",
+      "difficulty": "obvious",
+      "shot_match": false,
+      "predicted_shot": "Speed-Up at the Right Hip of the Left-Side Player",
+      "predicted_family": "speedup",
+      "expected_primary": "put_away_volley",
+      "expected_families": [
+        "attack_volley",
+        "overhead"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.667,
+      "mentions": {
+        "high": true,
+        "attack": true,
+        "finish": false
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three options correctly identify the high slow ball as attackable and offer distinct, situationally grounded attack choices; the hip-targeting and middle-seam rationale show genuine pickleball IQ, though the cross-court roll's feasibility at 4.0 from a non-dominant angle deserves a slight caveat.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_003",
+      "difficulty": "obvious",
+      "shot_match": true,
+      "predicted_shot": "Cross-Court Reset to Kitchen",
+      "predicted_family": "reset",
+      "expected_primary": "reset",
+      "expected_families": [
+        "attack_volley",
+        "block",
+        "reset"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 1.0,
+      "mentions": {
+        "reset": true,
+        "soft": true,
+        "kitchen": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "skill_level_feasible": true,
+        "notes": "All three shots are well-reasoned defensive/reset options appropriate for a low, fast ball in transition with both opponents at the kitchen, with the cross-court reset correctly prioritized as the highest-percentage play, the down-the-line drop as a tactically clever alternative, and the middle reset as a sound pressure-relief option\u2014each justified with situation-specific logic rather than generic advice.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_004",
+      "difficulty": "obvious",
+      "shot_match": true,
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "predicted_family": "dink",
+      "expected_primary": "crosscourt_dink",
+      "expected_families": [
+        "dink"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.667,
+      "mentions": {
+        "crosscourt": false,
+        "low": true,
+        "net": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "skill_level_feasible": true,
+        "notes": "All three shots are strategically sound for a low, slow ball at the kitchen in an all-NVZ rally, with excellent reasoning about net geometry, pattern variation, and middle confusion that is tightly tied to the specific game state.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_005",
+      "difficulty": "obvious",
+      "shot_match": true,
+      "predicted_shot": "Put-Away Drive at the Open Middle",
+      "predicted_family": "attack_volley",
+      "expected_primary": "drive",
+      "expected_families": [
+        "attack_volley",
+        "drive"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 1.0,
+      "mentions": {
+        "high": true,
+        "attack": true,
+        "feet": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "skill_level_feasible": true,
+        "notes": "All three shots are well-reasoned and appropriately tiered by risk/reward for this exact state \u2014 high slow ball at kitchen with both opponents deep is a textbook attack opportunity, and the system correctly identifies the middle drive as primary, the angled roll as a secondary option, and the reset as a conservative fallback, each with situation-specific justification.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_006",
+      "difficulty": "obvious",
+      "shot_match": false,
+      "predicted_shot": "Reset Drop into the Kitchen",
+      "predicted_family": "reset",
+      "expected_primary": "lob",
+      "expected_families": [
+        "drop",
+        "lob"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.667,
+      "mentions": {
+        "lob": false,
+        "reset": true,
+        "time": true
+      },
+      "warning": "No 3.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three shots are contextually appropriate for a low, fast ball at the baseline with both opponents at the kitchen; the reset drop is the safest primary choice, the body shot adds tactical nuance, and the middle drive acknowledges risk honestly, though executing a precise reset drop under a fast low ball is already at the upper edge of 3.5 reliability.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_007",
+      "difficulty": "obvious",
+      "shot_match": false,
+      "predicted_shot": "Deep Drop Shot to the Middle",
+      "predicted_family": "drop",
+      "expected_primary": "deep_return",
+      "expected_families": [
+        "serve_return"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.667,
+      "mentions": {
+        "deep": false,
+        "time": true,
+        "advance": true
+      },
+      "warning": "No 3.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three shots are strategically coherent for this state\u2014drop to exploit both opponents at baseline, body drive for simplicity, crosscourt drop to leverage partner's kitchen position\u2014with reasoning that correctly references ball height/speed, opponent positioning, and partner placement, though the 'deep drop shot' label is slightly contradictory (drops go short, not deep) and the crosscourt drop to the left kitchen is a moderately demanding placement for a 3.5 player.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_008",
+      "difficulty": "obvious",
+      "shot_match": false,
+      "predicted_shot": "Cross-Court Roll to Left-Side Player's Hip",
+      "predicted_family": "roll",
+      "expected_primary": "attack_volley",
+      "expected_families": [
+        "attack_volley"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.0,
+      "mentions": {
+        "popup": false,
+        "volley": false,
+        "feet": false
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three shots are legitimate kitchen-battle tactics for a 4.0 all-at-NVZ scenario with a slow mid-height ball; the hip-targeted roll and middle dink are particularly well-reasoned, though the 'follow-up switch' on the third option adds slight complexity that borders on overcomplication.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_009",
+      "difficulty": "obvious",
+      "shot_match": false,
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "predicted_family": "dink",
+      "expected_primary": "speedup",
+      "expected_families": [
+        "attack_volley",
+        "roll",
+        "speedup"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 1.0,
+      "mentions": {
+        "speed": true,
+        "middle": true,
+        "attack": true
+      },
+      "warning": "No 4.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three shots are contextually appropriate for a four-player kitchen battle with a slow mid-height ball; the cross-court dink and shake-and-bake are well-reasoned with specific targeting logic, though the inside-out dink + crash combo is slightly speculative in its assumption that it creates middle confusion when opponents are already well-positioned.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_010",
+      "difficulty": "obvious",
+      "shot_match": true,
+      "predicted_shot": "Block-Reset Drop into Kitchen",
+      "predicted_family": "reset",
+      "expected_primary": "block_volley",
+      "expected_families": [
+        "attack_volley",
+        "block",
+        "reset"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.667,
+      "mentions": {
+        "block": true,
+        "absorb": false,
+        "kitchen": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 3,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "The three shots span a reasonable range but the block-reset drop is slightly misaligned since both opponents at baseline actually favors attacking or pushing deep rather than gifting them a soft ball they can run down; the counter-attack roll and deep push are stronger choices given the offensive opportunity, and the reasoning correctly identifies opponent positioning and ball characteristics though the reset rationale ('forces them to hit up from baseline') is weak since a drop into their kitchen from baseline distance is easy to attack on the run.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_011",
+      "difficulty": "typical",
+      "shot_match": false,
+      "predicted_shot": "Cross-Court Roll into Middle",
+      "predicted_family": "roll",
+      "expected_primary": "forehand_roll_to_feet",
+      "expected_families": [
+        "attack_volley",
+        "dink",
+        "drive"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "forehand": false,
+        "roll": true,
+        "feet": false,
+        "mid-height": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 3,
+        "reasoning_quality": 3,
+        "specificity": 3,
+        "skill_level_feasible": true,
+        "notes": "The three shots cover a reasonable range of options but the ball at y=28 (transition zone, not kitchen) and mid-height with slow speed is actually more attackable than the system acknowledges, making the 'not quite attackable' framing in shot 1 questionable; the middle-gap dink concept is sound but the geometry from x=16 right sideline makes a true cross-court into the middle gap awkward, and the 'sharp cross-court reset near left sideline' in shot 3 is a very long diagonal from x=16 that risks the net cord \u2014 the reasoning shows pickleball awareness but imprecisely applies it to this specific ball location.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_012",
+      "difficulty": "typical",
+      "shot_match": true,
+      "predicted_shot": "Deep Drop Shot to Middle",
+      "predicted_family": "drop",
+      "expected_primary": "third_shot_drop",
+      "expected_families": [
+        "drive",
+        "drop"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 1.0,
+      "mentions": {
+        "kitchen": true,
+        "advance": true,
+        "angle": true,
+        "drop": true
+      },
+      "warning": "No 3.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 3,
+        "reasoning_quality": 3,
+        "specificity": 3,
+        "skill_level_feasible": true,
+        "notes": "The drop shot options are strategically appropriate for advancing to the kitchen, but calling a drop shot aimed at the middle (between two kitchen players) a 'deep drop shot' is contradictory and confused \u2014 a drop lands near the kitchen, not 'deep'; the drive option is reasonable but the reasoning oversimplifies body-shot execution; overall the advice is serviceable but contains terminology errors and moderate specificity to the actual ball position near the right sideline.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_013",
+      "difficulty": "typical",
+      "shot_match": false,
+      "predicted_shot": "Inside-Out Roll to Left-Side Gap",
+      "predicted_family": "specialty",
+      "expected_primary": "speedup",
+      "expected_families": [
+        "attack_volley",
+        "drive",
+        "speedup"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "shoulder": false,
+        "attack": true,
+        "speed": true,
+        "hip": true
+      },
+      "warning": "No 4.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three options are contextually grounded \u2014 the inside-out dink exploits a real gap, the hip speed-up targets the correct vulnerable zone in an all-kitchen rally, and the ATP/erne setup is a legitimate third-ball concept, though flagging ATP as a 4.5 option slightly oversells its reliability at that level.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_014",
+      "difficulty": "typical",
+      "shot_match": false,
+      "predicted_shot": "Counter-punch to the middle",
+      "predicted_family": null,
+      "expected_primary": "block_volley",
+      "expected_families": [
+        "attack_volley",
+        "block",
+        "reset"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "fast": true,
+        "absorb": false,
+        "soft": true,
+        "kitchen": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three options are contextually grounded and strategically layered \u2014 the middle seam punch is the strongest primary choice given the all-kitchen NVZ battle, the reset acknowledges risk management at 4.0, and the body attack at the hip is a legitimate aggressive option, though labeling it 'inside-out backhand' then describing it as a forehand is a minor contradiction that slightly undermines reasoning quality.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_015",
+      "difficulty": "typical",
+      "shot_match": true,
+      "predicted_shot": "Drive to the Middle (Body Attack)",
+      "predicted_family": "drive",
+      "expected_primary": "third_shot_drive",
+      "expected_families": [
+        "drive",
+        "drop"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 1.0,
+      "mentions": {
+        "high": true,
+        "drive": true,
+        "attack": true,
+        "kitchen": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "skill_level_feasible": true,
+        "notes": "All three shots are well-calibrated to the state\u2014high slow ball at y=38 with both opponents pinned at the kitchen correctly triggers an attack-first recommendation, the middle/body drive is the highest-percentage primary choice, and the drop is appropriately framed as a fallback rather than the default, with each option grounded in the specific ball height, speed, and opponent positioning.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_016",
+      "difficulty": "typical",
+      "shot_match": false,
+      "predicted_shot": "Attack the Middle with a Speed-Up",
+      "predicted_family": "speedup",
+      "expected_primary": "overhead_smash",
+      "expected_families": [
+        "overhead"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.0,
+      "mentions": {
+        "overhead": false,
+        "lob": false,
+        "smash": false,
+        "attack": false
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "skill_level_feasible": true,
+        "notes": "All three shots correctly identify the high slow ball at the kitchen as a prime attack opportunity against baseline opponents, with specific targeting logic (middle confusion, body jam, angle creation) that is well-reasoned and situation-specific.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_017",
+      "difficulty": "typical",
+      "shot_match": false,
+      "predicted_shot": "Reset Drop to Kitchen",
+      "predicted_family": "reset",
+      "expected_primary": "drive_return_down_line",
+      "expected_families": [
+        "drive",
+        "lob",
+        "serve_return"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "line": true,
+        "gap": true,
+        "net-rusher": false,
+        "feet": false
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 3,
+        "reasoning_quality": 3,
+        "specificity": 3,
+        "skill_level_feasible": true,
+        "notes": "The three-shot menu covers a reasonable range but the primary recommendation (reset drop) is overly conservative from baseline with a mid-height fast ball\u2014a drive or aggressive drop is more appropriate\u2014and the 'transition zone' label in the reasoning is factually wrong since the player is at the baseline, undermining confidence in the situational analysis.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_019",
+      "difficulty": "typical",
+      "shot_match": false,
+      "predicted_shot": "Cross-Court Inside-Out dink to opponent's backhand",
+      "predicted_family": "specialty",
+      "expected_primary": "angle_dink_sideline",
+      "expected_families": [
+        "dink"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "angle": true,
+        "sideline": true,
+        "pull": true,
+        "open court": false
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three shots are contextually appropriate for a low, slow ball at the kitchen from the right side, with the cross-court dink correctly identified as highest-percentage; the middle dink and down-the-line options are legitimate secondary choices, and the reasoning ties ball height, position, and opponent placement together well rather than relying on generic advice.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_020",
+      "difficulty": "typical",
+      "shot_match": true,
+      "predicted_shot": "Cross-Court dink to opponent's backhand",
+      "predicted_family": "dink",
+      "expected_primary": "crosscourt_dink",
+      "expected_families": [
+        "dink"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "low": true,
+        "patience": false,
+        "wait": false,
+        "dink": true
+      },
+      "warning": "No 3.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three options are strategically sound for an all-kitchen dinking rally with a low slow ball, with good situational reasoning about net clearance angles, middle confusion, and partner poach setup, though the 'dead dink to set up poach' requires some coordination assumption that may not hold at 3.5.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_021",
+      "difficulty": "typical",
+      "shot_match": true,
+      "predicted_shot": "Reset dink to the kitchen crosscourt",
+      "predicted_family": "reset",
+      "expected_primary": "drop",
+      "expected_families": [
+        "attack_volley",
+        "drop",
+        "reset"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "transition": true,
+        "soft": true,
+        "drop": true,
+        "advance": false
+      },
+      "warning": "No 3.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three shots correctly identify the low/slow ball as non-attackable and prescribe resets/drops, with the crosscourt dink being the soundest primary choice given the net-clearance advantage and forward movement goal; the backhand-targeting rationale is a nice 3.5-appropriate tactical layer, though 'drop down the middle' is slightly weaker since both opponents are already at the kitchen and can easily poach a middle ball.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_022",
+      "difficulty": "typical",
+      "shot_match": true,
+      "predicted_shot": "Put-Away to Open Court Center",
+      "predicted_family": "attack_volley",
+      "expected_primary": "backhand_volley_attack",
+      "expected_families": [
+        "attack_volley",
+        "roll"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 1.0,
+      "mentions": {
+        "high": true,
+        "backhand": true,
+        "attack": true,
+        "volley": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "skill_level_feasible": true,
+        "notes": "All three options correctly identify the high slow ball at the kitchen as a clear put-away opportunity with both opponents pinned at the baseline, and the recommendations are well-differentiated by risk/reward with specific targeting rationale tied directly to opponent positions and ball height.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_023",
+      "difficulty": "typical",
+      "shot_match": false,
+      "predicted_shot": "Attack the Middle with a Speed-Up",
+      "predicted_family": "speedup",
+      "expected_primary": "volley_before_bounce",
+      "expected_families": [
+        "attack_volley",
+        "drop"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "air": false,
+        "volley": true,
+        "float": false,
+        "advance": false
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "skill_level_feasible": true,
+        "notes": "All three shots are strategically coherent for this dominant kitchen position against deep opponents, with the primary speed-up to the middle being the highest-percentage aggressive option given mid-height, slow ball, and both opponents at baseline \u2014 reasoning correctly ties ball height, speed, and positional advantage together with specific tactical logic for each option.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_024",
+      "difficulty": "typical",
+      "shot_match": false,
+      "predicted_shot": "Cross-Court Roll/Drop to Left Side",
+      "predicted_family": "roll",
+      "expected_primary": "speedup",
+      "expected_families": [
+        "attack_volley",
+        "dink",
+        "speedup"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "above tape": false,
+        "attack": true,
+        "patience": true,
+        "mid-height": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three options are contextually appropriate for an all-kitchen NVZ battle with a slow mid-height ball, progressing logically from neutral reset to angle creation to selective attack, with the cross-court dink and body speed-up being particularly well-justified given opponent positioning.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_025",
+      "difficulty": "typical",
+      "shot_match": false,
+      "predicted_shot": "Cross-Court Inside-Out Roll",
+      "predicted_family": "specialty",
+      "expected_primary": "reset_crosscourt",
+      "expected_families": [
+        "attack_volley",
+        "dink",
+        "reset"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "wide": true,
+        "recover": false,
+        "reset": false,
+        "position": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three shots are contextually appropriate for a low, slow ball at the right kitchen with all four players at the NVZ \u2014 cross-court dink is the highest-percentage primary choice, the down-the-line reset adds good pattern variation, and the middle seam dink correctly exploits the opponent positioning, with reasoning grounded in ball height, angles, and court geometry rather than generic advice.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_026",
+      "difficulty": "typical",
+      "shot_match": true,
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "predicted_family": "dink",
+      "expected_primary": "cut_angle_volley",
+      "expected_families": [
+        "attack_volley",
+        "dink"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "angle": true,
+        "short": false,
+        "sideline": false,
+        "cut": false
+      },
+      "warning": "No 4.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "skill_level_feasible": true,
+        "notes": "All three dink options are well-suited to the all-kitchen, low-slow-ball scenario, with clear situational logic: cross-court for margin, inside-out for disruption, and middle for confusion\u2014each grounded in the specific positions and ball state described.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_027",
+      "difficulty": "typical",
+      "shot_match": false,
+      "predicted_shot": "Cross-Court Reset to Kitchen",
+      "predicted_family": "reset",
+      "expected_primary": "drop",
+      "expected_families": [
+        "block",
+        "drop"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "low": true,
+        "half-volley": false,
+        "soft": true,
+        "transition": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "skill_level_feasible": true,
+        "notes": "All three reset options are well-justified for a low, slow ball in transition with opponents at the kitchen, and each recommendation correctly identifies the defensive priority, net geometry, and positional nuances specific to this state.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_028",
+      "difficulty": "typical",
+      "shot_match": true,
+      "predicted_shot": "Deep Drop Shot to Center",
+      "predicted_family": "drop",
+      "expected_primary": "third_shot_drive",
+      "expected_families": [
+        "drive",
+        "drop"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "transition": true,
+        "drive": true,
+        "attack": false,
+        "advance": false
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 2,
+        "reasoning_quality": 2,
+        "specificity": 2,
+        "skill_level_feasible": true,
+        "notes": "All three recommendations critically misread the game state \u2014 opponents are at transition (mid-court), not the baseline, so the reasoning that 'both opponents are at the baseline' is factually wrong throughout, invalidating the strategic logic for every shot; a drop into the kitchen against mid-court opponents is actually dangerous as they can attack it, making a deep drive or lob far more appropriate from the baseline.",
+        "passed": false,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_bad_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_029",
+      "difficulty": "typical",
+      "shot_match": true,
+      "predicted_shot": "Deep Drop Shot to Center",
+      "predicted_family": "drop",
+      "expected_primary": "lob",
+      "expected_families": [
+        "drive",
+        "drop",
+        "lob"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "advancing": false,
+        "lob": false,
+        "over": true,
+        "time": true
+      },
+      "warning": "No 3.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 2,
+        "reasoning_quality": 2,
+        "specificity": 2,
+        "skill_level_feasible": true,
+        "notes": "The system critically misreads opponent positions \u2014 both opponents are at transition (mid-court), NOT the baseline, making the drop-shot rationale and 'pinned back' drive logic fundamentally flawed; a third-shot drop or reset to advance to the kitchen would be the correct read from your own baseline against mid-court opponents.",
+        "passed": false,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_bad_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_030",
+      "difficulty": "typical",
+      "shot_match": false,
+      "predicted_shot": "Reset Drop to Kitchen",
+      "predicted_family": "reset",
+      "expected_primary": "drive_to_server_feet",
+      "expected_families": [
+        "drive",
+        "lob",
+        "serve_return"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "server": false,
+        "feet": false,
+        "gap": true,
+        "line": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 3,
+        "reasoning_quality": 3,
+        "specificity": 3,
+        "skill_level_feasible": true,
+        "notes": "The system offers three reasonable options but misidentifies the player as being in the transition zone (they're at right_baseline, y\u224838-44), which undermines the reset rationale; the drive and roll shots are more situationally appropriate given the deep position, but the reasoning inconsistently applies positional logic across all three recommendations.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_031",
+      "difficulty": "tricky",
+      "shot_match": false,
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "predicted_family": "dink",
+      "expected_primary": "speedup_to_body",
+      "expected_families": [
+        "attack_volley",
+        "speedup"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "body": false,
+        "jam": false,
+        "shoulder": false,
+        "hip": true
+      },
+      "warning": "No 4.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "skill_level_feasible": true,
+        "notes": "All three shots are contextually appropriate for a 4v4 kitchen battle with a slow mid-height ball, with well-articulated reasoning covering net margin, seam exploitation, and pattern disruption specific to the positions and ball state described.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_032",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "predicted_family": "dink",
+      "expected_primary": "sharp_crosscourt_kitchen",
+      "expected_families": [
+        "dink",
+        "speedup"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.0,
+      "mentions": {
+        "corner": false,
+        "crosscourt": false,
+        "partner": false,
+        "Erne": false
+      },
+      "warning": "No 4.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three shots are strategically coherent for a low, slow ball at the kitchen in an all-NVZ rally, with well-articulated reasoning about net height, attackability, and deception; slight specificity deduction since opponent handedness is assumed rather than known, but the cross-court-over-lowest-net logic is correctly applied to the x=12 ball position.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_034",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "predicted_family": "dink",
+      "expected_primary": "around_the_post",
+      "expected_families": [
+        "dink",
+        "reset",
+        "specialty"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "ATP": false,
+        "sideline": true,
+        "post": false,
+        "angle": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three shots are strategically sound for a low, slow ball at the kitchen with all four players at the NVZ \u2014 cross-court dink is the highest-percentage primary choice, the reset dink is a reasonable alternative, and the middle seam dink is a legitimate 4.0 tactic, with reasoning well-tied to ball height, position, and opponent placement throughout.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_035",
+      "difficulty": "tricky",
+      "shot_match": false,
+      "predicted_shot": "Inside-Out Roll to Left-Side Gap",
+      "predicted_family": "specialty",
+      "expected_primary": "speedup",
+      "expected_families": [
+        "dink",
+        "speedup"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "fake": false,
+        "deception": false,
+        "soft": true,
+        "backpedal": false
+      },
+      "warning": "No 4.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three recommendations are contextually grounded\u2014the inside-out roll targets a specific backhand hip, the middle reset exploits partner confusion, and the sharp-angle setup creates a two-step attack pattern\u2014though the mid-height slow ball at the kitchen arguably invites more aggression than the reset option suggests.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_036",
+      "difficulty": "tricky",
+      "shot_match": false,
+      "predicted_shot": "Cross-Court Roll to the Middle",
+      "predicted_family": "roll",
+      "expected_primary": "dink_down_the_line",
+      "expected_families": [
+        "dink",
+        "reset"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "angle": true,
+        "sideline": true,
+        "safe": false,
+        "line": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 3,
+        "reasoning_quality": 3,
+        "specificity": 3,
+        "skill_level_feasible": false,
+        "notes": "The three shots span a wide strategic range (reset dink to ATP) with reasonable individual logic, but the ATP recommendation is not reliably executable at 4.0, and the system doesn't clearly prioritize one shot, weakening overall guidance; the cross-court dink to the middle is the most sound given slow mid-height ball at the kitchen, but the reasoning across all three options is somewhat generic and doesn't fully account for the ball being at x=18.5 (extreme right sideline) which actually does create ATP geometry worth noting, yet that shot is beyond 4.0 reliability.",
+        "passed": false,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_bad_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_037",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "predicted_family": "dink",
+      "expected_primary": "dink_crosscourt_for_partner_poach",
+      "expected_families": [
+        "dink",
+        "speedup"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "partner": true,
+        "poach": false,
+        "crosscourt": false,
+        "setup": false
+      },
+      "warning": "No 4.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "skill_level_feasible": true,
+        "notes": "All three shots are well-calibrated to the low/slow ball at the kitchen in an all-NVZ rally, with the cross-court dink correctly prioritized for net clearance and margin, the middle seam option leveraging the left-of-center ball position intelligently, and the straight reset acknowledged as conservative but valid \u2014 reasoning is scenario-specific and demonstrates genuine pickleball IQ throughout.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_038",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "predicted_shot": "Cross-Court Reset to Kitchen",
+      "predicted_family": "reset",
+      "expected_primary": "reset_from_baseline",
+      "expected_families": [
+        "lob",
+        "reset"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "defensive": false,
+        "reset": true,
+        "recover": false,
+        "position": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 3,
+        "reasoning_quality": 3,
+        "specificity": 3,
+        "skill_level_feasible": true,
+        "notes": "The reset strategy is directionally correct for a low slow ball, but the system incorrectly describes the player as being in the transition zone when they are at right_baseline, which undermines the reasoning about moving forward; the cross-court reset is sound, the middle reset option is reasonable, but the overall positional misread and generic 'move to kitchen' advice reduce quality.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_039",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "predicted_shot": "Drop Shot to the Middle",
+      "predicted_family": "drop",
+      "expected_primary": "drop",
+      "expected_families": [
+        "block",
+        "drop",
+        "reset"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "transition": false,
+        "soft": true,
+        "drop": true,
+        "kitchen": true
+      },
+      "warning": "No 3.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three shots are strategically coherent resets from transition with a low/slow ball against a stacked kitchen, with good situational reasoning, though the cross-court net-height explanation is a minor oversimplification since the net is lower at the center, not the sidelines.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_040",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "predicted_family": "dink",
+      "expected_primary": "inside_out_behind_opponent",
+      "expected_families": [
+        "dink",
+        "specialty"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "behind": false,
+        "cheating": true,
+        "line": true,
+        "open": true
+      },
+      "warning": "No 4.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "skill_level_feasible": true,
+        "notes": "All three shots are well-calibrated to the low/slow ball at the kitchen with both teams at the NVZ \u2014 cross-court dink is correctly prioritized, the straight dink variation and backspin reset are legitimate secondary options, and the reasoning ties ball height, net geometry, court angles, and opponent positioning together with genuine pickleball specificity.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_041",
+      "difficulty": "tricky",
+      "shot_match": false,
+      "predicted_shot": "Deep Drop Shot to Continue Forward",
+      "predicted_family": "drop",
+      "expected_primary": "serve_to_body",
+      "expected_families": [
+        "serve_return"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.0,
+      "mentions": {
+        "body": false,
+        "jam": false,
+        "limit": false,
+        "return angle": false
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three shots are strategically coherent given both opponents at baseline and a slow mid-height ball; the drop shot recommendation correctly identifies the opportunity to advance and join the partner at the kitchen, the drive option acknowledges the pace opportunity, and the teamwork angle on shot three is a genuine 4.0-level concept, though calling it a 'deep drop shot' in the first recommendation is a slight misnomer since a drop into the kitchen is not 'deep.'",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_042",
+      "difficulty": "tricky",
+      "shot_match": false,
+      "predicted_shot": "Deep Drop Shot to Right Side",
+      "predicted_family": "drop",
+      "expected_primary": "defensive_lob",
+      "expected_families": [
+        "lob",
+        "reset"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "lob": false,
+        "time": true,
+        "partner": true,
+        "defensive": false
+      },
+      "warning": "No 3.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three shots are strategically coherent given both opponents at baseline and player at kitchen; the drop recommendations correctly exploit the baseline positioning and the advice to resist driving a fast mid-height ball is sound 3.5 guidance, though the 'block drive down the line' third option slightly overstates the geometry since the ball is at x=6 (left side of court) making a down-the-line shot to opponent left's backhand a cross-court drive, not truly down the line.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_043",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "predicted_family": "dink",
+      "expected_primary": "dink_to_middle_T",
+      "expected_families": [
+        "dink"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "middle": true,
+        "T": true,
+        "split": false,
+        "confusion": false
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three dink options are strategically appropriate for a low, slow ball in an all-kitchen NVZ battle, with solid reasoning about net geometry, middle confusion, and line variation, though the ball's center-court x=10 position could have been more explicitly leveraged to explain shot angle availability.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_044",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "predicted_family": "dink",
+      "expected_primary": "drive_down_middle",
+      "expected_families": [
+        "dink",
+        "drive"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "middle": true,
+        "gap": true,
+        "cheating wide": false,
+        "attack": true
+      },
+      "warning": "No 4.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three options are strategically coherent for a mid-height slow ball in a four-way kitchen battle, with the cross-court dink being the safest primary choice, the middle attack a reasonable secondary given the mid-height contact, and the inside-out topspin dink a legitimate 4.5-level variation; minor quibble is that 'mid-height' could justify a more assertive speed-up as the primary recommendation rather than a dink.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_045",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "predicted_shot": "Cross-court dink to opponent's backhand",
+      "predicted_family": "dink",
+      "expected_primary": "reset",
+      "expected_families": [
+        "dink",
+        "reset",
+        "speedup"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "reset": true,
+        "exchange": false,
+        "recover": false,
+        "position": false
+      },
+      "warning": "No 4.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "skill_level_feasible": true,
+        "notes": "All three options are strategically coherent for a low, slow ball in a four-player kitchen battle, with well-articulated reasoning that directly references ball height, court geometry, body targeting, and 4.5-level patience\u2014no generic filler.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_046",
+      "difficulty": "adversarial",
+      "shot_match": false,
+      "predicted_shot": "Inside-Out Roll to Right Hip",
+      "predicted_family": "specialty",
+      "expected_primary": "roll_volley_body",
+      "expected_families": [
+        "attack_volley",
+        "speedup"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "above net": false,
+        "roll": true,
+        "body": true,
+        "4.5": true
+      },
+      "warning": "No 4.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three shots are contextually grounded in the all-kitchen engagement scenario with a mid-height slow ball, though the 'dead hand drop to middle' slightly undersells the offensive opportunity a mid-height ball presents at 4.5 level.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_047",
+      "difficulty": "adversarial",
+      "shot_match": false,
+      "predicted_shot": "Attack Deep Middle with Speed-Up",
+      "predicted_family": "speedup",
+      "expected_primary": "forehand_roll_to_feet",
+      "expected_families": [
+        "drive",
+        "reset"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.25,
+      "mentions": {
+        "controlled": false,
+        "feet": false,
+        "partner": true,
+        "roll": false
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "skill_level_feasible": true,
+        "notes": "All three shots correctly identify the high slow ball at the kitchen as an attackable opportunity with both opponents pinned at the baseline, offering a well-reasoned menu from aggressive speed-up to deceptive short ball, each grounded in the specific game state.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_048",
+      "difficulty": "adversarial",
+      "shot_match": true,
+      "predicted_shot": "Cross-Court Reset to Kitchen",
+      "predicted_family": "reset",
+      "expected_primary": "drop",
+      "expected_families": [
+        "drop",
+        "reset"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "overhead": false,
+        "smash": false,
+        "4.5": true,
+        "drop": true
+      },
+      "warning": "No 4.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "skill_level_feasible": true,
+        "notes": "All three shots correctly identify the defensive imperative of a low, fast ball at the baseline with both opponents at the kitchen, and the reasoning appropriately references ball height, net geometry, and opponent positioning rather than generic advice, though calling the baseline position 'transition zone' in shot one is a minor inaccuracy.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "right_shot_good_reasoning",
+      "overall_pass": true
+    },
+    {
+      "scenario_id": "gold_049",
+      "difficulty": "adversarial",
+      "shot_match": false,
+      "predicted_shot": "Attack the Open Right Side",
+      "predicted_family": null,
+      "expected_primary": "third_shot_drive_to_opp_right",
+      "expected_families": [
+        "drive",
+        "drop"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "transition": true,
+        "drive": true,
+        "feet": false,
+        "opp_right": false
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 3,
+        "reasoning_quality": 3,
+        "specificity": 3,
+        "skill_level_feasible": true,
+        "notes": "Shot 1 misreads the state \u2014 opponent right is at transition not baseline, so the 'massive gap' claim is inaccurate; Shot 2 (body attack on kitchen player) is the most strategically sound given the high slow ball and net presence, but the reasoning conflates positions; Shot 3's 'deep drop to right side' is a contradictory concept (drops go short, not deep) and concedes offense on a high attackable ball, showing a fundamental reasoning flaw.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    },
+    {
+      "scenario_id": "gold_050",
+      "difficulty": "adversarial",
+      "shot_match": false,
+      "predicted_shot": "Reset Drop to Kitchen",
+      "predicted_family": "reset",
+      "expected_primary": "drive_to_opp_right",
+      "expected_families": [
+        "drive"
+      ],
+      "unmapped_expected_labels": [],
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "gap": false,
+        "opp_right": false,
+        "baseline": true,
+        "drive": true
+      },
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "skill_level_feasible": true,
+        "notes": "All three shots are well-prioritized for the situation \u2014 reset drop as primary correctly addresses the low/fast ball in transition, the deep-player targeting exploits the stranded opponent right, and the body-shot drive is appropriately flagged as higher-risk but viable at 4.0, with each recommendation grounded in the specific positions and ball state provided.",
+        "passed": true,
+        "model": "claude-sonnet-4-6"
+      },
+      "quadrant": "wrong_shot_good_reasoning",
+      "overall_pass": false
+    }
+  ],
+  "errors": []
+}

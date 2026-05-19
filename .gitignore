@@ -30,3 +30,12 @@ rag/chroma_db/
 # Editor
 .vscode/
 .idea/
+
+# Eval results (keep baseline.json tracked manually)
+evals/results/*.json
+
+# Local tooling / scratch
+.claude/
+.playwright-mcp/
+*.png
+rag/audio_to_text_files/

@@ -7,6 +7,7 @@ import { useDrag } from './hooks/useDrag'
 import { useAnalyze } from './hooks/useAnalyze'
 import { useScenarios } from './hooks/useScenarios'
 import { INITIAL_PLAYERS, INITIAL_BALL, NET_Y, KITCHEN, COURT_W, describeBallZone } from './constants'
+import { courtToScreen } from './lib/courtProjection'
 
 export default function App() {
   const [mySide, setMySide] = useState('left')
@@ -14,6 +15,13 @@ export default function App() {
   const [ball, setBall] = useState(INITIAL_BALL)
   const [toast, setToast] = useState(false)
   const [skillLevel, setSkillLevel] = useState(null)
+  const [handedness, setHandedness] = useState({
+    my_left: 'right',
+    my_right: 'right',
+    opp_left: 'right',
+    opp_right: 'right',
+  })
+  const [showAllZones, setShowAllZones] = useState(false)
 
   const { dragging, onPointerDown, svgContainerRef } = useDrag(setPlayers, setBall)
   const { result, setResult, isAnalyzing, error, warning, analyze } = useAnalyze()
@@ -30,11 +38,20 @@ export default function App() {
     if (!skillLevel) return
     const meKey = mySide === 'left' ? 'my_left' : 'my_right'
     const me = players[meKey]
-    const dx = ball.x - me.x
-    const dy = ball.y - me.y
-    const dist = Math.sqrt(dx * dx + dy * dy)
-    if (dist > COURT_W / 3) {
-      setReachError("You can't reach the ball!")
+    // Screen-space ellipse check — matches the dashed ring drawn in StickFigure
+    // exactly (same rx, same ry-multiplier), so the gate aligns with what the
+    // user sees instead of being a strict circle of the smaller rx dimension.
+    const [meSx, meSy] = courtToScreen(me.x, me.y)
+    const [ballSx, ballSy] = courtToScreen(ball.x, ball.y)
+    const [courtLx] = courtToScreen(0, me.y)
+    const [courtRx] = courtToScreen(COURT_W, me.y)
+    const reachRx = (courtRx - courtLx) / 6
+    const reachRy = reachRx * 0.338688 * 1.3 // mirrors wedgeRyVal * 1.3 in StickFigure
+    const dxs = ballSx - meSx
+    const dys = ballSy - meSy
+    const inside = (dxs * dxs) / (reachRx * reachRx) + (dys * dys) / (reachRy * reachRy) <= 1
+    if (!inside) {
+      setReachError('You are not within reach of the ball!')
       setResult(null)
       return
     }
@@ -158,6 +175,8 @@ export default function App() {
               mySide={mySide}
               dragging={dragging}
               onPointerDown={onPointerDown}
+              handedness={handedness}
+              showAllZones={showAllZones}
             />
           </div>
           <ResultsPanel
@@ -172,6 +191,7 @@ export default function App() {
           <ControlPanel
             mySide={mySide}
             setMySide={setMySide}
+            players={players}
             ball={ball}
             setBall={setBall}
             onAnalyze={handleAnalyze}
@@ -180,6 +200,10 @@ export default function App() {
             scenarioCount={scenarios.length}
             skillLevel={skillLevel}
             setSkillLevel={setSkillLevel}
+            handedness={handedness}
+            setHandedness={setHandedness}
+            showAllZones={showAllZones}
+            setShowAllZones={setShowAllZones}
           />
           <ScenarioList
             scenarios={scenarios}

@@ -1,13 +1,21 @@
 from contextlib import asynccontextmanager
 
+from dotenv import load_dotenv
+
+# Load backend/.env into os.environ BEFORE importing modules that read it
+# (e.g. app.services.strategy → ANTHROPIC_API_KEY).
+load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.models.database import init_db
+from app.observability import init_observability
 from app.routers import analyze, corrections, scenarios
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    init_observability(service="backend")
     init_db()
     yield
 

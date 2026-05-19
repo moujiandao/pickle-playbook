@@ -1,5 +1,55 @@
 # Changelog
 
+## [2026-05-13] (eval taxonomy round 2)
+
+### Removed
+- M2 (skill-level overreach) — retired from the failure-mode taxonomy. Deleted `is_advanced_shot()`, `ADVANCED_CANONICAL`, `_ADVANCED_RAW`, `_ADVANCED_KEYWORDS` from `evals/lib/shot_taxonomy.py`; removed the M2 violation gate, `_ADVANCED_SHOT_THRESHOLD`, and `m2_advanced_shot_violation` field from `evals/run_eval.py`; dropped M2 row from the Streamlit detail panel; removed `TestM2AdvancedShotViolation` and the `TestIsAdvancedShot` test class
+- M3 (state-blind reasoning) — retired. The `state_use` Likert was doing two jobs (grading generic language and position-reasoning) and one dimension couldn't grade both cleanly. Dropped `state_use` field and `m3_passed` from `JudgeResult` in `evals/lib/llm_judge.py`; DIMENSION 1 removed from the judge prompt; `parse_judge_output` no longer requires `state_use`; M3 metric removed from the Streamlit judge panel (legacy archives still readable read-only)
+- Three golden scenarios: `v2_002` (M2), `v2_003` (M3), `v2_005` (M3). Survivors: `v2_001` (M1) + `v2_004` (M4)
+
+### Changed
+- `failure_modes.md` rewritten for round 2: M1, M4, M5 only. Numbering preserved (kept original IDs so archived eval runs stay readable) — surviving modes are not renumbered to M1/M2/M3
+- `evals/run_eval.py` `mode_keys` is now `["M1", "M5"]` deterministic + `["M4"]` when `--judge`. `avg_judge_scores` is now `{"ball_state_reading": …}` only
+- `evals/CLAUDE.md` updated mode references and detection-track split (M1/M5 deterministic, M4 judged)
+- `evals/README.md` table description for `lib/llm_judge.py` updated to "M4 only"
+
+## [2026-05-10]
+
+### Changed
+- Remove shots 2 and 3 (opponent response and follow-up) from all recommendations — each suggestion now shows only shot 1 (your shot). Affects `prompt_builder.py`, all heuristic rallies in `strategy.py`, CLAUDE.md docs, and the Response JSON contract. To be re-added in a future sprint.
+
+## [2026-04-29] (eval cleanup)
+
+### Removed
+- `evals/check_regression.py` — stub file with `raise NotImplementedError` in every function. Will be re-created when the regression gate is actually wired into CI; the sprint plan still references it as future work
+- README mentions of `check_regression.py` in `evals/README.md` (file table row, baseline-check usage block, and exit-code note)
+
+## [2026-04-28] (Langfuse observability)
+
+### Added
+- `backend/app/observability.py` — single-process bootstrap that initializes the Langfuse client and attaches the OpenTelemetry Anthropic instrumentor, plus a `trace_scenario(...)` context manager that wraps a unit of work in a parent Langfuse observation so nested Anthropic calls become child generations
+- Lifespan call to `init_observability("backend")` in `backend/app/main.py` so every `/api/analyze` Anthropic call is auto-traced
+- `init_observability("evals")` + per-scenario `trace_scenario(...)` wrap in `evals/run_eval.py`, with a final `flush()` so each scenario shows up as one Langfuse trace with `scenario_id`, `failure_modes`, `difficulty`, and `judge_model` in metadata
+- `langfuse>=4.5.0` and `opentelemetry-instrumentation-anthropic>=0.60.0` in `backend/requirements.txt`
+
+### Notes
+- Helper is idempotent and no-ops cleanly when `LANGFUSE_PUBLIC_KEY` / `LANGFUSE_SECRET_KEY` are unset, so tests and offline dev keep working
+- Required env vars (in `backend/.env`): `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_HOST` (Langfuse SDK reads `LANGFUSE_HOST`, not `LANGFUSE_BASE_URL`)
+
+## [2026-04-28] (eval triage in visualizer)
+
+### Added
+- Triage panel in `evals/viz/streamlit_app.py` Detail tab: per-scenario annotations (`judge_verdict`, `scenario_action`, `system_signal`, `priority`, freeform `note`)
+- Sidecar notes persistence at `evals/results/{stem}.notes.json`, scoped per results file
+- Sidebar triage filters (only-annotated, by action, by priority) and "Download triage report (.md)" button that emits a checklist grouped by `scenario_action`
+- "Bulk triage" tab with `st.data_editor` table: spreadsheet-style inline editing of triage fields across many scenarios, with Save / Discard controls and dirty-row diffing
+
+## [2026-04-23] (eval visualizer)
+
+### Added
+- `evals/viz/streamlit_app.py` — Streamlit court visualizer with Overview + Detail tabs; plots golden-scenario ball positions on a 2D court, optionally joins an eval results JSON to color-code by quadrant
+- `evals/viz/requirements.txt` — streamlit + plotly pins
+
 ## [2026-04-20] (skill level support)
 
 ### Added

@@ -1,0 +1,143 @@
+{
+  "summary": {
+    "total": 5,
+    "passed": 3,
+    "errors": 0,
+    "overall_pass_rate": 0.6,
+    "avg_reasoning_coverage": 0.783,
+    "by_difficulty": {
+      "tricky": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "typical": {
+        "total": 2,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "obvious": {
+        "total": 1,
+        "passed": 1,
+        "pass_rate": 1.0
+      }
+    },
+    "avg_judge_scores": {
+      "strategic_soundness": 4.0,
+      "reasoning_quality": 4.2,
+      "specificity": 4.0
+    }
+  },
+  "results": [
+    {
+      "scenario_id": "gold_039",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "reasoning_coverage": 1.0,
+      "mentions": {
+        "transition": true,
+        "soft": true,
+        "drop": true,
+        "kitchen": true
+      },
+      "predicted_shot": "Soft Reset Dink to Opponent's Backhand",
+      "expected_shot": "soft_drop",
+      "warning": "No 3.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 4,
+        "notes": "All three recommendations align with expert expectations (soft_drop, reset, block_volley equivalents), correctly emphasize transition zone soft play and kitchen advancement, and demonstrate solid 3.5-level tactical reasoning, though the middle-gap targeting and backhand-specific advice add nice specificity beyond generic advice.",
+        "passed": true
+      }
+    },
+    {
+      "scenario_id": "gold_028",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 0.75,
+      "mentions": {
+        "transition": false,
+        "drive": true,
+        "attack": true,
+        "advance": true
+      },
+      "predicted_shot": "Deep Soft Drop Shot to Opponent's Backhand",
+      "expected_shot": "third_shot_drive",
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 4,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "notes": "System correctly identifies both expert-expected shots (drop and drive) with solid situational reasoning referencing ball height, opponent positioning, and NVZ advancement, though shot ordering prioritizes drop over drive contrary to expert preference.",
+        "passed": true
+      }
+    },
+    {
+      "scenario_id": "gold_015",
+      "difficulty": "typical",
+      "shot_match": false,
+      "reasoning_coverage": 1.0,
+      "mentions": {
+        "high": true,
+        "drive": true,
+        "attack": true,
+        "kitchen": true
+      },
+      "predicted_shot": "Drive to the Backhand Side of Opponent Right",
+      "expected_shot": "third_shot_drive",
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 5,
+        "reasoning_quality": 5,
+        "specificity": 5,
+        "notes": "Excellent alignment with expert expectations: correctly identifies the high mid-court ball as an attack opportunity, prioritizes the drive with specific targeting (backhand hip/shoulder), includes the drop as a fallback, and grounds all reasoning in positional context and real pickleball mechanics.",
+        "passed": true
+      }
+    },
+    {
+      "scenario_id": "gold_010",
+      "difficulty": "obvious",
+      "shot_match": true,
+      "reasoning_coverage": 0.667,
+      "mentions": {
+        "block": true,
+        "absorb": false,
+        "kitchen": true
+      },
+      "predicted_shot": "Soft Reset Drop into Kitchen",
+      "expected_shot": "block_volley",
+      "warning": "No 4.0-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 3,
+        "reasoning_quality": 3,
+        "specificity": 3,
+        "notes": "First two shots align reasonably with expert expectations but use imprecise terminology and miss key concepts like absorbing pace; the third recommendation of a counter-drive contradicts expert guidance and introduces unnecessary risk, dragging down overall strategic soundness.",
+        "passed": true
+      }
+    },
+    {
+      "scenario_id": "gold_044",
+      "difficulty": "tricky",
+      "shot_match": true,
+      "reasoning_coverage": 0.5,
+      "mentions": {
+        "middle": true,
+        "gap": false,
+        "cheating wide": false,
+        "attack": true
+      },
+      "predicted_shot": "Dink Cross-Court to Opponent's Backhand",
+      "expected_shot": "drive_down_middle",
+      "warning": "No 4.5-level content available yet. Using general advice.",
+      "judge": {
+        "strategic_soundness": 3,
+        "reasoning_quality": 4,
+        "specificity": 4,
+        "notes": "System identifies valid shots (cross-court dink matches acceptable alternative, seam dink partially addresses middle) with solid technical reasoning, but misses the expert's top recommendation of drive_down_middle and fails to mention the key tactical cue of opponents cheating wide or attacking the gap aggressively.",
+        "passed": true
+      }
+    }
+  ],
+  "errors": []
+}

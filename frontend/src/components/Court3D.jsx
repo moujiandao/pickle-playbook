@@ -30,11 +30,11 @@ const COURT_INTERIOR = [
 
 const BALL_ELEVATION_MULT = { low: 1, mid: 2, high: 4 }
 
-const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, onPointerDown }, ref) {
+const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, onPointerDown, handedness, showAllZones }, ref) {
   const entities = [
     ...Object.entries(players).map(([k, p]) => ({ type: 'player', key: k, ...p })),
     { type: 'ball', key: 'ball', ...ball },
-  ].sort((a, b) => b.y - a.y)
+  ].sort((a, b) => a.y - b.y)
 
   const [netLX, netLY] = courtToScreen(-0.3, NET_Y)
   const [netRX] = courtToScreen(COURT_W + 0.3, NET_Y)
@@ -81,8 +81,8 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
           y1={postTopY}
           x2={netLX}
           y2={netLY + 4}
-          stroke={COLORS.netFill}
-          strokeWidth={3}
+          stroke="#374151"
+          strokeWidth={6}
           strokeLinecap="square"
         />
         {/* Right post */}
@@ -91,8 +91,8 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
           y1={postTopY}
           x2={netRX}
           y2={netLY + 4}
-          stroke={COLORS.netFill}
-          strokeWidth={3}
+          stroke="#374151"
+          strokeWidth={6}
           strokeLinecap="square"
         />
         {/* Top tape of the net */}
@@ -101,8 +101,8 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
           y1={netLY - netH}
           x2={netRX}
           y2={netLY - netH}
-          stroke="#000000"
-          strokeWidth={2.5}
+          stroke="#FFFFFF"
+          strokeWidth={4}
         />
         {/* Bottom band of the net */}
         <line
@@ -111,11 +111,11 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
           x2={netRX}
           y2={netLY}
           stroke="#FFFFFF"
-          strokeWidth={2.5}
+          strokeWidth={1}
         />
         {/* Vertical mesh — transparent cells, thicker lines */}
-        {Array.from({ length: 90 }).map((_, i) => {
-          const f = (i + 1) / 91
+        {Array.from({ length: 135 }).map((_, i) => {
+          const f = (i + 1) / 136
           const mx = netLX + (netRX - netLX) * f
           return (
             <line
@@ -125,13 +125,13 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
               x2={mx}
               y2={netLY - 1}
               stroke={COLORS.netMesh}
-              strokeWidth={2}
+              strokeWidth={0.8}
             />
           )
         })}
         {/* Horizontal mesh — transparent cells, thicker lines */}
-        {Array.from({ length: 12 }).map((_, i) => {
-          const f = (i + 1) / 13
+        {Array.from({ length: 18 }).map((_, i) => {
+          const f = (i + 1) / 19
           const my = netLY - netH + (netH - 2) * f
           return (
             <line
@@ -141,7 +141,7 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
               x2={netRX - 1}
               y2={my}
               stroke={COLORS.netMesh}
-              strokeWidth={2}
+              strokeWidth={0.8}
             />
           )
         })}
@@ -170,12 +170,25 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
           const label = isOpp ? null : isLeft ? 'Leftside Player' : 'Rightside Player'
           const isMe =
             (mySide === 'left' && ent.key === 'my_left') || (mySide === 'right' && ent.key === 'my_right')
-          // Reach ellipse rx: 1/3 of the court's screen width at this depth.
+          const isPartner = !isOpp && !isMe
+          // Reach ellipse diameter = 1/3 of the court's screen width at this
+          // depth, so 3 players with arms extended span the court horizontally.
           const [courtLx] = courtToScreen(0, ent.y)
           const [courtRx] = courtToScreen(COURT_W, ent.y)
           const reachRx = (courtRx - courtLx) / 6
+          // Attack position: behind own kitchen line and within 3.5 ft of it.
+          // Each side's kitchen line: south = NET_Y + KITCHEN, north = NET_Y - KITCHEN.
+          const inAttackPosition = isOpp
+            ? ent.y < NET_Y - KITCHEN && ent.y >= NET_Y - KITCHEN - 3.5
+            : ent.y > NET_Y + KITCHEN && ent.y <= NET_Y + KITCHEN + 3.5
+          // Opps face the opposite direction, so their attack zones mirror vertically.
+          const verticalFlip = isOpp ? -1 : 1
+          // Fade non-dragged players to 20% opacity (80% transparent) while another
+          // player is being dragged — bumped from 50% to make the dragged one pop more.
+          const isPlayerDragActive = dragging && dragging !== 'ball'
+          const groupOpacity = isPlayerDragActive && dragging !== ent.key ? 0.2 : 1
           return (
-            <g key={ent.key} onPointerDown={(e) => onPointerDown(e, ent.key)}>
+            <g key={ent.key} opacity={groupOpacity} onPointerDown={(e) => onPointerDown(e, ent.key)}>
               <StickFigure
                 cx={sx}
                 cy={sy}
@@ -183,8 +196,13 @@ const Court3D = forwardRef(function Court3D({ players, ball, mySide, dragging, o
                 label={label}
                 isSelected={dragging === ent.key}
                 isMe={isMe}
+                isPartner={isPartner}
                 scale={scale}
-                reachRx={isMe ? reachRx : undefined}
+                reachRx={reachRx}
+                inAttackPosition={inAttackPosition}
+                handedness={handedness?.[ent.key] ?? 'right'}
+                verticalFlip={verticalFlip}
+                forceShowZones={!!showAllZones}
               />
             </g>
           )
