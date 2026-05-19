@@ -681,7 +681,7 @@ def main() -> None:
     if failure_modes:
         sel_modes = st.sidebar.multiselect(
             "Failure modes", failure_modes, default=failure_modes,
-            help="v2 schema. Scenarios may probe one or more modes (M1-M5).",
+            help="v2 schema. Surviving modes after round-2 trim: M1, M4, M5.",
         )
 
     sel_quadrant: list[str] | None = None
@@ -835,21 +835,15 @@ def main() -> None:
                     f"reasoning_coverage: **{result.get('reasoning_coverage', '—')}**"
                 )
 
-                # v2 deterministic checks (M2 advanced shot, M5 tactical mode).
-                # Render only when the underlying fields are present so v1
-                # results files don't show empty rows.
-                m2_violation = result.get("m2_advanced_shot_violation")
+                # v2 deterministic check (M5 tactical mode). Render only when
+                # the underlying field is present so v1 results files don't
+                # show empty rows. (Old M2 advanced-shot row removed when M2
+                # was retired; archived results that still carry the field
+                # are ignored silently.)
                 m5_match = result.get("m5_tactical_mode_match")
-                if m2_violation is not None or m5_match is not None:
-                    parts = []
-                    if m2_violation is not None:
-                        m2_label = "❌ M2 advanced-shot for sub-4.0" if m2_violation else "M2 ✓"
-                        parts.append(f"**{m2_label}**")
-                    if m5_match is not None:
-                        m5_label = "M5 ✓" if m5_match else "❌ M5 posture mismatch"
-                        parts.append(f"**{m5_label}**")
-                    if parts:
-                        st.caption("Deterministic: " + "  ·  ".join(parts))
+                if m5_match is not None:
+                    m5_label = "M5 ✓" if m5_match else "❌ M5 posture mismatch"
+                    st.caption(f"Deterministic: **{m5_label}**")
 
                 pred_posture = result.get("predicted_posture")
                 exp_postures = result.get("expected_postures")
@@ -870,17 +864,20 @@ def main() -> None:
 
                 if judge := result.get("judge"):
                     st.subheader("Judge")
-                    # v2 has state_use + ball_state_reading; v1 has the
-                    # strategic_soundness/reasoning_quality/specificity trio.
-                    if "state_use" in judge or "ball_state_reading" in judge:
-                        jcols = st.columns(2)
-                        jcols[0].metric("M3 state_use", judge.get("state_use"))
-                        jcols[1].metric("M4 ball_state_reading", judge.get("ball_state_reading"))
+                    # Current (round-2) judge: ball_state_reading only (M4).
+                    # Older archives may carry state_use (retired M3) or the
+                    # v1 strategic/reasoning/specificity trio — render the
+                    # legacy fields read-only so historical runs stay readable.
+                    if "ball_state_reading" in judge:
+                        st.metric("M4 ball_state_reading", judge.get("ball_state_reading"))
+                        legacy_m3 = (
+                            f"  ·  M3 state_use (retired): **{judge['state_use']}**"
+                            if "state_use" in judge else ""
+                        )
                         st.caption(
-                            f"M3 passed: **{judge.get('m3_passed')}**  ·  "
                             f"M4 passed: **{judge.get('m4_passed')}**  ·  "
                             f"quadrant: **{result.get('quadrant', '—')}**  ·  "
-                            f"model: `{judge.get('model', '?')}`"
+                            f"model: `{judge.get('model', '?')}`{legacy_m3}"
                         )
                     else:
                         # v1 archive results — render legacy fields

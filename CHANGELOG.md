@@ -1,5 +1,18 @@
 # Changelog
 
+## [2026-05-13] (eval taxonomy round 2)
+
+### Removed
+- M2 (skill-level overreach) — retired from the failure-mode taxonomy. Deleted `is_advanced_shot()`, `ADVANCED_CANONICAL`, `_ADVANCED_RAW`, `_ADVANCED_KEYWORDS` from `evals/lib/shot_taxonomy.py`; removed the M2 violation gate, `_ADVANCED_SHOT_THRESHOLD`, and `m2_advanced_shot_violation` field from `evals/run_eval.py`; dropped M2 row from the Streamlit detail panel; removed `TestM2AdvancedShotViolation` and the `TestIsAdvancedShot` test class
+- M3 (state-blind reasoning) — retired. The `state_use` Likert was doing two jobs (grading generic language and position-reasoning) and one dimension couldn't grade both cleanly. Dropped `state_use` field and `m3_passed` from `JudgeResult` in `evals/lib/llm_judge.py`; DIMENSION 1 removed from the judge prompt; `parse_judge_output` no longer requires `state_use`; M3 metric removed from the Streamlit judge panel (legacy archives still readable read-only)
+- Three golden scenarios: `v2_002` (M2), `v2_003` (M3), `v2_005` (M3). Survivors: `v2_001` (M1) + `v2_004` (M4)
+
+### Changed
+- `failure_modes.md` rewritten for round 2: M1, M4, M5 only. Numbering preserved (kept original IDs so archived eval runs stay readable) — surviving modes are not renumbered to M1/M2/M3
+- `evals/run_eval.py` `mode_keys` is now `["M1", "M5"]` deterministic + `["M4"]` when `--judge`. `avg_judge_scores` is now `{"ball_state_reading": …}` only
+- `evals/CLAUDE.md` updated mode references and detection-track split (M1/M5 deterministic, M4 judged)
+- `evals/README.md` table description for `lib/llm_judge.py` updated to "M4 only"
+
 ## [2026-05-10]
 
 ### Changed

@@ -16,7 +16,6 @@ from shot_taxonomy import (
     expected_families,
     expected_postures,
     expected_tactical_mode,
-    is_advanced_shot,
     shot_posture,
 )
 
@@ -171,46 +170,6 @@ class TestExpectedFamilies:
         fams, unmapped = expected_families("xyzzy", ["foobar"])
         assert fams == set()
         assert unmapped == ["xyzzy", "foobar"]
-
-
-# ── M2: advanced shot detection ────────────────────────────────────────────
-
-class TestIsAdvancedShot:
-    def test_canonical_advanced(self):
-        assert is_advanced_shot("around_the_post") is True
-        assert is_advanced_shot("inside_out_behind_opponent") is True
-        assert is_advanced_shot("drop_volley") is True
-        assert is_advanced_shot("roll_volley") is True
-        assert is_advanced_shot("cut_angle_volley") is True
-        assert is_advanced_shot("topspin_return") is True
-        assert is_advanced_shot("backhand_roll") is True
-
-    def test_freeform_erne(self):
-        assert is_advanced_shot("Erne") is True
-        assert is_advanced_shot("Ernes to the line") is True
-        assert is_advanced_shot("backhand erne") is True
-
-    def test_freeform_atp(self):
-        assert is_advanced_shot("Around-the-Post") is True
-        assert is_advanced_shot("ATP winner") is True
-
-    def test_freeform_topspin(self):
-        assert is_advanced_shot("Topspin Roll Volley") is True
-        assert is_advanced_shot("topspin dink") is True
-
-    def test_basic_shots_not_advanced(self):
-        assert is_advanced_shot("third_shot_drop") is False
-        assert is_advanced_shot("dink") is False
-        assert is_advanced_shot("crosscourt_dink") is False
-        assert is_advanced_shot("reset") is False
-        assert is_advanced_shot("drive") is False
-        assert is_advanced_shot("put_away_volley") is False  # advanced ≠ aggressive
-        assert is_advanced_shot("block") is False
-
-    def test_empty_or_none_is_not_advanced(self):
-        assert is_advanced_shot(None) is False
-        assert is_advanced_shot("") is False
-        assert is_advanced_shot("   ") is False
 
 
 # ── M5: shot posture ───────────────────────────────────────────────────────

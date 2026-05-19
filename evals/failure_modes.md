@@ -2,26 +2,27 @@
 
 > This file is the contamination guard. We write down what the eval must catch
 > *before* writing scenarios or the judge prompt. Every scenario in
-> `golden_scenarios.jsonl` and every dimension in `llm_judge.py` should trace
-> back to one of the modes below. If a future change can't cite a mode here,
-> the eval is drifting.
+> `golden_scenarios.jsonl` and every dimension in `lib/llm_judge.py` should
+> trace back to one of the modes below. If a future change can't cite a mode
+> here, the eval is drifting.
 
-**Status:** Round 1 reviewed by Brian on 2026-04-28.
-Changes from Claude's draft:
-- Old M3 (generic advice) and old M5 (position-blind) **merged** into M3
-  (state-blind reasoning) — they were the same root cause: not using the state.
-- M2 detection mechanism **sharpened** — instead of a fuzzy judge call,
-  check whether the recommended shot is on an explicit "advanced shot" list
-  (4.0+ required). Sub-4.0 + advanced shot = automatic M2 fail.
-- Added M5 (wrong tactical mode — offense vs defense), **deterministic** —
-  expected mode is derived from state (me_zone × ball_height × ball_speed),
-  predicted posture is derived from the shot family. No judge involved.
+**Status:** Round 2 reviewed by Brian on 2026-05-13.
+Changes from round 1:
+- Old M2 (skill-level overreach) **removed**. The binary advanced-shot gate
+  was too narrow to be load-bearing (caught "Erne to a 3.5", missed strategic
+  mismatches), and dropping it leaves room to reintroduce a sharper skill
+  check later if production traces demand it.
+- Old M3 (state-blind reasoning) **removed**. It was doing two jobs — grading
+  generic *language* and grading position-*reasoning* — and one Likert can't
+  cleanly grade both. Future replacement, if any, should be split into narrow
+  binary judges driven by real traces.
+- Numbering preserved: surviving modes are still **M1, M4, M5** so archived
+  result JSON and historical commits keep referring to the same concepts.
 
-**Detection summary after round 1:** M1, M2, M5 are **deterministic**;
-M3 and M4 use the LLM judge. The judge prompt only has to grade two
-dimensions, not five. Cleaner and cheaper.
+**Detection summary after round 2:** M1 and M5 are **deterministic**;
+M4 uses the LLM judge. The judge prompt only has to grade one dimension.
 
-**Last updated:** 2026-04-28
+**Last updated:** 2026-05-13
 
 ---
 
@@ -44,48 +45,7 @@ Each entry has four parts:
 
 **Why it matters:** This is the most basic test of pickleball strategy. If the model can't distinguish drop from drive in textbook situations, no amount of nice prose hides that.
 
-**Detection mechanism:** Deterministic — `shot_match` via `shot_taxonomy.py`. Predicted shot text is mapped to a family; family must equal `expected_primary` family or be in `acceptable_alternatives`.
-
----
-
-## M2 — Skill-level overreach (recommends an advanced shot to a sub-4.0 player)
-
-**Description:** Model recommends a shot that's on the "advanced shot" list (requires 4.0+ skill to execute reliably) when the player's stated skill level is below 4.0.
-
-**Concrete example:** State says `skill_level: 3.5`. Ball is wide on the right side at the kitchen line. Model recommends an Erne or a topspin roll — both are 4.0+ shots. Right answer for a 3.5 is a sustainable cross-court dink.
-
-**Why it matters:** A coaching system that ignores skill level is giving advice for the wrong player. A 3.5 trying to hit Ernes will fault into the kitchen ten times out of ten.
-
-**Detection mechanism:** Deterministic — a binary check. Maintain an explicit `ADVANCED_SHOTS` set in `shot_taxonomy.py` (or equivalent) listing shots that require 4.0+:
-- All `specialty` family (around-the-post, Erne, inside-out)
-- Topspin variants in `roll` family
-- `cut_angle_volley`, `roll_volley`, `drop_volley` (offensive volleys with finesse)
-- Any shot string containing "topspin", "spin", "Erne", "ATP", "around the post"
-
-If `scenario.skill_level < 4.0` AND `predicted_shot ∈ ADVANCED_SHOTS` → M2 fail. If `scenario.skill_level >= 4.0` → M2 always passes (any shot is feasible at that level for purposes of this check).
-
-This replaces v1's fuzzy `skill_level_feasible` Likert with a crisp deterministic gate. The judge can still flag *strategic* skill mismatches (e.g. a 5.0 move suggested to a 3.5 in spirit), but the binary advanced-shot check is the floor.
-
----
-
-## M3 — State-blind reasoning (generic advice OR ignores positions)
-
-> **Merged from old M3 (generic advice) + old M5 (position-blind).** Both were
-> the same root cause: the model didn't use the state. The merged mode covers
-> any failure where the recommendation/reasoning would be identical if the
-> state were swapped for a different one.
-
-**Description:** Model's reasoning is vague enough that swapping the game state for a different scenario wouldn't change the recommendation. The "Why" doesn't reference ball height, ball position, ball speed, partner position, or opponent positions — it could fit any pickleball scene.
-
-**Concrete examples:**
-- *Generic flavor:* Ball low at the kitchen against opponents both at the kitchen line. Model says "Keep the ball low and play patient pickleball." That sentence works for ~80% of all kitchen scenarios.
-- *Position-blind flavor:* Opponents are stacked on the left side of the court (both at left_kitchen and left_transition); the right side is open. Model recommends a cross-court dink without noting that the cross-court is well-covered. Same advice would be given if both opponents were centered.
-
-**Why it matters:** This is the failure that's most expensive to ship. The system *sounds* like coaching but isn't actually using the inputs. Users get the warm fuzzy of getting an answer without any actual signal.
-
-**Detection mechanism:**
-- LLM judge Likert dimension — `specificity` / `state_use` (1–5 with anchors). The judge is asked: does the reasoning reference at least 2 specific state cues (ball height/speed/position/player positions)?
-- Reinforced deterministically by `reasoning_must_mention` keywords on each scenario (state-specific words like "open right side", "partner at kitchen", "high ball").
+**Detection mechanism:** Deterministic — `shot_match` via `lib/shot_taxonomy.py`. Predicted shot text is mapped to a family; family must equal `expected_primary` family or be in `acceptable_alternatives`.
 
 ---
 
@@ -113,7 +73,7 @@ This replaces v1's fuzzy `skill_level_feasible` Likert with a crisp deterministi
 
 **Detection mechanism: fully deterministic, no judge.**
 
-The expected tactical mode is *derivable from the state* — given me's court zone, ball height, ball speed, and opponent positions, the right posture is determined. Two functions, both in `shot_taxonomy.py`:
+The expected tactical mode is *derivable from the state* — given me's court zone, ball height, ball speed, and opponent positions, the right posture is determined. Two functions, both in `lib/shot_taxonomy.py`:
 
 1. **`expected_tactical_mode(state) → "offensive" | "defensive" | "neutral"`** — applies a decision rule. First cut:
 
@@ -139,7 +99,7 @@ The expected tactical mode is *derivable from the state* — given me's court zo
 
 **M5 check:** if `expected_tactical_mode(state) != shot_posture(predicted_shot)` → M5 fail.
 
-This means M5 (along with M1 and M2) is fully deterministic. Only M3 (state-blind reasoning) and M4 (ball-state reading) need the LLM judge.
+This means M5 (along with M1) is fully deterministic. Only M4 (ball-state reading) needs the LLM judge.
 
 ---
 
@@ -148,33 +108,36 @@ This means M5 (along with M1 and M2) is fully deterministic. Only M3 (state-blin
 | Failure mode | # scenarios | Difficulty mix |
 |---|---|---|
 | M1 wrong shot family | TBD | TBD |
-| M2 skill-level overreach (advanced shot for sub-4.0) | TBD | TBD |
-| M3 state-blind reasoning | TBD | TBD |
 | M4 misreads ball state | TBD | TBD |
 | M5 wrong tactical mode | TBD | TBD |
 
-Target: 4–5 scenarios per mode, ~20 total. Scenarios may probe multiple
+Target: 4–5 scenarios per mode, ~15 total. Scenarios may probe multiple
 modes; the `failure_modes` field on each scenario lists every mode it
 primarily probes.
+
+After the round-2 trim the golden set is intentionally thin (2 scenarios:
+one M1, one M4, zero M5). Filling these out is the next priority — new
+cases come from production traces, not imagination.
 
 ---
 
 ## Open questions still to resolve
 
-1. **Priority weighting** — are all 5 modes equal, or is one the primary
+1. **Priority weighting** — are all 3 modes equal, or is one the primary
    thing to catch? (Influences scenario distribution and judge pass criterion.)
-2. ~~**`tactical_mode` tagging** — derived deterministically from state, no
-   per-scenario tag needed.~~ Resolved: see M5 detection mechanism.
-3. **Where do `ADVANCED_SHOTS`, `expected_tactical_mode()`, and
-   `shot_posture()` live?** Plan: add all three to `shot_taxonomy.py`
-   alongside `SHOT_FAMILIES`. They're tightly coupled to shot identity and
-   shouldn't be a separate module. Confirm before Phase 4.
+2. **First M5 golden case.** M5 has zero scenarios. Pick a state where
+   `expected_tactical_mode(state)` returns "offensive" or "defensive" cleanly,
+   and the expected answer's posture matches. Avoid `neutral` baselines.
+3. **Replacements for old M2 / M3.** If production traces show recurring
+   skill-level mismatches or generic reasoning, design narrow binary judges
+   for those rather than reinstating the old Likerts.
 
 ---
 
 ## Definition of done for this file
 
 - [x] Each mode has a description, example, why-it-matters, and detection mechanism
-- [x] Brian has reviewed and made round-1 revisions (M3+M5 merge, M2 sharpening, M5 added)
+- [x] Brian has reviewed and made round-2 revisions (drop M2, drop M3, preserve numbering)
 - [x] No mode is decorative — each one has a concrete detection layer attached
 - [ ] Final priority/weighting decision (open question 1)
+- [ ] At least one golden case per surviving mode (open question 2)

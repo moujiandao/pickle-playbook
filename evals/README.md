@@ -10,7 +10,7 @@ Eval-driven quality gate for strategy recommendations. Every prompt or RAG chang
 |------|---------|
 | `golden_scenarios.jsonl` | Ground-truth test cases. One JSON object per line. Each scenario has a `game_state` (exact API input), `expected` fields (shot type, must-mention keywords), and a `difficulty` label. |
 | `run_eval.py` | Batch runner. Hits `/api/analyze` for every scenario, invokes the LLM judge on each response, writes a structured results JSON. |
-| `llm_judge.py` | LLM-as-judge scorer. Asks Claude to evaluate a response on shot-type match, keyword coverage, and reasoning quality. Returns a `JudgeResult` with a 0–1 score. |
+| `lib/llm_judge.py` | LLM-as-judge scorer. Blind-grades each response on **M4 only** (`ball_state_reading`). M1 (shot family) and M5 (tactical posture) are deterministic and don't need the judge. M2 and M3 were retired in round 2 — see `failure_modes.md`. Returns a `JudgeResult` with a 0–1 score. |
 | `results/` | Local run output. `*.json` files are gitignored — only `.gitkeep` is tracked. |
 
 ---

@@ -43,13 +43,8 @@ from shot_taxonomy import (  # noqa: E402
     expected_families,
     expected_postures,
     expected_tactical_mode,
-    is_advanced_shot,
     shot_posture,
 )
-
-# Skill levels at or above this threshold are considered capable of advanced
-# shots; below it, an advanced shot recommendation is M2 fail.
-_ADVANCED_SHOT_THRESHOLD = 4.0
 
 # ── court layout constants ─────────────────────────────────────────────────
 _ZONE_Y_MY = {"kitchen": 29.0, "transition": 35.0, "baseline": 40.0}
@@ -119,22 +114,18 @@ def score_scenario(scenario: dict, recs: list) -> dict:
 
     Deterministic checks emitted (one per failure mode that has a det. layer):
       shot_match         — M1: predicted family ∈ expected family set.
-      m2_advanced_shot_violation
-                         — M2: True if scenario.skill_level < 4.0 AND the
-                           predicted shot is on the advanced-shot list.
       m5_tactical_mode_match
                          — M5: predicted shot's posture ∈ expected_postures
                            (postures of all acceptable shots for this state).
       reasoning_coverage — diagnostic only (must_mention keyword hit rate).
 
-    M3 / M4 require the LLM judge and are added by the judge stage downstream.
+    M4 requires the LLM judge and is added by the judge stage downstream.
     """
     expert = scenario["expert_answer"]
     primary = expert["primary_shot"]
     alternatives = expert.get("acceptable_alternatives", [])
     must_mention = expert.get("reasoning_must_mention", [])
     state = scenario.get("state", {})
-    skill_level = float(state.get("skill_level", 0.0)) if state.get("skill_level") is not None else 0.0
 
     expected_fams, unmapped_expected = expected_families(primary, alternatives)
     exp_postures = expected_postures(primary, alternatives)
@@ -152,13 +143,6 @@ def score_scenario(scenario: dict, recs: list) -> dict:
     shot_match = (
         predicted_family is not None
         and predicted_family in expected_fams
-    )
-
-    # M2 — advanced shot recommended to a sub-4.0 player
-    m2_violation = (
-        predicted_shot is not None
-        and skill_level < _ADVANCED_SHOT_THRESHOLD
-        and is_advanced_shot(predicted_shot)
     )
 
     # M5 — tactical mode (posture) must match one of the acceptable postures.
@@ -181,12 +165,11 @@ def score_scenario(scenario: dict, recs: list) -> dict:
     mentions = {kw: kw.lower() in all_why for kw in must_mention}
     reasoning_coverage = sum(mentions.values()) / len(mentions) if mentions else 0.0
 
-    # Per-mode pass for the deterministic gates only. Judge-gated modes
-    # (M3, M4) are merged in by the runner after the judge runs. M5 with
-    # no expected postures (impossible state) is treated as pass-through.
+    # Per-mode pass for the deterministic gates only. Judge-gated M4 is
+    # merged in by the runner after the judge runs. M5 with no expected
+    # postures (impossible state) is treated as pass-through.
     per_mode_pass: dict[str, bool] = {
         "M1": bool(shot_match),
-        "M2": not m2_violation,
         "M5": bool(m5_mode_match) if m5_mode_match is not None else True,
     }
     overall_pass = all(per_mode_pass.values())  # judge-less floor; runner overwrites
@@ -204,7 +187,6 @@ def score_scenario(scenario: dict, recs: list) -> dict:
         "expected_postures": sorted(exp_postures),
         "expected_tactical_mode": exp_mode,
         "unmapped_expected_labels": unmapped_expected,
-        "m2_advanced_shot_violation": m2_violation,
         "m5_tactical_mode_match": m5_mode_match,
         "per_mode_pass": per_mode_pass,
         "overall_pass": overall_pass,
@@ -295,9 +277,7 @@ def run(
                         model=judge_model_id,
                     )
                     result["judge"] = {
-                        "state_use": jr.state_use,                 # M3
                         "ball_state_reading": jr.ball_state_reading,  # M4
-                        "m3_passed": jr.m3_passed,
                         "m4_passed": jr.m4_passed,
                         "notes": jr.notes,
                         "passed": jr.passed,
@@ -306,10 +286,9 @@ def run(
                     result["quadrant"] = _quadrant(result["shot_match"], jr.passed)
 
                 # score_scenario already populated per_mode_pass with the
-                # deterministic gates (M1, M2, M5) and overall_pass with their
-                # AND. After the judge runs we merge M3+M4 in and recompute.
+                # deterministic gates (M1, M5) and overall_pass with their
+                # AND. After the judge runs we merge M4 in and recompute.
                 if use_judge and "judge" in result:
-                    result["per_mode_pass"]["M3"] = result["judge"]["m3_passed"]
                     result["per_mode_pass"]["M4"] = result["judge"]["m4_passed"]
                     result["overall_pass"] = all(result["per_mode_pass"].values())
                 results.append(result)
@@ -348,7 +327,7 @@ def run(
     }
 
     # Per-mode pass rates always available (deterministic modes work without judge).
-    mode_keys = ["M1", "M2", "M5"] + (["M3", "M4"] if use_judge else [])
+    mode_keys = ["M1", "M5"] + (["M4"] if use_judge else [])
     per_mode_rates: dict[str, float] = {}
     for m in mode_keys:
         rows = [r for r in results if m in r.get("per_mode_pass", {})]
@@ -380,8 +359,9 @@ def run(
         summary["failure_breakdown"] = failure_breakdown
         if judge_rows:
             summary["avg_judge_scores"] = {
-                k: round(sum(j[k] for j in judge_rows) / len(judge_rows), 2)
-                for k in ("state_use", "ball_state_reading")
+                "ball_state_reading": round(
+                    sum(j["ball_state_reading"] for j in judge_rows) / len(judge_rows), 2
+                ),
             }
 
     output = {"summary": summary, "results": results, "errors": errors}

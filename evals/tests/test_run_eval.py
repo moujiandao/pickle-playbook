@@ -234,50 +234,6 @@ class TestEvalStateToGameState:
         assert gs.ball.y == 29.0
 
 
-# ── M2 — advanced shot for sub-4.0 player (deterministic) ─────────────────
-
-class TestM2AdvancedShotViolation:
-    def test_advanced_shot_at_3_5_is_violation(self):
-        # 3.5 player + Erne recommendation = M2 fail
-        recs = [_Rec("Erne to the line")]
-        scen = _scenario(
-            "crosscourt_dink",
-            state=_base_state(skill_level=3.5),
-        )
-        result = score_scenario(scen, recs)
-        assert result["m2_advanced_shot_violation"] is True
-
-    def test_advanced_shot_at_4_0_is_not_violation(self):
-        # 4.0 player + Erne = no M2 violation (player is capable)
-        recs = [_Rec("Erne winner")]
-        scen = _scenario(
-            "crosscourt_dink",
-            state=_base_state(skill_level=4.0),
-        )
-        result = score_scenario(scen, recs)
-        assert result["m2_advanced_shot_violation"] is False
-
-    def test_basic_shot_at_3_0_is_not_violation(self):
-        recs = [_Rec("Cross-court Dink")]
-        scen = _scenario(
-            "crosscourt_dink",
-            state=_base_state(skill_level=3.0),
-        )
-        result = score_scenario(scen, recs)
-        assert result["m2_advanced_shot_violation"] is False
-
-    def test_topspin_at_3_5_is_violation(self):
-        recs = [_Rec("Topspin Roll Volley")]
-        scen = _scenario("dink", state=_base_state(skill_level=3.5))
-        result = score_scenario(scen, recs)
-        assert result["m2_advanced_shot_violation"] is True
-
-    def test_no_recs_no_violation(self):
-        scen = _scenario("dink", state=_base_state(skill_level=3.0))
-        result = score_scenario(scen, [])
-        assert result["m2_advanced_shot_violation"] is False
-
-
 # ── M5 — tactical mode (posture) match (deterministic) ────────────────────
 
 class TestM5TacticalModeMatch:

@@ -3,9 +3,9 @@
 The actual API call to score_response() is not exercised here (it would
 require an ANTHROPIC_API_KEY and produce non-deterministic costs). Tests
 cover:
-  - parse_judge_output: valid JSON, missing fields, out-of-range scores,
+  - parse_judge_output: valid JSON, missing field, out-of-range scores,
     fenced output, embedded notes
-  - JudgeResult.passed reflects per-dimension thresholds
+  - JudgeResult.passed reflects the M4 threshold
   - build_judge_prompt: state cues + recommendation appear; expected_answer
     fields do NOT leak in
 """
@@ -39,70 +39,61 @@ def _state(**overrides) -> dict:
 # ── parse ──────────────────────────────────────────────────────────────────
 
 class TestParseJudgeOutput:
-    def test_valid_5_5_passes(self):
-        raw = '{"state_use": 5, "ball_state_reading": 5, "notes": "tight"}'
+    def test_valid_5_passes(self):
+        raw = '{"ball_state_reading": 5, "notes": "tight"}'
         r = parse_judge_output(raw, model="test-model")
-        assert r.state_use == 5
         assert r.ball_state_reading == 5
-        assert r.m3_passed is True
         assert r.m4_passed is True
         assert r.passed is True
         assert r.score == 1.0
         assert r.notes == "tight"
         assert r.model == "test-model"
 
-    def test_valid_3_3_just_passes(self):
-        raw = '{"state_use": 3, "ball_state_reading": 3, "notes": "ok"}'
+    def test_valid_3_just_passes(self):
+        raw = '{"ball_state_reading": 3, "notes": "ok"}'
         r = parse_judge_output(raw)
         assert r.passed is True
-        assert r.m3_passed is True
         assert r.m4_passed is True
 
-    def test_one_dim_fails_overall_fails(self):
-        raw = '{"state_use": 5, "ball_state_reading": 2, "notes": "missed ball read"}'
+    def test_below_threshold_fails(self):
+        raw = '{"ball_state_reading": 2, "notes": "missed ball read"}'
         r = parse_judge_output(raw)
-        assert r.m3_passed is True
         assert r.m4_passed is False
         assert r.passed is False
 
     def test_score_normalized_to_unit_interval(self):
-        # avg=1 → score=0; avg=5 → score=1; avg=3 → score=0.5
-        assert parse_judge_output('{"state_use":1,"ball_state_reading":1,"notes":""}').score == 0.0
-        assert parse_judge_output('{"state_use":5,"ball_state_reading":5,"notes":""}').score == 1.0
-        assert parse_judge_output('{"state_use":3,"ball_state_reading":3,"notes":""}').score == 0.5
+        # bsr=1 → score=0; bsr=5 → score=1; bsr=3 → score=0.5
+        assert parse_judge_output('{"ball_state_reading":1,"notes":""}').score == 0.0
+        assert parse_judge_output('{"ball_state_reading":5,"notes":""}').score == 1.0
+        assert parse_judge_output('{"ball_state_reading":3,"notes":""}').score == 0.5
 
     def test_fenced_json_parses(self):
-        raw = '```json\n{"state_use": 4, "ball_state_reading": 3, "notes": "ok"}\n```'
+        raw = '```json\n{"ball_state_reading": 3, "notes": "ok"}\n```'
         r = parse_judge_output(raw)
-        assert r.state_use == 4
+        assert r.ball_state_reading == 3
         assert r.passed is True
 
     def test_extra_text_around_json_parses(self):
-        raw = 'Here is my evaluation:\n{"state_use": 4, "ball_state_reading": 4, "notes": "good"}\nDone.'
+        raw = 'Here is my evaluation:\n{"ball_state_reading": 4, "notes": "good"}\nDone.'
         r = parse_judge_output(raw)
-        assert r.state_use == 4
         assert r.ball_state_reading == 4
-
-    def test_missing_state_use_raises(self):
-        with pytest.raises(ValueError, match="missing field: state_use"):
-            parse_judge_output('{"ball_state_reading": 4, "notes": "x"}')
 
     def test_missing_ball_state_reading_raises(self):
         with pytest.raises(ValueError, match="missing field: ball_state_reading"):
-            parse_judge_output('{"state_use": 4, "notes": "x"}')
+            parse_judge_output('{"notes": "x"}')
 
     def test_score_out_of_range_raises(self):
         with pytest.raises(ValueError, match="out of range"):
-            parse_judge_output('{"state_use": 6, "ball_state_reading": 4, "notes": ""}')
+            parse_judge_output('{"ball_state_reading": 6, "notes": ""}')
         with pytest.raises(ValueError, match="out of range"):
-            parse_judge_output('{"state_use": 4, "ball_state_reading": 0, "notes": ""}')
+            parse_judge_output('{"ball_state_reading": 0, "notes": ""}')
 
     def test_no_json_object_raises(self):
         with pytest.raises(ValueError, match="No JSON object found"):
             parse_judge_output("the model refused to respond")
 
     def test_notes_optional(self):
-        r = parse_judge_output('{"state_use": 4, "ball_state_reading": 4}')
+        r = parse_judge_output('{"ball_state_reading": 4}')
         assert r.notes == ""
 
 
@@ -128,17 +119,18 @@ class TestBuildJudgePrompt:
         assert "put_away_volley" not in prompt
         assert "expert_answer" not in prompt
 
-    def test_dimensions_named_in_prompt(self):
+    def test_dimension_named_in_prompt(self):
         prompt = build_judge_prompt([{"name": "X", "why": "Y"}], _state())
-        assert "state_use" in prompt
         assert "ball_state_reading" in prompt
         # And the failure mode anchors should be visible
-        assert "Generic" in prompt
-        assert "Specific" in prompt
+        assert "Wrong" in prompt
+        assert "Correct" in prompt
         assert "ANCHORS" in prompt
 
-    def test_dropped_v1_dimensions_not_in_prompt(self):
+    def test_dropped_dimensions_not_in_prompt(self):
+        # M3 (state_use) was retired round 2; v1 dimensions removed earlier.
         prompt = build_judge_prompt([{"name": "X", "why": "Y"}], _state())
+        assert "state_use" not in prompt
         assert "strategic_soundness" not in prompt
         assert "reasoning_quality" not in prompt
         assert "specificity" not in prompt

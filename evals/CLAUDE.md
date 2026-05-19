@@ -5,11 +5,13 @@ Read these rules before changing anything in here.
 
 ### What this harness is
 
-- Failure-mode taxonomy: M1–M5 in failure_modes.md (the rubric framework)
+- Failure-mode taxonomy: M1, M4, M5 in failure_modes.md (the rubric framework).
+  Numbering has gaps because old M2 and M3 were retired in round 2 (2026-05-13);
+  surviving modes keep their original IDs so archived eval runs stay readable.
 - Golden set: golden_scenarios.jsonl, hand-curated, tagged by failure mode
 - Two eval tracks:
-  - Deterministic checks for M1, M2, M5 (cheap, exact, gate-able)
-  - LLM-as-judge for M3, M4 (subjective, needs calibration)
+  - Deterministic checks for M1, M5 (cheap, exact, gate-able)
+  - LLM-as-judge for M4 (subjective, needs calibration)
 - Harness: run_eval.py wires golden set → app → checks + judges → report
 - Visualization: streamlit_app.py for inspection
 
@@ -62,7 +64,7 @@ If I propose any of these, stop me and quote the rule:
 
 Before writing code in this directory, answer:
 
-1. What failure mode is this change about? (M1–M5 or named new one)
+1. What failure mode is this change about? (M1, M4, M5 — or named new one)
 2. Where's the trace evidence? (production trace IDs or "I made it up")
 3. What's the smallest thing that would close the gap? (new golden case? 
    new check? rubric tweak? full new judge?)
