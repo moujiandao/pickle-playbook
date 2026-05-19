@@ -70,8 +70,25 @@ const st = {
   },
 }
 
-export default function ControlPanel({ mySide, setMySide, ball, setBall, onAnalyze, isAnalyzing, onSave, scenarioCount, skillLevel, setSkillLevel }) {
+export default function ControlPanel({ mySide, setMySide, players, ball, setBall, onAnalyze, isAnalyzing, onSave, scenarioCount, skillLevel, setSkillLevel, handedness, setHandedness, showAllZones, setShowAllZones }) {
   const inK = ball.y >= NET_Y - KITCHEN && ball.y <= NET_Y + KITCHEN
+  const fmt = (n) => n.toFixed(1).padStart(4, ' ')
+  const meKey = mySide === 'left' ? 'my_left' : 'my_right'
+  const partnerKey = mySide === 'left' ? 'my_right' : 'my_left'
+  const handRows = [
+    { key: meKey, label: 'ME' },
+    { key: partnerKey, label: 'PARTNER' },
+    { key: 'opp_left', label: 'OPP L' },
+    { key: 'opp_right', label: 'OPP R' },
+  ]
+  const coordRows = players
+    ? [
+        { label: `ME (${mySide[0].toUpperCase()})`, pos: players[meKey], color: '#f59e0b' },
+        { label: `PARTNER (${mySide === 'left' ? 'R' : 'L'})`, pos: players[partnerKey], color: '#48bfe3' },
+        { label: 'OPP L', pos: players.opp_left, color: 'rgba(255,255,255,0.55)' },
+        { label: 'OPP R', pos: players.opp_right, color: 'rgba(255,255,255,0.55)' },
+      ]
+    : []
   return (
     <div style={panelStyle}>
       <div>
@@ -102,6 +119,63 @@ export default function ControlPanel({ mySide, setMySide, ball, setBall, onAnaly
           ))}
         </div>
       </div>
+      {setShowAllZones && (
+        <div>
+          <label style={st.label}>PLAYER ATTACKABLE ZONES DISPLAY</label>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {[
+              { label: 'ON', val: true },
+              { label: 'OFF', val: false },
+            ].map(({ label, val }) => (
+              <button
+                key={label}
+                onClick={() => setShowAllZones(val)}
+                style={{ ...st.btn, ...(showAllZones === val ? st.active : {}) }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      {handedness && setHandedness && (
+        <div>
+          <label style={st.label}>HANDEDNESS</label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {handRows.map((row) => (
+              <div key={row.key} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span
+                  style={{
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: 10,
+                    color: 'rgba(255,255,255,0.55)',
+                    width: 64,
+                    letterSpacing: '0.5px',
+                  }}
+                >
+                  {row.label}
+                </span>
+                <div style={{ display: 'flex', gap: 6, flex: 1 }}>
+                  {['right', 'left'].map((h) => (
+                    <button
+                      key={h}
+                      onClick={() => setHandedness({ ...handedness, [row.key]: h })}
+                      style={{
+                        ...st.btn,
+                        padding: '5px 8px',
+                        fontSize: 11,
+                        ...(handedness[row.key] === h ? st.active : {}),
+                      }}
+                    >
+                      {h === 'right' ? 'R' : 'L'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       <div>
         <label style={st.label}>BALL HEIGHT</label>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -159,10 +233,29 @@ export default function ControlPanel({ mySide, setMySide, ball, setBall, onAnaly
           lineHeight: 1.7,
         }}
       >
-        Ball: ({ball.x.toFixed(1)}ft, {ball.y.toFixed(1)}ft) · {ball.height} · {ball.speed}
-        {inK && ball.spin ? ` · ${ball.spin}` : ''}
-        <br />
-        Zone: {describeBallZone(ball.y)}
+        <div style={{ color: 'rgba(255,255,255,0.55)', fontWeight: 600, letterSpacing: '1px', marginBottom: 4 }}>
+          POSITIONS (ft)
+        </div>
+        {coordRows.map((row) => (
+          <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', color: row.color }}>
+            <span>{row.label}</span>
+            <span>({fmt(row.pos.x)}, {fmt(row.pos.y)})</span>
+          </div>
+        ))}
+        <div
+          style={{
+            borderTop: '1px solid rgba(255,255,255,0.08)',
+            margin: '6px 0',
+          }}
+        />
+        <div style={{ display: 'flex', justifyContent: 'space-between', color: '#fbbf24' }}>
+          <span>BALL</span>
+          <span>({fmt(ball.x)}, {fmt(ball.y)})</span>
+        </div>
+        <div style={{ marginTop: 2 }}>
+          {ball.height} · {ball.speed}
+          {inK && ball.spin ? ` · ${ball.spin}` : ''} · {describeBallZone(ball.y)}
+        </div>
       </div>
       <button
         onClick={onAnalyze}

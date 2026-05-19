@@ -5,31 +5,29 @@ export const KITCHEN = 7
 export const NET_Y = COURT_L / 2
 
 // SVG viewport & trapezoid geometry for the 3D-perspective court.
-//   - near baseline width = 680px, centered in SVG with 100px
-//     out-of-bounds margin on each side (slightly wider green than
-//     the previous 60px)
-//   - far baseline = 50% of near baseline (trapezoid foreshortening)
-//   - 120px out-of-bounds margin above the far baseline so far-side
-//     stick-figure heads are not clipped at the top of the SVG
-//   - 120px out-of-bounds margin below the near baseline (3x the
-//     previous 40px) to give the near-side player more visual runway
-//   - DEPTH_EXP tuned so the near half (net → near baseline) is 10%
-//     taller on screen than the far half (net → far baseline); with
-//     screen_y = NEAR_Y - 0.5^E * (NEAR_Y - FAR_Y) at the net line,
-//     solving near/far = 1.10 gives E ≈ 0.93
-export const SVG_W = 880
-export const SVG_H = 617
+// Tuned for a low-angle, near-baseline first-person POV while keeping the
+// opponent's kitchen line legible.
+//   - 16:9 cinematic viewport
+//   - near baseline width ≈ 840px (60px margin each side) — wide-FOV near edge
+//   - far baseline = 33% of near baseline (aggressive trapezoid taper)
+//   - 170px sky/back-wall band above the far baseline
+//   - 30px margin below the near baseline
+//   - DEPTH_EXP=0.58 → near half is ~2.04x taller on screen than far half;
+//     opp kitchen line (y=15) sits ~76px below the far baseline on screen,
+//     well above the 40px legibility floor.
+export const SVG_W = 960
+export const SVG_H = 540
 
-export const NEAR_LEFT_X = 100
-export const NEAR_RIGHT_X = SVG_W - 100
-export const NEAR_Y = SVG_H - 120
+export const NEAR_LEFT_X = 60
+export const NEAR_RIGHT_X = SVG_W - 60
+export const NEAR_Y = SVG_H - 30
 
-// Far baseline width = (NEAR_RIGHT_X - NEAR_LEFT_X) / 2 = 340, centered in SVG
-export const FAR_LEFT_X = 270
-export const FAR_RIGHT_X = SVG_W - 270
-export const FAR_Y = 120
+// Far baseline width = 240px ≈ 33% of near baseline width (720px), centered in SVG
+export const FAR_LEFT_X = 360
+export const FAR_RIGHT_X = SVG_W - 360
+export const FAR_Y = 170
 
-export const DEPTH_EXP = 0.93
+export const DEPTH_EXP = 0.58
 
 // Base player height in SVG units at scale=1. Sized per skill's
 // 40px hard minimum: far-side players use depth scale 0.55, so base
